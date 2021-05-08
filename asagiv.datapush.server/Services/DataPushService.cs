@@ -1,6 +1,9 @@
+using asagiv.datapush.server.common;
+using asagiv.datapush.server.common.Models;
 using Google.Protobuf;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace asagiv.datapush.server
@@ -23,6 +26,10 @@ namespace asagiv.datapush.server
         {
             _logger.LogInformation($"Request Received for topic: {request.Topic}");
 
+            var pushRepositoryItem = new PushRepositoryItem(request.Topic, request.Data);
+
+            PushDataRepository.instance.repository.Add(pushRepositoryItem);
+
             return Task.FromResult(new DataPushResponse
             {
                 Confirmation = 1
@@ -33,11 +40,25 @@ namespace asagiv.datapush.server
         {
             _logger.LogInformation($"Routing topic topic: {request.Topic}");
 
-            return Task.FromResult(new DataPullResponse
+            var repositoryItem = PushDataRepository.instance.repository
+                .FirstOrDefault(x => x.Topic == request.Topic);
+
+            if(repositoryItem == null)
             {
-                Topic = request.Topic,
-                Data = ByteString.CopyFrom(new byte[0]),
-            });
+                return Task.FromResult(new DataPullResponse
+                {
+                    Topic = request.Topic,
+                    Data = ByteString.CopyFrom(new byte[0]),
+                });
+            }
+            else
+            {
+                return Task.FromResult(new DataPullResponse
+                {
+                    Topic = request.Topic,
+                    Data = repositoryItem.Data,
+                });
+            }
         }
         #endregion
     }

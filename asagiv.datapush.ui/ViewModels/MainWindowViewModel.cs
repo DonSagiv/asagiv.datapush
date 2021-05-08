@@ -86,25 +86,31 @@ namespace asagiv.datapush.ui.ViewModels
 
             var request = new DataPushRequest
             {
-                Topic = Path.GetFileName(_filePath),
+                Topic = "Test Topic",
                 Data = ByteString.CopyFrom(data)
             };
 
-            var pushReply = await _client.PushDataAsync(request);
-
-            Reply = pushReply.Confirmation.ToString();
+            await _client.PushDataAsync(request);
         }
 
         private async Task pollDataAsync(long obj)
         {
             var request = new DataPullRequest
             {
-                Topic = Path.GetFileName($"Test {obj}"),
+                Topic = Path.GetFileName("Test Topic"),
             };
 
             var pushReply = await _client.PullDataAsync(request);
 
-            Reply = $"{pushReply.Topic} (Attempt {obj})";
+            if(pushReply.Data.Length == 0)
+            {
+                Reply = $"{pushReply.Topic} (Attempt {obj})";
+            }
+            else
+            {
+                Reply = $"Data Found for {pushReply.Topic}";
+                _pullSubscribe.Dispose();
+            }
         }
         #endregion
     }

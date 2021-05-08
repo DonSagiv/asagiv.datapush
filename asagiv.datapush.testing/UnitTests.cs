@@ -31,10 +31,6 @@ namespace asagiv.datapush.testing
             var reply = _client.PushData(request);
 
             Assert.IsTrue(reply.Confirmation == 1);
-
-            var replyData = reply.Data.ToStringUtf8();
-
-            Assert.IsTrue(replyData == payload);
         }
     }
 }
