@@ -1,0 +1,27 @@
+﻿<Window x:Class="asagiv.datapush.ui.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:asagiv.datapush.ui.ViewModels"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance vm:MainWindowViewModel, IsDesignTimeCreatable=False}"
+        Title="MainWindow" Height="450" Width="800">
+
+    <StackPanel>
+
+        <Button Margin="10"    
+                Content="Select File to Upload"
+                Command="{Binding SelectFileToUploadCommand}"/>
+
+        <Button Margin="10"    
+                Content="Upload File"
+                Command="{Binding UploadFileCommand}"/>
+
+        <TextBlock Margin="10"
+                   TextAlignment="Center"
+                   Text="{Binding Reply}"/>
+
+    </StackPanel>
+
+</Window>

@@ -20,19 +20,12 @@ namespace asagiv.datapush.testing
 
         [TestCase("Hello World!")]
         [TestCase("")]
-        [TestCase(null)]
         public void AssertRequestConfirmation(string payload)
         {
-            var context = new PushDataContext
-            {
-                topic = "Hello World!",
-                data = Encoding.UTF8.GetBytes(payload)
-            };
-
             var request = new DataPushRequest
             {
-                Topic = context.topic,
-                Data = ByteString.CopyFrom(context.data)
+                Topic = "Hello World!",
+                Data = ByteString.CopyFrom(Encoding.UTF8.GetBytes(payload))
             };
 
             var reply = _client.PushData(request);
