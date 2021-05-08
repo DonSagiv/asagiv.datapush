@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option csharp_namespace = "asagiv.datapush.testing";
+
+package dataPush;
+
+// The greeting service definition.
+service DataPush {
+  // Sends a greeting
+  rpc PushData (DataPushRequest) returns (DataPushResponse);
+}
+
+// The request message containing the user's name.
+message DataPushRequest {
+  string topic = 1;
+  bytes data = 2;
+}
+
+// The response message containing the greetings.
+message DataPushResponse {
+  int32 confirmation = 1;
+  bytes data = 2;
+}
