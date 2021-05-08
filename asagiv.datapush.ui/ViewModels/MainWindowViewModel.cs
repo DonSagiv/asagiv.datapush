@@ -7,6 +7,9 @@ using Prism.Mvvm;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Reactive.Linq;
+using System;
+using System.Reactive.Concurrency;
 
 namespace asagiv.datapush.ui.ViewModels
 {
@@ -17,6 +20,8 @@ namespace asagiv.datapush.ui.ViewModels
         private readonly GrpcChannel _channel;
         private readonly DataPush.DataPushClient _client;
         private string _reply;
+        private IObservable<long> _pullObservable;
+        private IDisposable _pullSubscribe;
         #endregion
 
         #region Properties
@@ -40,6 +45,12 @@ namespace asagiv.datapush.ui.ViewModels
 
             SelectFileToUploadCommand = new DelegateCommand(SelectFileToUpload);
             UploadFileCommand = new DelegateCommand(async () => await UploadFileAsync());
+
+            _pullObservable = Observable.Interval(TimeSpan.FromSeconds(1));
+
+            _pullSubscribe = _pullObservable
+                .ObserveOn(TaskPoolScheduler.Default)
+                .Subscribe(async x => await pollDataAsync(x));
         }
         #endregion
 
@@ -82,6 +93,18 @@ namespace asagiv.datapush.ui.ViewModels
             var pushReply = await _client.PushDataAsync(request);
 
             Reply = pushReply.Confirmation.ToString();
+        }
+
+        private async Task pollDataAsync(long obj)
+        {
+            var request = new DataPullRequest
+            {
+                Topic = Path.GetFileName($"Test {obj}"),
+            };
+
+            var pushReply = await _client.PullDataAsync(request);
+
+            Reply = $"{pushReply.Topic} (Attempt {obj})";
         }
         #endregion
     }

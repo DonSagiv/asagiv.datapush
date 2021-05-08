@@ -1,3 +1,4 @@
+using Google.Protobuf;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
@@ -24,8 +25,18 @@ namespace asagiv.datapush.server
 
             return Task.FromResult(new DataPushResponse
             {
-                Confirmation = 1,
-                Data = request.Data
+                Confirmation = 1
+            });
+        }
+
+        public override Task<DataPullResponse> PullData(DataPullRequest request, ServerCallContext context)
+        {
+            _logger.LogInformation($"Routing topic topic: {request.Topic}");
+
+            return Task.FromResult(new DataPullResponse
+            {
+                Topic = request.Topic,
+                Data = ByteString.CopyFrom(new byte[0]),
             });
         }
         #endregion

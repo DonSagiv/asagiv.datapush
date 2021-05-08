@@ -4,20 +4,25 @@ option csharp_namespace = "asagiv.datapush.server";
 
 package dataPush;
 
-// The greeting service definition.
 service DataPush {
-  // Sends a greeting
   rpc PushData (DataPushRequest) returns (DataPushResponse);
+  rpc PullData (DataPullRequest) returns (DataPullResponse);
 }
 
-// The request message containing the user's name.
 message DataPushRequest {
   string topic = 1;
   bytes data = 2;
 }
 
-// The response message containing the greetings.
 message DataPushResponse {
   int32 confirmation = 1;
+}
+
+message DataPullRequest {
+  string topic = 1;
+}
+
+message DataPullResponse {
+  string topic = 1;
   bytes data = 2;
 }
