@@ -28,7 +28,7 @@ namespace asagiv.datapush.server
 
             var pushRepositoryItem = new PushRepositoryItem(request.Topic, request.Data);
 
-            PushDataRepository.instance.repository.Add(pushRepositoryItem);
+            PushDataRepository.Instance.Repository.Add(pushRepositoryItem);
 
             return Task.FromResult(new DataPushResponse
             {
@@ -38,13 +38,13 @@ namespace asagiv.datapush.server
 
         public override Task<DataPullResponse> PullData(DataPullRequest request, ServerCallContext context)
         {
-            _logger.LogInformation($"Routing topic topic: {request.Topic}");
-
-            var repositoryItem = PushDataRepository.instance.repository
+            var repositoryItem = PushDataRepository.Instance.Repository
                 .FirstOrDefault(x => x.Topic == request.Topic);
 
             if(repositoryItem == null)
             {
+                _logger.LogInformation($"No data found for topic {request.Topic}");
+
                 return Task.FromResult(new DataPullResponse
                 {
                     Topic = request.Topic,
@@ -53,6 +53,10 @@ namespace asagiv.datapush.server
             }
             else
             {
+                _logger.LogInformation($"Data retrieved for topic {request.Topic}");
+
+                PushDataRepository.Instance.Repository.Remove(repositoryItem);
+
                 return Task.FromResult(new DataPullResponse
                 {
                     Topic = request.Topic,

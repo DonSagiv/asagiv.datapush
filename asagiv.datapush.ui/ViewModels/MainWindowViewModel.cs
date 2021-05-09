@@ -1,64 +1,55 @@
-﻿using asagiv.datapush.common;
-using Google.Protobuf;
-using Grpc.Net.Client;
+﻿using asagiv.datapush.ui.Models;
 using Microsoft.Win32;
 using Prism.Commands;
 using Prism.Mvvm;
-using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using System.Reactive.Linq;
-using System;
-using System.Reactive.Concurrency;
 
 namespace asagiv.datapush.ui.ViewModels
 {
     public class MainWindowViewModel : BindableBase
     {
         #region Fields
-        private string _filePath;
-        private readonly GrpcChannel _channel;
-        private readonly DataPush.DataPushClient _client;
-        private string _reply;
-        private IObservable<long> _pullObservable;
-        private IDisposable _pullSubscribe;
+        private string _status;
         #endregion
 
         #region Properties
-        public string Reply
+        public DataPushClientModel ClientModel { get; }
+        public string Status
         {
-            get { return _reply; }
-            set { _reply = value; RaisePropertyChanged(nameof(Reply)); }
+            get { return _status; }
+            set { _status = value; RaisePropertyChanged(nameof(Status)); }
         }
         #endregion
 
         #region Commands
+        public ICommand ConnectToServerCommand { get; }
         public ICommand SelectFileToUploadCommand { get; }
-        public ICommand UploadFileCommand { get; }
         #endregion
 
         #region Constructor
         public MainWindowViewModel()
         {
-            _channel = GrpcChannel.ForAddress("http://localhost:80");
-            _client = new DataPush.DataPushClient(_channel);
+            ClientModel = new DataPushClientModel();
 
-            SelectFileToUploadCommand = new DelegateCommand(SelectFileToUpload);
-            UploadFileCommand = new DelegateCommand(async () => await UploadFileAsync());
+            // Default Value;
+            ClientModel.ConnectionString = "http://localhost:80";
 
-            _pullObservable = Observable.Interval(TimeSpan.FromSeconds(1));
-
-            _pullSubscribe = _pullObservable
-                .ObserveOn(TaskPoolScheduler.Default)
-                .Subscribe(async x => await pollDataAsync(x));
+            ConnectToServerCommand = new DelegateCommand(ConnectToServer);
+            SelectFileToUploadCommand = new DelegateCommand(async() => await SelectFileToUpload());
         }
         #endregion
 
         #region Methods
-        private void SelectFileToUpload()
+        private void ConnectToServer()
         {
-            _filePath = null;
+            Status = ClientModel.initializeClient()
+                ? "Server Connection Successful"
+                : "Server Connection Failed";
+        }
 
+        private async Task SelectFileToUpload()
+        {
             var openFileDialog = new OpenFileDialog()
             {
                 Title = "Select File to Upload.",
@@ -72,45 +63,7 @@ namespace asagiv.datapush.ui.ViewModels
                 return;
             }
 
-            _filePath = openFileDialog.FileName;
-        }
-
-        private async Task UploadFileAsync()
-        {
-            if (string.IsNullOrWhiteSpace(_filePath))
-            {
-                return;
-            }
-
-            var data = await File.ReadAllBytesAsync(_filePath);
-
-            var request = new DataPushRequest
-            {
-                Topic = "Test Topic",
-                Data = ByteString.CopyFrom(data)
-            };
-
-            await _client.PushDataAsync(request);
-        }
-
-        private async Task pollDataAsync(long obj)
-        {
-            var request = new DataPullRequest
-            {
-                Topic = Path.GetFileName("Test Topic"),
-            };
-
-            var pushReply = await _client.PullDataAsync(request);
-
-            if(pushReply.Data.Length == 0)
-            {
-                Reply = $"{pushReply.Topic} (Attempt {obj})";
-            }
-            else
-            {
-                Reply = $"Data Found for {pushReply.Topic}";
-                _pullSubscribe.Dispose();
-            }
+            await ClientModel.UploadFileAsync("Test", openFileDialog.FileName);
         }
         #endregion
     }

@@ -1,5 +1,6 @@
 ﻿using asagiv.datapush.server.common.Interfaces;
 using Google.Protobuf;
+using System;
 
 namespace asagiv.datapush.server.common.Models
 {
@@ -7,6 +8,7 @@ namespace asagiv.datapush.server.common.Models
     {
         #region Properties
         public string Topic { get; }
+        public DateTime PushDateTime { get; }
         public ByteString Data { get; }
         #endregion
 
@@ -14,6 +16,7 @@ namespace asagiv.datapush.server.common.Models
         public PushRepositoryItem(string Topic, ByteString Data)
         {
             this.Topic = Topic;
+            this.PushDateTime = DateTime.Now;
             this.Data = Data;
         }
         #endregion
