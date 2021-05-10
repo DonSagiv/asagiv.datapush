@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             xmlns:viewmodels="clr-namespace:asagiv.datapush.ui.mobile.ViewModels"
+             x:Class="asagiv.datapush.ui.mobile.MainPage">
+
+    <d:ContentPage.BindingContext>
+        <viewmodels:MainPageViewModel/>
+    </d:ContentPage.BindingContext>
+
+    <StackLayout>
+
+        <Entry Placeholder="Connection String"/>
+
+        <Button Text="Connect"/>
+
+        <Button Text="Selet File"
+                Command="{Binding SelectFileCommand}"/>
+
+    </StackLayout>
+
+</ContentPage>
