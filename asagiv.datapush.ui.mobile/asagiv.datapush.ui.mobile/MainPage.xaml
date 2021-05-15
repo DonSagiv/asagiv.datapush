@@ -13,9 +13,11 @@
 
     <StackLayout>
 
-        <Entry Placeholder="Connection String"/>
+        <Entry Placeholder="Connection String"
+               Text="{Binding ConnectionString, Mode=TwoWay}"/>
 
-        <Button Text="Connect"/>
+        <Button Text="Connect"
+                Command="{Binding ConnectCommand}"/>
 
         <Button Text="Selet File"
                 Command="{Binding SelectFileCommand}"/>

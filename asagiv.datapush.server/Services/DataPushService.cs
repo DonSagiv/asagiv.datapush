@@ -43,7 +43,7 @@ namespace asagiv.datapush.server
 
             if(repositoryItem == null)
             {
-                _logger.LogInformation($"No data found for topic {request.Topic}");
+                // _logger.LogInformation($"No data found for topic {request.Topic}");
 
                 return Task.FromResult(new DataPullResponse
                 {

@@ -1,4 +1,5 @@
 ﻿using Google.Protobuf;
+using Grpc.Core;
 using Grpc.Net.Client;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace asagiv.datapush.common.Utilities
     public class GrpcClient
     {
         #region Fields
-        private readonly GrpcChannel _channel;
+        private readonly ChannelBase _channel;
         #endregion
 
         #region Delegates
@@ -29,6 +30,16 @@ namespace asagiv.datapush.common.Utilities
         public GrpcClient(string connectionString)
         {
             _channel = GrpcChannel.ForAddress(connectionString);
+
+            Client = new DataPush.DataPushClient(_channel);
+
+            PullSubscribers = new List<DataPullSubscriber>();
+        }
+
+        public GrpcClient(ChannelBase channel)
+        {
+            _channel = channel;
+
             Client = new DataPush.DataPushClient(_channel);
 
             PullSubscribers = new List<DataPullSubscriber>();
