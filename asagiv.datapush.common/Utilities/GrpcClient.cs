@@ -16,59 +16,73 @@ namespace asagiv.datapush.common.Utilities
         #endregion
 
         #region Delegates
-        public event EventHandler<byte[]> DataRetrieved;
+        public event EventHandler<DataPullResponse> DataRetrieved;
         #endregion
 
         #region Properties
         public DataPush.DataPushClient Client { get; }
         public IList<DataPullSubscriber> PullSubscribers { get; }
+        public string NodeName { get; set; }
+        public string DeviceId { get; set; }
         #endregion
 
         #region Constructor
-        public GrpcClient(string address, uint port) : this($"http://{address}:{port}") { }
-
-        public GrpcClient(string connectionString)
+        public GrpcClient(string connectionString, string nodeName, string deviceId)
         {
             _channel = GrpcChannel.ForAddress(connectionString);
 
             Client = new DataPush.DataPushClient(_channel);
 
             PullSubscribers = new List<DataPullSubscriber>();
+
+            NodeName = nodeName;
+
+            DeviceId = deviceId;
         }
 
-        public GrpcClient(ChannelBase channel)
+        public GrpcClient(ChannelBase channel, string nodeName, string deviceId)
         {
             _channel = channel;
 
             Client = new DataPush.DataPushClient(_channel);
 
             PullSubscribers = new List<DataPullSubscriber>();
+
+            NodeName = nodeName;
+
+            DeviceId = deviceId;
         }
         #endregion
 
         #region Methods
-        public void CreatePullSubscriber(string topic)
+        public async Task CreatePullSubscriberAsync()
         {
             var hasSubscriber = PullSubscribers
-                .Any(x => x.Topic == topic);
+                .Any(x => x.DestinationNode == NodeName);
 
             if (hasSubscriber) return;
 
-            var subscriberToAdd = new DataPullSubscriber(Client, topic);
+            var nodeRequest = new RegisterNodeRequest
+            {
+                DeviceId = DeviceId,
+                NodeName = NodeName,
+            };
+
+            var response = await Client.RegisterNodeAsync(nodeRequest);
+
+            var subscriberToAdd = new DataPullSubscriber(Client, NodeName);
 
             subscriberToAdd.DataRetrieved += OnPullDataRetrieved;
 
             PullSubscribers.Add(subscriberToAdd);
         }
 
-        private void OnPullDataRetrieved(object sender, ByteString e)
+        private void OnPullDataRetrieved(object sender, DataPullResponse e)
         {
-            var byteArray = e.ToByteArray();
-
-            DataRetrieved?.Invoke(sender, byteArray);
+            DataRetrieved?.Invoke(sender, e);
         }
 
-        public async Task<bool> PushFileAsync(string topic, string filePath)
+        public async Task<bool> PushFileAsync(string pushto, string filePath)
         {
             if (string.IsNullOrWhiteSpace(filePath))
             {
@@ -77,14 +91,19 @@ namespace asagiv.datapush.common.Utilities
 
             var data = await File.ReadAllBytesAsync(filePath);
 
-            return await PushDataAsync(topic, data);
+            var name = Path.GetFileName(filePath);
+
+            return await PushDataAsync(pushto, name, data);
         }
-        public async Task<bool> PushDataAsync(string topic, byte[] data) 
+
+        public async Task<bool> PushDataAsync(string pushTo, string name, byte[] data) 
         {
             var request = new DataPushRequest
             {
-                Topic = topic,
-                Data = ByteString.CopyFrom(data)
+                SourceNode = NodeName,
+                DestinationNode = pushTo,
+                Name = name,
+                Payload = ByteString.CopyFrom(data)
             };
 
             try

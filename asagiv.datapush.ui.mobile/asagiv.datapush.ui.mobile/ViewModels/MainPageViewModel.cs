@@ -1,6 +1,5 @@
 ﻿using asagiv.datapush.common.Utilities;
 using Grpc.Core;
-using Grpc.Net.Client;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
@@ -8,6 +7,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Essentials;
+using Xamarin.Forms;
 
 namespace asagiv.datapush.ui.mobile.ViewModels
 {
@@ -15,6 +15,7 @@ namespace asagiv.datapush.ui.mobile.ViewModels
     {
         #region Fields
         private string _connectionString;
+        private string _nodeName;
         #endregion
 
         #region Properties
@@ -22,6 +23,11 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         {
             get { return _connectionString; }
             set { _connectionString = value; RaisePropertyChanged(nameof(ConnectionString)); }
+        }
+        public string NodeName
+        {
+            get { return _nodeName; }
+            set { _nodeName = value; RaisePropertyChanged(nameof(NodeName)); }
         }
         public GrpcClient Client { get; private set; }
         #endregion
@@ -42,11 +48,19 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         #region Methods
         private void Connect()
         {
+            var deviceId = Preferences.Get("deviceId", string.Empty);
+
+            if (string.IsNullOrWhiteSpace(deviceId))
+            {
+                deviceId = Guid.NewGuid().ToString();
+                Preferences.Set("deviceId", deviceId);
+            }
+
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
             var channel = new Channel(_connectionString, ChannelCredentials.Insecure);
 
-            Client = new GrpcClient(channel);
+            Client = new GrpcClient(channel, _nodeName, deviceId);
         }
 
         private async Task SelectFileAsync()

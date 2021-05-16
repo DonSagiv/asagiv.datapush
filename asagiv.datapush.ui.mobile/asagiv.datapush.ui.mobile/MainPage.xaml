@@ -16,6 +16,9 @@
         <Entry Placeholder="Connection String"
                Text="{Binding ConnectionString, Mode=TwoWay}"/>
 
+        <Entry Placeholder="Connection String"
+               Text="{Binding NodeName, Mode=TwoWay}"/>
+
         <Button Text="Connect"
                 Command="{Binding ConnectCommand}"/>
 

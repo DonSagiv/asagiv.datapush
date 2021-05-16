@@ -1,4 +1,5 @@
-﻿using asagiv.datapush.common.Utilities;
+﻿using asagiv.datapush.common;
+using asagiv.datapush.common.Utilities;
 using Prism.Mvvm;
 using System;
 using System.IO;
@@ -12,6 +13,8 @@ namespace asagiv.datapush.ui.Models
         private string _fileToUploadPath;
         private string _connectionString;
         private GrpcClient _client;
+        private string _nodeName;
+        private string _saveDirectory;
         #endregion
 
         #region Properties
@@ -25,19 +28,32 @@ namespace asagiv.datapush.ui.Models
             get { return _connectionString; }
             set { _connectionString = value; RaisePropertyChanged(nameof(ConnectionString)); }
         }
+        public string NodeName
+        {
+            get { return _nodeName; }
+            set { _nodeName = value; RaisePropertyChanged(nameof(NodeName)); }
+        }
+        public string SaveDirectory
+        {
+            get { return _saveDirectory; }
+            set { _saveDirectory = value; RaisePropertyChanged(nameof(SaveDirectory)); }
+        }
         #endregion
 
         #region Constructor
-        public DataPushClientModel() { }
+        public DataPushClientModel()
+        {
+            SaveDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        }
         #endregion
 
         #region Methods
-        public bool initializeClient()
+        public async Task<bool> initializeClientAsync()
         {
             try
             {
-                _client = new GrpcClient(_connectionString);
-                _client.CreatePullSubscriber("Test");
+                _client = new GrpcClient(_connectionString, NodeName, getDeviceId());
+                await _client.CreatePullSubscriberAsync();
                 _client.DataRetrieved += async (s, e) => await OnDataRetrievedAsync(s, e);
 
                 return true;
@@ -48,19 +64,38 @@ namespace asagiv.datapush.ui.Models
             }
         }
 
-        public async Task UploadFileAsync(string topic, string filePath)
+        private string getDeviceId()
         {
-            await _client.PushFileAsync(topic, filePath);
+            var appDataRoot = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var appDataFolder = Path.Combine(appDataRoot, "asagiv_datapush");
+            var deviceIdFile = Path.Combine(appDataFolder,"deviceId.txt");
+
+            if (File.Exists(deviceIdFile))
+            {
+                return File.ReadAllText(deviceIdFile);
+            }
+              
+            Directory.CreateDirectory(appDataFolder);
+
+            var deviceId = Guid.NewGuid().ToString();
+
+            File.WriteAllText(deviceIdFile, deviceId);
+
+            return deviceId;
         }
 
-        private async Task OnDataRetrievedAsync(object sender, byte[] e)
+        public async Task PushFileAsync(string destination, string filePath)
         {
-            var fileLocation = Path.Combine(@"C:\Users\DonSa\Desktop", "testFile.cs");
+            await _client.PushFileAsync(destination, filePath);
+        }
 
-            using(var fs = new FileStream(fileLocation, FileMode.CreateNew))
-            {
-                await fs.WriteAsync(e);
-            }
+        private async Task OnDataRetrievedAsync(object _, DataPullResponse e)
+        {
+            var fileLocation = Path.Combine(SaveDirectory, e.Name);
+
+            using var fs = new FileStream(fileLocation, FileMode.CreateNew);
+
+            await fs.WriteAsync(e.Payload.ToByteArray());
         }
         #endregion
     }

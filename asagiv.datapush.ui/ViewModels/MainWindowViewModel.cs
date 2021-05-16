@@ -1,8 +1,8 @@
 ﻿using asagiv.datapush.ui.Models;
-using Microsoft.Win32;
 using Prism.Commands;
 using Prism.Mvvm;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Windows.Input;
 
 namespace asagiv.datapush.ui.ViewModels
@@ -25,30 +25,33 @@ namespace asagiv.datapush.ui.ViewModels
         #region Commands
         public ICommand ConnectToServerCommand { get; }
         public ICommand SelectFileToUploadCommand { get; }
+        public ICommand BrowseSaveLocationCommand { get; }
         #endregion
 
         #region Constructor
         public MainWindowViewModel()
         {
-            ClientModel = new DataPushClientModel();
+            ClientModel = new DataPushClientModel
+            {
+                // Default Value;
+                ConnectionString = "http://localhost:80"
+            };
 
-            // Default Value;
-            ClientModel.ConnectionString = "http://localhost:80";
-
-            ConnectToServerCommand = new DelegateCommand(ConnectToServer);
-            SelectFileToUploadCommand = new DelegateCommand(async() => await SelectFileToUpload());
+            ConnectToServerCommand = new DelegateCommand(async() => await ConnectToServerAsync());
+            SelectFileToUploadCommand = new DelegateCommand(async() => await UploadFileAsync());
+            BrowseSaveLocationCommand = new DelegateCommand(BrowseSaveLocation);
         }
         #endregion
 
         #region Methods
-        private void ConnectToServer()
+        private async Task ConnectToServerAsync()
         {
-            Status = ClientModel.initializeClient()
+            Status = await ClientModel.initializeClientAsync()
                 ? "Server Connection Successful"
                 : "Server Connection Failed";
         }
 
-        private async Task SelectFileToUpload()
+        private async Task UploadFileAsync()
         {
             var openFileDialog = new OpenFileDialog()
             {
@@ -58,12 +61,29 @@ namespace asagiv.datapush.ui.ViewModels
 
             var result = openFileDialog.ShowDialog();
 
-            if (result != true)
+            if (result != DialogResult.OK)
             {
                 return;
             }
 
-            await ClientModel.UploadFileAsync("Test", openFileDialog.FileName);
+            await ClientModel.PushFileAsync("Test", openFileDialog.FileName);
+        }
+
+        private void BrowseSaveLocation()
+        {
+            var dialog = new FolderBrowserDialog
+            {
+                SelectedPath = ClientModel?.SaveDirectory
+            };
+
+            var result = dialog.ShowDialog();
+
+            if(result != DialogResult.OK)
+            {
+                return;
+            }
+
+            ClientModel.SaveDirectory = dialog.SelectedPath;
         }
         #endregion
     }

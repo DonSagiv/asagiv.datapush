@@ -7,12 +7,12 @@ using System.Reactive.Linq;
 
 namespace asagiv.datapush.server.common
 {
-    public class PushDataRepository
+    public class DataRouteRepository
     {
         #region Statics
         private const int numMinutesPurge = 1;
-        private static readonly Lazy<PushDataRepository> _lazyInstance = new Lazy<PushDataRepository>(() => new PushDataRepository());
-        public static PushDataRepository Instance => _lazyInstance.Value;
+        private static readonly Lazy<DataRouteRepository> _lazyInstance = new Lazy<DataRouteRepository>(() => new DataRouteRepository());
+        public static DataRouteRepository Instance => _lazyInstance.Value;
         #endregion
 
         #region Fields
@@ -21,11 +21,11 @@ namespace asagiv.datapush.server.common
         #endregion
 
         #region Properties
-        public IList<IPushRepositoryItem> Repository { get; }
+        public IList<IRouteRequest> Repository { get; }
         #endregion
 
         #region Constructor
-        private PushDataRepository()
+        private DataRouteRepository()
         {
             _purgeRepositoryObservable = Observable.Interval(TimeSpan.FromMinutes(1));
 
@@ -33,7 +33,7 @@ namespace asagiv.datapush.server.common
                 .ObserveOn(TaskPoolScheduler.Default)
                 .Subscribe(purgeRepository);
 
-            Repository = new List<IPushRepositoryItem>();
+            Repository = new List<IRouteRequest>();
         }
 
         private void purgeRepository(long obj)

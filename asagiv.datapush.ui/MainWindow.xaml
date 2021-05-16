@@ -19,8 +19,50 @@
                         Content="Connect to Server"
                         Command="{Binding ConnectToServerCommand}"/>
 
+                <UniformGrid Columns="2">
+
+                    <DockPanel>
+
+                        <TextBlock Margin="10" Text="Connection String:"
+                                   DockPanel.Dock="Left"
+                                   VerticalAlignment="Center"/>
+
+                        <TextBox Margin="10"
+                                 Text="{Binding ClientModel.ConnectionString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 VerticalAlignment="Center"/>
+
+                    </DockPanel>
+
+                    <DockPanel>
+
+                        <TextBlock Margin="10" Text="Device Name:"
+                                   DockPanel.Dock="Left"
+                                   VerticalAlignment="Center"/>
+
+                        <TextBox Margin="10"
+                                 Text="{Binding ClientModel.NodeName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 VerticalAlignment="Center"/>
+
+                    </DockPanel>
+
+                </UniformGrid>
+
+            </DockPanel>
+
+            <DockPanel DockPanel.Dock="Top">
+
+                <Button Margin="10"
+                        DockPanel.Dock="Right"
+                        Content="Set Save Location"
+                        Command="{Binding BrowseSaveLocationCommand}"/>
+
+                <TextBlock Margin="10" Text="Save File Location:"
+                                   DockPanel.Dock="Left"
+                                   VerticalAlignment="Center"/>
+
                 <TextBox Margin="10"
-                         Text="{Binding ClientModel.ConnectionString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                         Text="{Binding ClientModel.SaveDirectory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         VerticalAlignment="Center"/>
 
             </DockPanel>
 

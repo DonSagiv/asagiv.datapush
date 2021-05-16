@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using asagiv.datapush.server.common.Interfaces;
+using asagiv.datapush.server.common.Models;
+using asagiv.datapush.server.Interfaces;
+using asagiv.datapush.server.Models;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace asagiv.datapush.server
 {
@@ -16,6 +16,8 @@ namespace asagiv.datapush.server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<INodeRepository, NodeRepository>();
+            services.AddSingleton<IRequestHandler, RequestHandler>();
             services.AddGrpc();
         }
 

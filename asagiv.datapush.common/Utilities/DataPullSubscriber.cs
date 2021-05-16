@@ -16,18 +16,18 @@ namespace asagiv.datapush.common.Utilities
 
         #region Properties
         public DataPush.DataPushClient Client { get; }
-        public string Topic { get; }
+        public string DestinationNode { get; }
         #endregion
 
         #region Delegages
-        public event EventHandler<ByteString> DataRetrieved;
+        public event EventHandler<DataPullResponse> DataRetrieved;
         #endregion
 
         #region Constructor
-        public DataPullSubscriber(DataPush.DataPushClient client, string topic)
+        public DataPullSubscriber(DataPush.DataPushClient client, string node)
         {
             Client = client;
-            Topic = topic;
+            DestinationNode = node;
 
             _pullObservable = Observable.Interval(TimeSpan.FromSeconds(1));
 
@@ -40,20 +40,17 @@ namespace asagiv.datapush.common.Utilities
         #region 
         private async Task<bool> pollDataAsync(long obj)
         {
-            var request = new DataPullRequest
-            {
-                Topic = Path.GetFileName("Test"),
-            };
+            var request = new DataPullRequest { DestinationNode = DestinationNode };
 
             var pushReply = await Client.PullDataAsync(request);
 
-            if (pushReply.Data.Length == 0)
+            if (pushReply.Payload.Length == 0)
             {
                 return false;
             }
             else
             {
-                DataRetrieved?.Invoke(this, pushReply.Data);
+                DataRetrieved?.Invoke(this, pushReply);
 
                 return true;
             }

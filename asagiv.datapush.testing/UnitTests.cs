@@ -24,8 +24,9 @@ namespace asagiv.datapush.testing
         {
             var request = new DataPushRequest
             {
-                Topic = "Hello World!",
-                Data = ByteString.CopyFrom(Encoding.UTF8.GetBytes(payload))
+                SourceNode = "My Source",
+                DestinationNode = "My Destination",
+                Payload = ByteString.CopyFrom(Encoding.UTF8.GetBytes(payload))
             };
 
             var reply = _client.PushData(request);
