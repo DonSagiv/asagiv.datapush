@@ -6,13 +6,13 @@ namespace asagiv.datapush.server.common.Models
     public class NodeRepository : INodeRepository
     {
         #region Properties
-        public IDictionary<string, string> nodeDictionary { get; }
+        public IList<IDeviceNode> nodeList { get; }
         #endregion
 
         #region Constructor
         public NodeRepository()
         {
-            nodeDictionary = new Dictionary<string, string>();
+            nodeList = new List<IDeviceNode>();
         }
         #endregion
     }

@@ -3,11 +3,11 @@ using Grpc.Core;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Essentials;
-using Xamarin.Forms;
 
 namespace asagiv.datapush.ui.mobile.ViewModels
 {
@@ -16,6 +16,8 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         #region Fields
         private string _connectionString;
         private string _nodeName;
+        private ObservableCollection<string> _destinationNodeList;
+        private string _selectedDestinationNode;
         #endregion
 
         #region Properties
@@ -29,6 +31,16 @@ namespace asagiv.datapush.ui.mobile.ViewModels
             get { return _nodeName; }
             set { _nodeName = value; RaisePropertyChanged(nameof(NodeName)); }
         }
+        public ObservableCollection<string> DestinationNodeList
+        {
+            get { return _destinationNodeList; }
+            set { _destinationNodeList = value; RaisePropertyChanged(nameof(DestinationNodeList)); }
+        }
+        public string SelectedDestinationNode
+        {
+            get { return _selectedDestinationNode; }
+            set { _selectedDestinationNode = value; RaisePropertyChanged(nameof(SelectedDestinationNode)); }
+        }
         public GrpcClient Client { get; private set; }
         #endregion
 
@@ -40,13 +52,15 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         #region Constructor
         public MainPageViewModel()
         {
-            ConnectCommand = new DelegateCommand(Connect);
+            DestinationNodeList = new ObservableCollection<string>();
+
+            ConnectCommand = new DelegateCommand(async () => await ConnectAsync());
             SelectFileCommand = new DelegateCommand(async () => await SelectFileAsync());
         }
         #endregion
 
         #region Methods
-        private void Connect()
+        private async Task ConnectAsync()
         {
             var deviceId = Preferences.Get("deviceId", string.Empty);
 
@@ -61,17 +75,28 @@ namespace asagiv.datapush.ui.mobile.ViewModels
             var channel = new Channel(_connectionString, ChannelCredentials.Insecure);
 
             Client = new GrpcClient(channel, _nodeName, deviceId);
+
+            var response = await Client.RegisterNodeAsync(false);
+
+            _destinationNodeList.Clear();
+
+            foreach (var item in response)
+            {
+                _destinationNodeList.Add(item);
+            }
         }
 
         private async Task SelectFileAsync()
         {
             var file = await FilePicker.PickAsync();
 
-            var fileName = file.FullPath;
+            var filePath = file.FullPath;
 
-            var data = await File.ReadAllBytesAsync(fileName);
+            var data = await File.ReadAllBytesAsync(filePath);
 
-            await Client.PushDataAsync("Test", data);
+            var fileName = Path.GetFileName(filePath);
+
+            await Client.PushDataAsync(NodeName, SelectedDestinationNode, fileName, data);
         }
         #endregion
     }

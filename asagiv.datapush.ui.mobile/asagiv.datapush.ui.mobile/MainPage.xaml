@@ -16,8 +16,11 @@
         <Entry Placeholder="Connection String"
                Text="{Binding ConnectionString, Mode=TwoWay}"/>
 
-        <Entry Placeholder="Connection String"
+        <Entry Placeholder="Device Name"
                Text="{Binding NodeName, Mode=TwoWay}"/>
+
+        <Picker ItemsSource="{Binding DestinationNodeList}"
+                SelectedItem="{Binding SelectedDestinationNode, Mode=TwoWay}"/>
 
         <Button Text="Connect"
                 Command="{Binding ConnectCommand}"/>

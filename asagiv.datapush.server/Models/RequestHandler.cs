@@ -31,7 +31,17 @@ namespace asagiv.datapush.server.Models
         {
             _logger.LogInformation($"Regiser Node Received (Node Name: {request.NodeName}, Device ID: {request.DeviceId})");
 
-            _nodeRepository.nodeDictionary[request.DeviceId] = request.NodeName;
+            var node = _nodeRepository.nodeList.FirstOrDefault(x => x.DeviceId == request.DeviceId);
+
+            if(node == null)
+            {
+                _nodeRepository.nodeList.Add(new DeviceNode(request.NodeName, request.DeviceId, request.IsPullNode));
+            }
+            else
+            {
+                node.NodeName = request.NodeName;
+                node.IsPullNode = request.IsPullNode;
+            }
 
             var response = new RegisterNodeResponse
             {
@@ -39,7 +49,13 @@ namespace asagiv.datapush.server.Models
                 Successful = true
             };
 
-            response.PullNodeList.AddRange(_nodeRepository.nodeDictionary.Select(x => x.Value));
+            var pullNodes = _nodeRepository
+                .nodeList
+                .Where(x => x.IsPullNode)
+                .Select(x => x.NodeName)
+                .ToList();
+
+            response.PullNodeList.AddRange(pullNodes);
 
             return Task.FromResult(response);
         }

@@ -55,26 +55,34 @@ namespace asagiv.datapush.common.Utilities
         #endregion
 
         #region Methods
-        public async Task CreatePullSubscriberAsync()
+        public Task CreatePullSubscriberAsync()
         {
             var hasSubscriber = PullSubscribers
                 .Any(x => x.DestinationNode == NodeName);
 
-            if (hasSubscriber) return;
-
-            var nodeRequest = new RegisterNodeRequest
-            {
-                DeviceId = DeviceId,
-                NodeName = NodeName,
-            };
-
-            var response = await Client.RegisterNodeAsync(nodeRequest);
+            if (hasSubscriber) return Task.CompletedTask;
 
             var subscriberToAdd = new DataPullSubscriber(Client, NodeName);
 
             subscriberToAdd.DataRetrieved += OnPullDataRetrieved;
 
             PullSubscribers.Add(subscriberToAdd);
+
+            return Task.CompletedTask;
+        }
+
+        public async Task<IEnumerable<string>> RegisterNodeAsync(bool isPullNode)
+        {
+            var nodeRequest = new RegisterNodeRequest
+            {
+                DeviceId = DeviceId,
+                NodeName = NodeName,
+                IsPullNode = isPullNode,
+            };
+
+            var response = await Client.RegisterNodeAsync(nodeRequest);
+
+            return response.PullNodeList;
         }
 
         private void OnPullDataRetrieved(object sender, DataPullResponse e)
@@ -82,7 +90,7 @@ namespace asagiv.datapush.common.Utilities
             DataRetrieved?.Invoke(sender, e);
         }
 
-        public async Task<bool> PushFileAsync(string pushto, string filePath)
+        public async Task<bool> PushFileAsync(string destinationNode, string filePath)
         {
             if (string.IsNullOrWhiteSpace(filePath))
             {
@@ -93,15 +101,15 @@ namespace asagiv.datapush.common.Utilities
 
             var name = Path.GetFileName(filePath);
 
-            return await PushDataAsync(pushto, name, data);
+            return await PushDataAsync(NodeName, destinationNode, name, data);
         }
 
-        public async Task<bool> PushDataAsync(string pushTo, string name, byte[] data) 
+        public async Task<bool> PushDataAsync(string sourceNode, string destinationNode, string name, byte[] data) 
         {
             var request = new DataPushRequest
             {
                 SourceNode = NodeName,
-                DestinationNode = pushTo,
+                DestinationNode = destinationNode,
                 Name = name,
                 Payload = ByteString.CopyFrom(data)
             };
