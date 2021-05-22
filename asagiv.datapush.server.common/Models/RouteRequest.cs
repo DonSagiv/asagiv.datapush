@@ -1,6 +1,7 @@
 ﻿using asagiv.datapush.server.common.Interfaces;
 using Google.Protobuf;
 using System;
+using System.Collections.Generic;
 
 namespace asagiv.datapush.server.common.Models
 {
@@ -11,20 +12,33 @@ namespace asagiv.datapush.server.common.Models
         public string DestinationNode { get; }
         public string Name { get; }
         public DateTime PushDateTime { get; }
-        public ByteString Payload { get; }
+        public Queue<ByteString> PayloadQueue { get; }
         public bool isRouteCompleted { get; set; }
         #endregion
 
         #region Constructor
-        public RouteRequest(string fromNode, string toNode, string name, ByteString payload)
+        public RouteRequest(string sourceNode, string destinationNode, string name)
         {
-            this.SourceNode = fromNode;
-            this.DestinationNode = toNode;
+            this.SourceNode = sourceNode;
+            this.DestinationNode = destinationNode;
             this.Name = name;
-            this.Payload = payload;
+
+            PayloadQueue = new Queue<ByteString>();
 
             this.PushDateTime = DateTime.Now;
             isRouteCompleted = false;
+        }
+
+        public void AddToPayload(ByteString payloadItemToAdd)
+        {
+            PayloadQueue.Enqueue(payloadItemToAdd);
+        }
+
+        public ByteString GetFromPayload()
+        {
+            return PayloadQueue.TryDequeue(out ByteString payloadToReturn)
+                ? payloadToReturn
+                : ByteString.Empty;
         }
         #endregion
     }

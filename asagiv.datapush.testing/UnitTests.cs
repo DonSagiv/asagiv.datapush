@@ -1,8 +1,6 @@
 using asagiv.datapush.common;
-using Google.Protobuf;
 using Grpc.Net.Client;
 using NUnit.Framework;
-using System.Text;
 
 namespace asagiv.datapush.testing
 {
@@ -22,16 +20,7 @@ namespace asagiv.datapush.testing
         [TestCase("")]
         public void AssertRequestConfirmation(string payload)
         {
-            var request = new DataPushRequest
-            {
-                SourceNode = "My Source",
-                DestinationNode = "My Destination",
-                Payload = ByteString.CopyFrom(Encoding.UTF8.GetBytes(payload))
-            };
 
-            var reply = _client.PushData(request);
-
-            Assert.IsTrue(reply.Confirmation == 1);
         }
     }
 }

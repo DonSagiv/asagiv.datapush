@@ -3,7 +3,7 @@ using asagiv.datapush.server.common.Interfaces;
 using asagiv.datapush.server.common.Models;
 using asagiv.datapush.server.Interfaces;
 using Google.Protobuf;
-using Google.Protobuf.Collections;
+using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
@@ -60,35 +60,54 @@ namespace asagiv.datapush.server.Models
             return Task.FromResult(response);
         }
 
-        public Task<DataPushResponse> HandlePushDataAsync(DataPushRequest request)
+        public async Task<DataPushResponse> HandlePushDataAsync(IAsyncStreamReader<DataPushRequest> requestStream)
         {
-            _logger.LogInformation($"Push Request Received (Source: {request.SourceNode}, Destination: {request.DestinationNode})");
+            IRouteRequest repositoryItem = null;
+            DataPushRequest currentRequest = null;
 
             try
             {
-                var repositoryItem = new RouteRequest(request.SourceNode, request.DestinationNode, request.Name, request.Payload);
+                while (await requestStream.MoveNext())
+                {
+                    currentRequest = requestStream.Current;
 
-                DataRouteRepository.Instance.Repository.Add(repositoryItem);
+                    if (repositoryItem == null)
+                    {
+                        _logger.LogInformation($"Push Request Received (Source: {currentRequest.SourceNode}, Destination: {currentRequest.DestinationNode})");
 
-                _logger.LogInformation($"Push Request Processed (Source: {request.SourceNode}, Destination: {request.DestinationNode})");
+                        repositoryItem = DataRouteRepository.Instance.Repository
+                            .Where(x => x.SourceNode == currentRequest.SourceNode)
+                            .Where(x => x.DestinationNode == currentRequest.DestinationNode)
+                            .FirstOrDefault(x => x.Name == currentRequest.Name);
 
-                return Task.FromResult(new DataPushResponse 
+                        if (repositoryItem == null)
+                        {
+                            repositoryItem = new RouteRequest(currentRequest.SourceNode, currentRequest.DestinationNode, currentRequest.Name);
+
+                            DataRouteRepository.Instance.Repository.Add(repositoryItem);
+                        }
+                    }
+
+                    repositoryItem.AddToPayload(currentRequest.Payload);
+                }
+
+                return await Task.FromResult(new DataPushResponse
                 {
                     Confirmation = 1
                 });
             }
             catch (Exception e)
             {
-                _logger.LogInformation($"Push Request Failed (Source: {request.SourceNode}, Destination: {request.DestinationNode}, Error: {e.Message})");
+                _logger.LogInformation($"Push Request Failed (Source: {currentRequest?.SourceNode}, Destination: {currentRequest.DestinationNode}, Error: {e.Message})");
 
-                return Task.FromResult(new DataPushResponse
+                return await Task.FromResult(new DataPushResponse
                 {
                     Confirmation = -1
                 });
             }
         }
 
-        public Task<DataPullResponse> HandlePullDataAsync(DataPullRequest request)
+        public async Task HandlePullDataAsync(DataPullRequest request, IServerStreamWriter<DataPullResponse> responseStream)
         {
             var repositoryItem = DataRouteRepository.Instance.Repository
                 .Where(x => !x.isRouteCompleted)
@@ -96,29 +115,42 @@ namespace asagiv.datapush.server.Models
 
             if (repositoryItem == null)
             {
-                return Task.FromResult(new DataPullResponse
+                await responseStream.WriteAsync(new DataPullResponse
                 {
                     SourceNode = string.Empty,
                     DestinationNode = request.DestinationNode,
                     Name = string.Empty,
-                    Payload = ByteString.CopyFrom(Array.Empty<byte>()),
+                    Payload = ByteString.Empty,
                 });
             }
             else
             {
-                repositoryItem.isRouteCompleted = true;
-
                 _logger.LogInformation($"Data Pull Item Found (Source: {repositoryItem.SourceNode}, Destination: {repositoryItem.DestinationNode})");
 
-                DataRouteRepository.Instance.Repository.Remove(repositoryItem);
+                repositoryItem.isRouteCompleted = true;
 
-                return Task.FromResult(new DataPullResponse
+                // Alert the user that a stream is avaiable.
+                await responseStream.WriteAsync(new DataPullResponse
                 {
                     SourceNode = repositoryItem.SourceNode,
-                    DestinationNode = repositoryItem.DestinationNode,
+                    DestinationNode = request.DestinationNode,
                     Name = repositoryItem.Name,
-                    Payload = repositoryItem.Payload,
+                    Payload = ByteString.Empty,
                 });
+
+                // Sends the payload data.
+                while (repositoryItem.PayloadQueue.Count > 0)
+                {
+                    var response = repositoryItem.GetFromPayload();
+
+                    await responseStream.WriteAsync(new DataPullResponse
+                    {
+                        SourceNode = repositoryItem.SourceNode,
+                        DestinationNode = repositoryItem.DestinationNode,
+                        Name = repositoryItem.Name,
+                        Payload = response,
+                    });
+                }
             }
         }
         #endregion

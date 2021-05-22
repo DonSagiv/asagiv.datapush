@@ -1,6 +1,7 @@
 ﻿using asagiv.datapush.ui.Models;
 using Prism.Commands;
 using Prism.Mvvm;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Input;
@@ -11,6 +12,8 @@ namespace asagiv.datapush.ui.ViewModels
     {
         #region Fields
         private string _status;
+        private ObservableCollection<string> _destinatioNodes;
+        private string _selectedDestinationNode;
         #endregion
 
         #region Properties
@@ -19,6 +22,16 @@ namespace asagiv.datapush.ui.ViewModels
         {
             get { return _status; }
             set { _status = value; RaisePropertyChanged(nameof(Status)); }
+        }
+        public ObservableCollection<string> DestinationNodes
+        {
+            get { return _destinatioNodes; }
+            set { _destinatioNodes = value; RaisePropertyChanged(nameof(DestinationNodes)); }
+        }
+        public string SelectedDestinationNode
+        {
+            get { return _selectedDestinationNode; }
+            set { _selectedDestinationNode = value; RaisePropertyChanged(nameof(SelectedDestinationNode)); }
         }
         #endregion
 
@@ -37,6 +50,8 @@ namespace asagiv.datapush.ui.ViewModels
                 ConnectionString = "http://localhost:80"
             };
 
+            DestinationNodes = new ObservableCollection<string>();
+
             ConnectToServerCommand = new DelegateCommand(async() => await ConnectToServerAsync());
             SelectFileToUploadCommand = new DelegateCommand(async() => await UploadFileAsync());
             BrowseSaveLocationCommand = new DelegateCommand(BrowseSaveLocation);
@@ -46,9 +61,23 @@ namespace asagiv.datapush.ui.ViewModels
         #region Methods
         private async Task ConnectToServerAsync()
         {
-            Status = await ClientModel.initializeClientAsync()
-                ? "Server Connection Successful"
-                : "Server Connection Failed";
+            DestinationNodes.Clear();
+
+            var nodes = await ClientModel.InitializeClientAsync();
+
+            if(nodes == null)
+            {
+                Status = "Connection Failed";
+
+                return;
+            }
+
+            foreach(var node in nodes)
+            {
+                Status = "Connection Successful";
+
+                DestinationNodes.Add(node);
+            }
         }
 
         private async Task UploadFileAsync()
@@ -61,12 +90,12 @@ namespace asagiv.datapush.ui.ViewModels
 
             var result = openFileDialog.ShowDialog();
 
-            if (result != DialogResult.OK)
+            if (result != DialogResult.OK || string.IsNullOrEmpty(SelectedDestinationNode))
             {
                 return;
             }
 
-            await ClientModel.PushFileAsync("Test", openFileDialog.FileName);
+            await ClientModel.PushFileAsync(SelectedDestinationNode, openFileDialog.FileName);
         }
 
         private void BrowseSaveLocation()

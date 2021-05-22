@@ -1,4 +1,3 @@
-using asagiv.datapush.server.common.Interfaces;
 using asagiv.datapush.server.Interfaces;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
@@ -23,14 +22,14 @@ namespace asagiv.datapush.server
         #endregion
 
         #region Methods
-        public override Task<DataPushResponse> PushData(DataPushRequest request, ServerCallContext context)
+        public override Task<DataPushResponse> PushData(IAsyncStreamReader<DataPushRequest> requestStream, ServerCallContext context)
         {
-            return _requestHandler.HandlePushDataAsync(request);
+            return _requestHandler.HandlePushDataAsync(requestStream);
         }
 
-        public override Task<DataPullResponse> PullData(DataPullRequest request, ServerCallContext context)
+        public override Task PullData(DataPullRequest request, IServerStreamWriter<DataPullResponse> responseStream, ServerCallContext context)
         {
-            return _requestHandler.HandlePullDataAsync(request);
+            return _requestHandler.HandlePullDataAsync(request, responseStream);
         }
 
         public override Task<RegisterNodeResponse> RegisterNode(RegisterNodeRequest request, ServerCallContext context)

@@ -96,7 +96,7 @@ namespace asagiv.datapush.ui.mobile.ViewModels
 
             var fileName = Path.GetFileName(filePath);
 
-            await Client.PushDataAsync(NodeName, SelectedDestinationNode, fileName, data);
+            await Client.PushDataAsync(SelectedDestinationNode, fileName, data);
         }
         #endregion
     }

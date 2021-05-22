@@ -1,6 +1,5 @@
-﻿using Google.Protobuf;
+﻿using Grpc.Core;
 using System;
-using System.IO;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -10,8 +9,8 @@ namespace asagiv.datapush.common.Utilities
     public class DataPullSubscriber
     {
         #region Fields
-        private IObservable<long> _pullObservable;
-        private IDisposable _pullSubscribe;
+        private readonly IObservable<long> _pullObservable;
+        private readonly IDisposable _pullSubscribe;
         #endregion
 
         #region Properties
@@ -20,7 +19,7 @@ namespace asagiv.datapush.common.Utilities
         #endregion
 
         #region Delegages
-        public event EventHandler<DataPullResponse> DataRetrieved;
+        public event EventHandler<ResponseStreamContext<DataPullResponse>> DataRetrieved;
         #endregion
 
         #region Constructor
@@ -38,22 +37,22 @@ namespace asagiv.datapush.common.Utilities
         #endregion
 
         #region 
-        private async Task<bool> pollDataAsync(long obj)
+        private async Task<bool> pollDataAsync(long Obj)
         {
             var request = new DataPullRequest { DestinationNode = DestinationNode };
 
-            var pushReply = await Client.PullDataAsync(request);
+            var pullResponse = Client.PullData(request);
 
-            if (pushReply.Payload.Length == 0)
+            if (await pullResponse.ResponseStream.MoveNext() && !string.IsNullOrEmpty(pullResponse.ResponseStream.Current.Name))
             {
-                return false;
-            }
-            else
-            {
-                DataRetrieved?.Invoke(this, pushReply);
+                var responseStreamContext = new ResponseStreamContext<DataPullResponse>(pullResponse.ResponseStream.Current, pullResponse.ResponseStream);
+
+                DataRetrieved?.Invoke(this, responseStreamContext);
 
                 return true;
             }
+
+            return false;
         }
         #endregion
     }

@@ -6,8 +6,8 @@ package dataPush;
 
 service DataPush {
   rpc RegisterNode (RegisterNodeRequest) returns (RegisterNodeResponse);
-  rpc PushData (DataPushRequest) returns (DataPushResponse);
-  rpc PullData (DataPullRequest) returns (DataPullResponse);
+  rpc PushData (stream DataPushRequest) returns (DataPushResponse);
+  rpc PullData (DataPullRequest) returns (stream DataPullResponse);
 }
 
 message RegisterNodeRequest

@@ -16,7 +16,7 @@ namespace asagiv.datapush.common.Utilities
         #endregion
 
         #region Delegates
-        public event EventHandler<DataPullResponse> DataRetrieved;
+        public event EventHandler<ResponseStreamContext<DataPullResponse>> DataRetrieved;
         #endregion
 
         #region Properties
@@ -85,7 +85,7 @@ namespace asagiv.datapush.common.Utilities
             return response.PullNodeList;
         }
 
-        private void OnPullDataRetrieved(object sender, DataPullResponse e)
+        private void OnPullDataRetrieved(object sender, ResponseStreamContext<DataPullResponse> e)
         {
             DataRetrieved?.Invoke(sender, e);
         }
@@ -101,22 +101,44 @@ namespace asagiv.datapush.common.Utilities
 
             var name = Path.GetFileName(filePath);
 
-            return await PushDataAsync(NodeName, destinationNode, name, data);
+            return await PushDataAsync(destinationNode, name, data);
         }
 
-        public async Task<bool> PushDataAsync(string sourceNode, string destinationNode, string name, byte[] data) 
+        public async Task<bool> PushDataAsync(string destinationNode, string name, byte[] data) 
         {
-            var request = new DataPushRequest
-            {
-                SourceNode = NodeName,
-                DestinationNode = destinationNode,
-                Name = name,
-                Payload = ByteString.CopyFrom(data)
-            };
-
             try
             {
-                await Client.PushDataAsync(request);
+                var blockSize = 1000000;
+
+                var blockIterations = data.Length / blockSize;
+
+                for (var i = 0; i < blockIterations; i++)
+                {
+                    var start = i * blockSize;
+                    var end = start + blockSize - 1;
+
+                    var dataBlock = data[start..end];
+
+                    var request = new DataPushRequest
+                    {
+                        SourceNode = NodeName,
+                        DestinationNode = destinationNode,
+                        Name = name,
+                        Payload = ByteString.CopyFrom(dataBlock)
+                    };
+
+                    await Client.PushData().RequestStream.WriteAsync(request);
+                }
+
+                var endRequest = new DataPushRequest
+                {
+                    SourceNode = NodeName,
+                    DestinationNode = destinationNode,
+                    Name = name,
+                    Payload = ByteString.Empty
+                };
+
+                await Client.PushData().RequestStream.WriteAsync(endRequest);
 
                 return true;
             }

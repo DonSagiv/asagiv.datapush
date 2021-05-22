@@ -1,7 +1,9 @@
 ﻿using asagiv.datapush.common;
 using asagiv.datapush.common.Utilities;
+using Grpc.Core;
 using Prism.Mvvm;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -48,24 +50,24 @@ namespace asagiv.datapush.ui.Models
         #endregion
 
         #region Methods
-        public async Task<bool> initializeClientAsync()
+        public async Task<IEnumerable<string>> InitializeClientAsync()
         {
             try
             {
-                _client = new GrpcClient(_connectionString, NodeName, getDeviceId());
-                await _client.RegisterNodeAsync(true);
+                _client = new GrpcClient(_connectionString, NodeName, GetDeviceId());
+                var availableNodes = await _client.RegisterNodeAsync(true);
                 await _client.CreatePullSubscriberAsync();
                 _client.DataRetrieved += async (s, e) => await OnDataRetrievedAsync(s, e);
 
-                return true;
+                return availableNodes;
             }
             catch(Exception ex)
             {
-                return false;
+                return null;
             }
         }
 
-        private string getDeviceId()
+        private string GetDeviceId()
         {
             var appDataRoot = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             var appDataFolder = Path.Combine(appDataRoot, "asagiv_datapush");
@@ -90,13 +92,16 @@ namespace asagiv.datapush.ui.Models
             await _client.PushFileAsync(destination, filePath);
         }
 
-        private async Task OnDataRetrievedAsync(object _, DataPullResponse e)
+        private async Task OnDataRetrievedAsync(object _, ResponseStreamContext<DataPullResponse> e)
         {
-            var fileLocation = Path.Combine(SaveDirectory, e.Name);
+            var fileLocation = Path.Combine(SaveDirectory, e.ResponseData.Name);
 
             using var fs = new FileStream(fileLocation, FileMode.CreateNew);
 
-            await fs.WriteAsync(e.Payload.ToByteArray());
+            while(await e.ResponseStream.MoveNext())
+            {
+                await fs.WriteAsync(e.ResponseStream.Current.Payload.ToByteArray());
+            }
         }
         #endregion
     }

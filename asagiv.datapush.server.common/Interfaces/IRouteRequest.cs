@@ -1,5 +1,6 @@
 ﻿using Google.Protobuf;
 using System;
+using System.Collections.Generic;
 
 namespace asagiv.datapush.server.common.Interfaces
 {
@@ -9,7 +10,10 @@ namespace asagiv.datapush.server.common.Interfaces
         string DestinationNode { get; }
         string Name { get; }
         DateTime PushDateTime { get; }
-        ByteString Payload { get; }
+        Queue<ByteString> PayloadQueue { get; }
         bool isRouteCompleted { get; set; }
+
+        void AddToPayload(ByteString payloadItemToAdd);
+        ByteString GetFromPayload();
     }
 }
