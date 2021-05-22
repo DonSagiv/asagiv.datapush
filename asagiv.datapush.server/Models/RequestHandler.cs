@@ -151,6 +151,8 @@ namespace asagiv.datapush.server.Models
                         Payload = response,
                     });
                 }
+
+                DataRouteRepository.Instance.Repository.Remove(repositoryItem);
             }
         }
         #endregion

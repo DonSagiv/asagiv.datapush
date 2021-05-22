@@ -94,13 +94,37 @@ namespace asagiv.datapush.ui.Models
 
         private async Task OnDataRetrievedAsync(object _, ResponseStreamContext<DataPullResponse> e)
         {
-            var fileLocation = Path.Combine(SaveDirectory, e.ResponseData.Name);
+            var tempFileLocation = Path.Combine(SaveDirectory, $"{Guid.NewGuid()}.meta");
+            var actualFileLocation = Path.Combine(SaveDirectory, e.ResponseData.Name);
 
-            using var fs = new FileStream(fileLocation, FileMode.CreateNew);
-
-            while(await e.ResponseStream.MoveNext())
+            try
             {
-                await fs.WriteAsync(e.ResponseStream.Current.Payload.ToByteArray());
+                using var fs = new FileStream(tempFileLocation, FileMode.CreateNew);
+                {
+                    while (await e.ResponseStream.MoveNext())
+                    {
+                        await fs.WriteAsync(e.ResponseStream.Current.Payload.ToByteArray());
+                    }
+                }
+
+                await fs.DisposeAsync();
+
+                var iteration = 0;
+
+                // Ensures that downloaded files do not overwrite files w/ the sane name.
+                while (File.Exists(actualFileLocation))
+                {
+                    var nameWithoutExtension = Path.GetFileNameWithoutExtension(e.ResponseData.Name);
+                    var extension = Path.GetExtension(e.ResponseData.Name);
+
+                    actualFileLocation = Path.Combine(SaveDirectory, $"{nameWithoutExtension} ({++iteration}).{extension}");
+                }
+
+                File.Move(tempFileLocation, actualFileLocation);
+            }
+            catch(Exception ex)
+            {
+                File.Delete(tempFileLocation);
             }
         }
         #endregion
