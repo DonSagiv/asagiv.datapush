@@ -112,10 +112,15 @@ namespace asagiv.datapush.common.Utilities
 
                 var blockIterations = data.Length / blockSize;
 
-                for (var i = 0; i < blockIterations; i++)
+                var blockSizeCheck = 0;
+
+                for (var i = 0; i <= blockIterations; i++)
                 {
                     var start = i * blockSize;
-                    var end = start + blockSize - 1;
+
+                    var end = start + blockSize >= data.Length
+                        ? data.Length
+                        : start + blockSize;
 
                     var dataBlock = data[start..end];
 
@@ -129,16 +134,6 @@ namespace asagiv.datapush.common.Utilities
 
                     await Client.PushData().RequestStream.WriteAsync(request);
                 }
-
-                var endRequest = new DataPushRequest
-                {
-                    SourceNode = NodeName,
-                    DestinationNode = destinationNode,
-                    Name = name,
-                    Payload = ByteString.Empty
-                };
-
-                await Client.PushData().RequestStream.WriteAsync(endRequest);
 
                 return true;
             }
