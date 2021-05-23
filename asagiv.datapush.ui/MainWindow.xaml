@@ -71,7 +71,7 @@
                 <ComboBox Margin="10"
                           ItemsSource="{Binding DestinationNodes}"
                           SelectedItem="{Binding SelectedDestinationNode, Mode=TwoWay}">
-                    
+
                 </ComboBox>
 
                 <Button Margin="10"    
@@ -84,11 +84,9 @@
 
         </StackPanel>
 
-        <TextBlock Margin="10"
-                   DockPanel.Dock="Bottom"
-                   Text="{Binding Status}"/>
-
-        <Border/>
+        <ListBox Margin="10"
+                 DockPanel.Dock="Bottom"
+                 ItemsSource="{Binding LogEntries}"/>
 
     </DockPanel>
 

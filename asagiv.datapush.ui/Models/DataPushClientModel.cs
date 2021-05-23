@@ -52,6 +52,8 @@ namespace asagiv.datapush.ui.Models
         #region Methods
         public async Task<IEnumerable<string>> InitializeClientAsync()
         {
+            Logger.Instance.Append("Initializing Client.");
+
             try
             {
                 _client = new GrpcClient(_connectionString, NodeName, GetDeviceId());
@@ -94,6 +96,8 @@ namespace asagiv.datapush.ui.Models
 
         private async Task OnDataRetrievedAsync(object _, ResponseStreamContext<DataPullResponse> e)
         {
+            Logger.Instance.Append($"Starting Retrieval: {e.ResponseData.Name} from {e.ResponseData.SourceNode}.");
+
             var fileLocation = Path.Combine(SaveDirectory, e.ResponseData.Name);
 
             try
@@ -102,9 +106,15 @@ namespace asagiv.datapush.ui.Models
                 {
                     while (await e.ResponseStream.MoveNext())
                     {
-                        await fs.WriteAsync(e.ResponseStream.Current.Payload.ToByteArray());
+                        var byteArray = e.ResponseStream.Current.Payload.ToByteArray();
+
+                        await fs.WriteAsync(byteArray);
+
+                        Logger.Instance.Append($"Data Retrieved: {byteArray.Length} bytes.");
                     }
                 }
+
+                Logger.Instance.Append($"Disposing File Stream.");
 
                 await fs.DisposeAsync();
             }

@@ -14,19 +14,31 @@
     <StackLayout>
 
         <Entry Placeholder="Connection String"
+               Margin="10"
                Text="{Binding ConnectionString, Mode=TwoWay}"/>
 
         <Entry Placeholder="Device Name"
+               Margin="10"
                Text="{Binding NodeName, Mode=TwoWay}"/>
 
-        <Picker ItemsSource="{Binding DestinationNodeList}"
-                SelectedItem="{Binding SelectedDestinationNode, Mode=TwoWay}"/>
-
         <Button Text="Connect"
+                Margin="10"
                 Command="{Binding ConnectCommand}"/>
 
-        <Button Text="Selet File"
+        <Picker ItemsSource="{Binding DestinationNodeList}"
+                Margin="10"
+                SelectedItem="{Binding SelectedDestinationNode, Mode=TwoWay}"/>
+
+        <Button Text="Select File"
+                Margin="10"
                 Command="{Binding SelectFileCommand}"/>
+
+        <ScrollView>
+
+            <ListView Margin="10"
+                      ItemsSource="{Binding LogEntries}"/>
+
+        </ScrollView>
 
     </StackLayout>
 

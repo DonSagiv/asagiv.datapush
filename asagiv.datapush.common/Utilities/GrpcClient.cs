@@ -73,6 +73,8 @@ namespace asagiv.datapush.common.Utilities
 
         public async Task<IEnumerable<string>> RegisterNodeAsync(bool isPullNode)
         {
+            Logger.Instance.Append("Registering Node.");
+
             var nodeRequest = new RegisterNodeRequest
             {
                 DeviceId = DeviceId,
@@ -106,6 +108,8 @@ namespace asagiv.datapush.common.Utilities
 
         public async Task<bool> PushDataAsync(string destinationNode, string name, byte[] data) 
         {
+            Logger.Instance.Append($"Pushing Data for {name} to {destinationNode}");
+
             try
             {
                 var blockSize = 1000000;
@@ -124,6 +128,8 @@ namespace asagiv.datapush.common.Utilities
 
                     var dataBlock = data[start..end];
 
+                    Logger.Instance.Append($"Pushing Block {i}: {dataBlock.Length} bytes.");
+
                     var request = new DataPushRequest
                     {
                         SourceNode = NodeName,
@@ -139,6 +145,8 @@ namespace asagiv.datapush.common.Utilities
             }
             catch(Exception e)
             {
+                Logger.Instance.Append($"Pushing Error: {e.Message}");
+
                 return false;
             }
         }

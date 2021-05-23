@@ -8,6 +8,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Essentials;
+using Xamarin.Forms;
 
 namespace asagiv.datapush.ui.mobile.ViewModels
 {
@@ -16,7 +17,6 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         #region Fields
         private string _connectionString;
         private string _nodeName;
-        private ObservableCollection<string> _destinationNodeList;
         private string _selectedDestinationNode;
         #endregion
 
@@ -31,16 +31,13 @@ namespace asagiv.datapush.ui.mobile.ViewModels
             get { return _nodeName; }
             set { _nodeName = value; RaisePropertyChanged(nameof(NodeName)); }
         }
-        public ObservableCollection<string> DestinationNodeList
-        {
-            get { return _destinationNodeList; }
-            set { _destinationNodeList = value; RaisePropertyChanged(nameof(DestinationNodeList)); }
-        }
+        public ObservableCollection<string> DestinationNodeList { get; }
         public string SelectedDestinationNode
         {
             get { return _selectedDestinationNode; }
             set { _selectedDestinationNode = value; RaisePropertyChanged(nameof(SelectedDestinationNode)); }
         }
+        public ObservableCollection<string> LogEntries { get; }
         public GrpcClient Client { get; private set; }
         #endregion
 
@@ -54,6 +51,13 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         {
             DestinationNodeList = new ObservableCollection<string>();
 
+            LogEntries = new ObservableCollection<string>();
+
+            Logger.Instance.LogEntryAdd += (s, e) => Application.Current.Dispatcher?.BeginInvokeOnMainThread(new Action(() =>
+            {
+                LogEntries.Add(e);
+            }));
+
             ConnectCommand = new DelegateCommand(async () => await ConnectAsync());
             SelectFileCommand = new DelegateCommand(async () => await SelectFileAsync());
         }
@@ -62,6 +66,8 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         #region Methods
         private async Task ConnectAsync()
         {
+            Logger.Instance.Append("Connecting to server.");
+
             var deviceId = Preferences.Get("deviceId", string.Empty);
 
             if (string.IsNullOrWhiteSpace(deviceId))
@@ -78,11 +84,11 @@ namespace asagiv.datapush.ui.mobile.ViewModels
 
             var response = await Client.RegisterNodeAsync(false);
 
-            _destinationNodeList.Clear();
+            DestinationNodeList.Clear();
 
             foreach (var item in response)
             {
-                _destinationNodeList.Add(item);
+                DestinationNodeList.Add(item);
             }
         }
 

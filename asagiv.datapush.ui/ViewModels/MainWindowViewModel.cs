@@ -1,6 +1,8 @@
-﻿using asagiv.datapush.ui.Models;
+﻿using asagiv.datapush.common.Utilities;
+using asagiv.datapush.ui.Models;
 using Prism.Commands;
 using Prism.Mvvm;
+using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -11,18 +13,13 @@ namespace asagiv.datapush.ui.ViewModels
     public class MainWindowViewModel : BindableBase
     {
         #region Fields
-        private string _status;
         private ObservableCollection<string> _destinatioNodes;
         private string _selectedDestinationNode;
         #endregion
 
         #region Properties
         public DataPushClientModel ClientModel { get; }
-        public string Status
-        {
-            get { return _status; }
-            set { _status = value; RaisePropertyChanged(nameof(Status)); }
-        }
+        public ObservableCollection<string> LogEntries { get; }
         public ObservableCollection<string> DestinationNodes
         {
             get { return _destinatioNodes; }
@@ -50,6 +47,13 @@ namespace asagiv.datapush.ui.ViewModels
                 ConnectionString = "http://localhost:80"
             };
 
+            LogEntries = new ObservableCollection<string>();
+
+            Logger.Instance.LogEntryAdd += async (s, e) => await System.Windows.Application.Current.Dispatcher?.BeginInvoke(new Action(() =>
+            {
+                LogEntries.Add(e);
+            }));
+
             DestinationNodes = new ObservableCollection<string>();
 
             ConnectToServerCommand = new DelegateCommand(async() => await ConnectToServerAsync());
@@ -67,14 +71,14 @@ namespace asagiv.datapush.ui.ViewModels
 
             if(nodes == null)
             {
-                Status = "Connection Failed";
+                Logger.Instance.Append("Connection Failed");
 
                 return;
             }
 
             foreach(var node in nodes)
             {
-                Status = "Connection Successful";
+                Logger.Instance.Append("Connection Successful");
 
                 DestinationNodes.Add(node);
             }
