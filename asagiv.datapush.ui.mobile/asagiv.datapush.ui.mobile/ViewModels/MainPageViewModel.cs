@@ -94,15 +94,18 @@ namespace asagiv.datapush.ui.mobile.ViewModels
 
         private async Task SelectFileAsync()
         {
-            var file = await FilePicker.PickAsync();
+            var files = await FilePicker.PickMultipleAsync();
 
-            var filePath = file.FullPath;
+            foreach(var file in files)
+            {
+                var filePath = file.FullPath;
 
-            var data = await File.ReadAllBytesAsync(filePath);
+                var data = await File.ReadAllBytesAsync(filePath);
 
-            var fileName = Path.GetFileName(filePath);
+                var fileName = Path.GetFileName(filePath);
 
-            await Client.PushDataAsync(SelectedDestinationNode, fileName, data);
+                await Client.PushDataAsync(SelectedDestinationNode, fileName, data);
+            }
         }
         #endregion
     }

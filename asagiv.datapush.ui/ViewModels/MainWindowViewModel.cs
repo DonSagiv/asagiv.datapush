@@ -90,6 +90,7 @@ namespace asagiv.datapush.ui.ViewModels
             {
                 Title = "Select File to Upload.",
                 CheckPathExists = true,
+                Multiselect = true,
             };
 
             var result = openFileDialog.ShowDialog();
@@ -99,7 +100,10 @@ namespace asagiv.datapush.ui.ViewModels
                 return;
             }
 
-            await ClientModel.PushFileAsync(SelectedDestinationNode, openFileDialog.FileName);
+            foreach(var file in openFileDialog.FileNames)
+            {
+                await ClientModel.PushFileAsync(SelectedDestinationNode, file);
+            }
         }
 
         private void BrowseSaveLocation()
