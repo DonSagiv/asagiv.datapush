@@ -32,15 +32,19 @@ namespace asagiv.datapush.common.Utilities
         #endregion
 
         #region Constructor
-        private GrpcClient(string nodeName, string deviceId, ILogger logger)
+        public GrpcClient(string nodeName, string deviceId)
         {
-            _logger = logger;
-
             NodeName = nodeName;
 
             DeviceId = deviceId;
 
             PullSubscribers = new List<DataPullSubscriber>();
+        }
+
+        private GrpcClient(string nodeName, string deviceId, ILogger logger) : this(nodeName, deviceId)
+        {
+            _logger = logger;
+
         }
 
         public GrpcClient(ChannelBase channel, string nodeName, string deviceId, ILogger logger) : this(nodeName, deviceId, logger)
