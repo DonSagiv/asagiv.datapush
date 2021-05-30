@@ -1,6 +1,5 @@
 using asagiv.datapush.server.Interfaces;
 using Grpc.Core;
-using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 
 namespace asagiv.datapush.server
@@ -8,15 +7,12 @@ namespace asagiv.datapush.server
     public class DataPushService : DataPush.DataPushBase
     {
         #region Fields
-        private readonly ILogger<DataPushService> _logger;
         private readonly IRequestHandler _requestHandler;
-
         #endregion
 
         #region Constructor
-        public DataPushService(ILogger<DataPushService> logger, IRequestHandler requestHandler)
+        public DataPushService(IRequestHandler requestHandler)
         {
-            _logger = logger;
             _requestHandler = requestHandler;
         }
         #endregion
