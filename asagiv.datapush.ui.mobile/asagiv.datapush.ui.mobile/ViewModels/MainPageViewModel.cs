@@ -80,7 +80,7 @@ namespace asagiv.datapush.ui.mobile.ViewModels
 
             var channel = new Channel(_connectionString, ChannelCredentials.Insecure);
 
-            Client = new GrpcClient(channel, _nodeName, deviceId, null);
+            Client = new GrpcClient(channel, _nodeName, deviceId);
 
             var response = await Client.RegisterNodeAsync(false);
 

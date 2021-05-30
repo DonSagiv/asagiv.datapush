@@ -19,7 +19,6 @@ namespace asagiv.datapush.windowsservice
                 .UseSerilog()
                 .ConfigureServices((hostContext, services) =>
                 {
-                    services.AddSingleton(LoggerFactory.build());
                     services.AddSingleton(GrpcClientFactory.CreateGprcClient);
                     services.AddSingleton<GrpcFileDownloader>();
                     services.AddHostedService<GrpcBackgroundClientService>();

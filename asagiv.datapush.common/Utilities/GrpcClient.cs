@@ -2,7 +2,6 @@
 using Google.Protobuf;
 using Grpc.Core;
 using Grpc.Net.Client;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,7 +13,6 @@ namespace asagiv.datapush.common.Utilities
     public class GrpcClient : INotifyDisposable
     {
         #region Fields
-        private readonly ILogger _logger;
         private readonly ChannelBase _channel;
         #endregion
 
@@ -41,20 +39,14 @@ namespace asagiv.datapush.common.Utilities
             PullSubscribers = new List<DataPullSubscriber>();
         }
 
-        private GrpcClient(string nodeName, string deviceId, ILogger logger) : this(nodeName, deviceId)
-        {
-            _logger = logger;
-
-        }
-
-        public GrpcClient(ChannelBase channel, string nodeName, string deviceId, ILogger logger) : this(nodeName, deviceId, logger)
+        public GrpcClient(ChannelBase channel, string nodeName, string deviceId) : this(nodeName, deviceId)
         {
             _channel = channel;
 
             Client = new DataPush.DataPushClient(_channel);
         }
 
-        public GrpcClient(string connectionString, string nodeName, string deviceId, ILogger logger) : this(nodeName, deviceId, logger)
+        public GrpcClient(string connectionString, string nodeName, string deviceId) : this(nodeName, deviceId)
         {
             _channel = GrpcChannel.ForAddress(connectionString);
 
@@ -81,8 +73,6 @@ namespace asagiv.datapush.common.Utilities
 
         public async Task<IEnumerable<string>> RegisterNodeAsync(bool isPullNode)
         {
-            _logger?.Information("Registering Node.");
-
             var nodeRequest = new RegisterNodeRequest
             {
                 DeviceId = DeviceId,
@@ -116,8 +106,6 @@ namespace asagiv.datapush.common.Utilities
 
         public async Task<bool> PushDataAsync(string destinationNode, string name, byte[] data)
         {
-            _logger?.Information($"Pushing Data for {name} to {destinationNode}");
-
             try
             {
                 var blockSize = 1000000;
@@ -136,8 +124,6 @@ namespace asagiv.datapush.common.Utilities
 
                     var dataBlock = data[start..end];
 
-                    _logger?.Information($"Pushing Block {i}: {dataBlock.Length} bytes.");
-
                     var request = new DataPushRequest
                     {
                         SourceNode = NodeName,
@@ -153,8 +139,6 @@ namespace asagiv.datapush.common.Utilities
             }
             catch (Exception e)
             {
-                _logger?.Information($"Pushing Error: {e.Message}");
-
                 return false;
             }
         }

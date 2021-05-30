@@ -1,5 +1,4 @@
-﻿using Serilog;
-using System;
+﻿using System;
 using System.IO;
 
 namespace asagiv.datapush.common.Utilities
@@ -8,9 +7,7 @@ namespace asagiv.datapush.common.Utilities
     {
         public static GrpcClient CreateGprcClient(IServiceProvider serviceProvider)
         {
-            var logger = serviceProvider.GetService(typeof(ILogger)) as ILogger;
-
-            return new GrpcClient("http://192.168.4.4:8082", "Windows PC", GetDeviceId(), logger);
+            return new GrpcClient("http://192.168.4.4:8082", "Windows PC", GetDeviceId());
         }
 
         public static string GetDeviceId()
