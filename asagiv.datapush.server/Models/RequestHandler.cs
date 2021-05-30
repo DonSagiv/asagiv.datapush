@@ -4,7 +4,6 @@ using asagiv.datapush.server.common.Models;
 using asagiv.datapush.server.Interfaces;
 using Google.Protobuf;
 using Grpc.Core;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,14 +13,12 @@ namespace asagiv.datapush.server.Models
     public class RequestHandler : IRequestHandler
     {
         #region Fields
-        private readonly ILogger<DataPushService> _logger;
         private readonly INodeRepository _nodeRepository;
         #endregion
 
         #region Constructor
-        public RequestHandler(ILogger<DataPushService> logger, INodeRepository nodeRepository)
+        public RequestHandler(INodeRepository nodeRepository)
         {
-            _logger = logger;
             _nodeRepository = nodeRepository;
         }
         #endregion
@@ -29,8 +26,6 @@ namespace asagiv.datapush.server.Models
         #region Methods
         public Task<RegisterNodeResponse> HandleRegisterNodeRequest(RegisterNodeRequest request)
         {
-            _logger.LogInformation($"Regiser Node Received (Node Name: {request.NodeName}, Device ID: {request.DeviceId})");
-
             var node = _nodeRepository.nodeList.FirstOrDefault(x => x.DeviceId == request.DeviceId);
 
             if(node == null)
@@ -73,8 +68,6 @@ namespace asagiv.datapush.server.Models
 
                     if (repositoryItem == null)
                     {
-                        _logger.LogInformation($"Push Request Received (Source: {currentRequest.SourceNode}, Destination: {currentRequest.DestinationNode})");
-
                         repositoryItem = DataRouteRepository.Instance.Repository
                             .Where(x => x.SourceNode == currentRequest.SourceNode)
                             .Where(x => x.DestinationNode == currentRequest.DestinationNode)
@@ -98,8 +91,6 @@ namespace asagiv.datapush.server.Models
             }
             catch (Exception e)
             {
-                _logger.LogInformation($"Push Request Failed (Source: {currentRequest?.SourceNode}, Destination: {currentRequest.DestinationNode}, Error: {e.Message})");
-
                 return await Task.FromResult(new DataPushResponse
                 {
                     Confirmation = -1
@@ -125,8 +116,6 @@ namespace asagiv.datapush.server.Models
             }
             else
             {
-                _logger.LogInformation($"Data Pull Item Found (Source: {repositoryItem.SourceNode}, Destination: {repositoryItem.DestinationNode})");
-
                 repositoryItem.isRouteCompleted = true;
 
                 // Alert the user that a stream is avaiable.
