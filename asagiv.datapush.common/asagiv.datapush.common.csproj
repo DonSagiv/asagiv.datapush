@@ -21,6 +21,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\asagiv.common\asagiv.common\asagiv.common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Protobuf Include="Protos\dataPush.proto" GrpcServices="Client" />
   </ItemGroup>
 

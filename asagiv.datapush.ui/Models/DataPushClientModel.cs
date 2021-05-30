@@ -56,7 +56,7 @@ namespace asagiv.datapush.ui.Models
 
             try
             {
-                _client = new GrpcClient(_connectionString, NodeName, GetDeviceId());
+                _client = new GrpcClient(_connectionString, NodeName, GetDeviceId(), null);
                 var availableNodes = await _client.RegisterNodeAsync(true);
                 await _client.CreatePullSubscriberAsync();
                 _client.DataRetrieved += async (s, e) => await OnDataRetrievedAsync(s, e);

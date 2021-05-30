@@ -1,4 +1,5 @@
-﻿using Grpc.Core;
+﻿using asagiv.common;
+using Grpc.Core;
 using System;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
@@ -6,20 +7,22 @@ using System.Threading.Tasks;
 
 namespace asagiv.datapush.common.Utilities
 {
-    public class DataPullSubscriber
+    public class DataPullSubscriber : INotifyDisposable
     {
         #region Fields
         private readonly IObservable<long> _pullObservable;
         private readonly IDisposable _pullSubscribe;
         #endregion
 
+        #region Delegages
+        public event EventHandler Disposed;
+        public event EventHandler<ResponseStreamContext<DataPullResponse>> DataRetrieved;
+        #endregion
+
         #region Properties
         public DataPush.DataPushClient Client { get; }
         public string DestinationNode { get; }
-        #endregion
-
-        #region Delegages
-        public event EventHandler<ResponseStreamContext<DataPullResponse>> DataRetrieved;
+        public bool IsDisposed { get; private set; }
         #endregion
 
         #region Constructor
@@ -53,6 +56,13 @@ namespace asagiv.datapush.common.Utilities
             }
 
             return false;
+        }
+
+        public void Dispose()
+        {
+            IsDisposed = true;
+
+            _pullSubscribe.Dispose();
         }
         #endregion
     }

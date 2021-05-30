@@ -1,6 +1,8 @@
-﻿using Google.Protobuf;
+﻿using asagiv.common;
+using Google.Protobuf;
 using Grpc.Core;
 using Grpc.Net.Client;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,13 +11,15 @@ using System.Threading.Tasks;
 
 namespace asagiv.datapush.common.Utilities
 {
-    public class GrpcClient
+    public class GrpcClient : INotifyDisposable
     {
         #region Fields
+        private readonly ILogger _logger;
         private readonly ChannelBase _channel;
         #endregion
 
         #region Delegates
+        public event EventHandler Disposed;
         public event EventHandler<ResponseStreamContext<DataPullResponse>> DataRetrieved;
         #endregion
 
@@ -24,33 +28,33 @@ namespace asagiv.datapush.common.Utilities
         public IList<DataPullSubscriber> PullSubscribers { get; }
         public string NodeName { get; set; }
         public string DeviceId { get; set; }
+        public bool IsDisposed { get; private set; }
         #endregion
 
         #region Constructor
-        public GrpcClient(string connectionString, string nodeName, string deviceId)
+        private GrpcClient(string nodeName, string deviceId, ILogger logger)
         {
-            _channel = GrpcChannel.ForAddress(connectionString);
-
-            Client = new DataPush.DataPushClient(_channel);
-
-            PullSubscribers = new List<DataPullSubscriber>();
+            _logger = logger;
 
             NodeName = nodeName;
 
             DeviceId = deviceId;
+
+            PullSubscribers = new List<DataPullSubscriber>();
         }
 
-        public GrpcClient(ChannelBase channel, string nodeName, string deviceId)
+        public GrpcClient(ChannelBase channel, string nodeName, string deviceId, ILogger logger) : this(nodeName, deviceId, logger)
         {
             _channel = channel;
 
             Client = new DataPush.DataPushClient(_channel);
+        }
 
-            PullSubscribers = new List<DataPullSubscriber>();
+        public GrpcClient(string connectionString, string nodeName, string deviceId, ILogger logger) : this(nodeName, deviceId, logger)
+        {
+            _channel = GrpcChannel.ForAddress(connectionString);
 
-            NodeName = nodeName;
-
-            DeviceId = deviceId;
+            Client = new DataPush.DataPushClient(_channel);
         }
         #endregion
 
@@ -73,7 +77,7 @@ namespace asagiv.datapush.common.Utilities
 
         public async Task<IEnumerable<string>> RegisterNodeAsync(bool isPullNode)
         {
-            Logger.Instance.Append("Registering Node.");
+            _logger?.Information("Registering Node.");
 
             var nodeRequest = new RegisterNodeRequest
             {
@@ -106,9 +110,9 @@ namespace asagiv.datapush.common.Utilities
             return await PushDataAsync(destinationNode, name, data);
         }
 
-        public async Task<bool> PushDataAsync(string destinationNode, string name, byte[] data) 
+        public async Task<bool> PushDataAsync(string destinationNode, string name, byte[] data)
         {
-            Logger.Instance.Append($"Pushing Data for {name} to {destinationNode}");
+            _logger?.Information($"Pushing Data for {name} to {destinationNode}");
 
             try
             {
@@ -128,7 +132,7 @@ namespace asagiv.datapush.common.Utilities
 
                     var dataBlock = data[start..end];
 
-                    Logger.Instance.Append($"Pushing Block {i}: {dataBlock.Length} bytes.");
+                    _logger?.Information($"Pushing Block {i}: {dataBlock.Length} bytes.");
 
                     var request = new DataPushRequest
                     {
@@ -143,11 +147,23 @@ namespace asagiv.datapush.common.Utilities
 
                 return true;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                Logger.Instance.Append($"Pushing Error: {e.Message}");
+                _logger?.Information($"Pushing Error: {e.Message}");
 
                 return false;
+            }
+        }
+
+        public void Dispose()
+        {
+            IsDisposed = true;
+
+            Disposed?.Invoke(this, EventArgs.Empty);
+
+            foreach (var pullSubscriber in PullSubscribers)
+            {
+                pullSubscriber.Dispose();
             }
         }
         #endregion
