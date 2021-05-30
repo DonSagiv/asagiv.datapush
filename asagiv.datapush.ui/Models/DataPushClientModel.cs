@@ -65,8 +65,6 @@ namespace asagiv.datapush.ui.Models
             }
             catch(Exception ex)
             {
-                Logger.Instance.Append($"Initializing Failed: {ex.Message}.");
-
                 return null;
             }
         }
