@@ -1,4 +1,5 @@
-﻿using asagiv.datapush.server.common.Interfaces;
+﻿using asagiv.datapush.server.common;
+using asagiv.datapush.server.common.Interfaces;
 using asagiv.datapush.server.common.Models;
 using asagiv.datapush.server.Interfaces;
 using asagiv.datapush.server.Models;
@@ -16,6 +17,7 @@ namespace asagiv.datapush.server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton(LoggerFactory.CreateLogger());
             services.AddSingleton<INodeRepository, NodeRepository>();
             services.AddSingleton<IRequestHandler, RequestHandler>();
             services.AddGrpc();

@@ -4,6 +4,7 @@ using asagiv.datapush.server.common.Models;
 using asagiv.datapush.server.Interfaces;
 using Google.Protobuf;
 using Grpc.Core;
+using Serilog;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,29 +14,39 @@ namespace asagiv.datapush.server.Models
     public class RequestHandler : IRequestHandler
     {
         #region Fields
+        private readonly ILogger _logger;
         private readonly INodeRepository _nodeRepository;
         #endregion
 
         #region Constructor
-        public RequestHandler(INodeRepository nodeRepository)
+        public RequestHandler(INodeRepository nodeRepository, ILogger logger)
         {
             _nodeRepository = nodeRepository;
+            _logger = logger;
+
+            _logger.Debug("Request Handler Instantiated.");
         }
         #endregion
 
         #region Methods
         public Task<RegisterNodeResponse> HandleRegisterNodeRequest(RegisterNodeRequest request)
         {
+            _logger.Information($"Register Node Request Received. (Node Name: {request.NodeName}, Device ID: {request.DeviceId}, Is Pull Node: {request.IsPullNode})");
+
             var node = _nodeRepository.nodeList.FirstOrDefault(x => x.DeviceId == request.DeviceId);
 
             if(node == null)
             {
                 _nodeRepository.nodeList.Add(new DeviceNode(request.NodeName, request.DeviceId, request.IsPullNode));
+
+                _logger.Information($"Added New Node to Repository. (Node Name: {request.NodeName}, Device ID: {request.DeviceId}, Is Pull Node: {request.IsPullNode})");
             }
             else
             {
                 node.NodeName = request.NodeName;
                 node.IsPullNode = request.IsPullNode;
+
+                _logger.Information($"Set Node {request.DeviceId} to {request.NodeName}.");
             }
 
             var response = new RegisterNodeResponse
@@ -51,6 +62,8 @@ namespace asagiv.datapush.server.Models
                 .ToList();
 
             response.PullNodeList.AddRange(pullNodes);
+
+            _logger.Information($"Sending Response to {response.NodeName}. (Is Successful = {response.Successful})");
 
             return Task.FromResult(response);
         }
