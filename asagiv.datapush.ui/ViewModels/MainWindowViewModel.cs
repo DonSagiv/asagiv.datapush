@@ -1,11 +1,8 @@
-﻿using asagiv.datapush.common.Utilities;
-using asagiv.datapush.ui.Models;
+﻿using asagiv.datapush.ui.Models;
 using Prism.Commands;
 using Prism.Mvvm;
-using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Windows.Input;
 
 namespace asagiv.datapush.ui.ViewModels
@@ -19,7 +16,6 @@ namespace asagiv.datapush.ui.ViewModels
 
         #region Properties
         public DataPushClientModel ClientModel { get; }
-        public ObservableCollection<string> LogEntries { get; }
         public ObservableCollection<string> DestinationNodes
         {
             get { return _destinatioNodes; }
@@ -47,81 +43,14 @@ namespace asagiv.datapush.ui.ViewModels
                 ConnectionString = "http://localhost:80"
             };
 
-            LogEntries = new ObservableCollection<string>();
-
-            Logger.Instance.LogEntryAdd += async (s, e) => await System.Windows.Application.Current.Dispatcher?.BeginInvoke(new Action(() =>
-            {
-                LogEntries.Add(e);
-            }));
-
             DestinationNodes = new ObservableCollection<string>();
 
-            ConnectToServerCommand = new DelegateCommand(async() => await ConnectToServerAsync());
-            SelectFileToUploadCommand = new DelegateCommand(async() => await UploadFileAsync());
-            BrowseSaveLocationCommand = new DelegateCommand(BrowseSaveLocation);
+            ConnectToServerCommand = new DelegateCommand(async () => await ConnectToServerAsync());
         }
         #endregion
 
         #region Methods
-        private async Task ConnectToServerAsync()
-        {
-            DestinationNodes.Clear();
-
-            var nodes = await ClientModel.InitializeClientAsync();
-
-            if(nodes == null)
-            {
-                Logger.Instance.Append("Connection Failed");
-
-                return;
-            }
-
-            foreach(var node in nodes)
-            {
-                Logger.Instance.Append("Connection Successful");
-
-                DestinationNodes.Add(node);
-            }
-        }
-
-        private async Task UploadFileAsync()
-        {
-            var openFileDialog = new OpenFileDialog()
-            {
-                Title = "Select File to Upload.",
-                CheckPathExists = true,
-                Multiselect = true,
-            };
-
-            var result = openFileDialog.ShowDialog();
-
-            if (result != DialogResult.OK || string.IsNullOrEmpty(SelectedDestinationNode))
-            {
-                return;
-            }
-
-            foreach(var file in openFileDialog.FileNames)
-            {
-                await ClientModel.PushFileAsync(SelectedDestinationNode, file);
-            }
-        }
-
-        private void BrowseSaveLocation()
-        {
-            var dialog = new FolderBrowserDialog
-            {
-                SelectedPath = ClientModel?.SaveDirectory
-            };
-
-            var result = dialog.ShowDialog();
-
-            if(result != DialogResult.OK)
-            {
-                return;
-            }
-
-            ClientModel.SaveDirectory = dialog.SelectedPath;
-        }
+        private Task ConnectToServerAsync() => ClientModel.InitializeClientAsync();
         #endregion
     }
 }

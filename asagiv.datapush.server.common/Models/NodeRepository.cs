@@ -23,7 +23,7 @@ namespace asagiv.datapush.server.common.Models
             _nodeList = new List<IDeviceNode>();
             _logger = logger;
 
-            _logger.Debug("Node Repository Instantiated.");
+            _logger?.Debug("Node Repository Instantiated.");
         }
 
         public IDeviceNode GetNode(string nodeName, string deviceId, bool isPullNode)
@@ -36,7 +36,7 @@ namespace asagiv.datapush.server.common.Models
 
                 _nodeList.Add(node);
 
-                _logger.Information($"Added New Node to Repository. (Node Name: {nodeName}, Device ID: {deviceId}, Is Pull Node: {isPullNode})");
+                _logger?.Information($"Added New Node to Repository. (Node Name: {nodeName}, Device ID: {deviceId}, Is Pull Node: {isPullNode})");
             }
             else
             {
@@ -44,7 +44,7 @@ namespace asagiv.datapush.server.common.Models
 
                 node.IsPullNode = isPullNode;
 
-                _logger.Information($"Set Node {deviceId} to {nodeName}.");
+                _logger?.Information($"Set Node {deviceId} to {nodeName}.");
             }
 
             return node;

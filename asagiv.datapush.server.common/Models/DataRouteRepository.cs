@@ -51,7 +51,7 @@ namespace asagiv.datapush.server.common
             {
                 routeRequest = new RouteRequest(sourceNode, destinationNode, name);
 
-                _logger.Information($"New Route Request Added. (Source: {sourceNode}, Destionation: {destinationNode}, Name: {name}, ID)");
+                _logger?.Information($"New Route Request Added. (Source: {sourceNode}, Destionation: {destinationNode}, Name: {name}, ID)");
 
                 _repository.Add(routeRequest);
             }
@@ -75,7 +75,7 @@ namespace asagiv.datapush.server.common
 
         public void CloseRouteRequest(IRouteRequest routeRequest)
         {
-            _logger.Information($"Closing Route Request. (Source: {routeRequest.SourceNode}, Destination: {routeRequest.DestinationNode}, Name: {routeRequest.Name})");
+            _logger?.Information($"Closing Route Request. (Source: {routeRequest.SourceNode}, Destination: {routeRequest.DestinationNode}, Name: {routeRequest.Name})");
 
             _repository.Remove(routeRequest);
         }
@@ -87,7 +87,7 @@ namespace asagiv.datapush.server.common
 
             foreach (var itemToPurge in itemsToPurge)
             {
-                _logger.Warning($"Purging Route Request from Repository. (Source: {itemToPurge.SourceNode}, Destination: {itemToPurge.DestinationNode}, Name:{itemToPurge.Name})");
+                _logger?.Warning($"Purging Route Request from Repository. (Source: {itemToPurge.SourceNode}, Destination: {itemToPurge.DestinationNode}, Name:{itemToPurge.Name})");
                 _repository.Remove(itemToPurge);
             }
         }

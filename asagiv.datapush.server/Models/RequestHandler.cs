@@ -24,14 +24,14 @@ namespace asagiv.datapush.server.Models
             _routeRepository = routeRepository;
             _logger = logger;
 
-            _logger.Debug("Request Handler Instantiated.");
+            _logger?.Debug("Request Handler Instantiated.");
         }
         #endregion
 
         #region Methods
         public Task<RegisterNodeResponse> HandleRegisterNodeRequest(RegisterNodeRequest request)
         {
-            _logger.Information($"Register Node Request Received. (Node Name: {request.NodeName}, Device ID: {request.DeviceId}, Is Pull Node: {request.IsPullNode})");
+            _logger?.Information($"Register Node Request Received. (Node Name: {request.NodeName}, Device ID: {request.DeviceId}, Is Pull Node: {request.IsPullNode})");
 
             var node = _nodeRepository.GetNode(request.NodeName, request.DeviceId, request.IsPullNode);
 
@@ -48,7 +48,7 @@ namespace asagiv.datapush.server.Models
 
             response.PullNodeList.AddRange(pullNodes);
 
-            _logger.Information($"Sending Response to {response.NodeName}. (Is Successful = {response.Successful})");
+            _logger?.Information($"Sending Response to {response.NodeName}. (Is Successful = {response.Successful})");
 
             return Task.FromResult(response);
         }
@@ -69,7 +69,7 @@ namespace asagiv.datapush.server.Models
                         routeRequest = _routeRepository.GetRoutePushRequest(request.SourceNode, request.DestinationNode, request.Name);
                     }
 
-                    _logger.Information($"Adding Payload to Route Request. (Source: {request.SourceNode}, Destionation: {request.DestinationNode}, Name: {request.Name}, Size: {request.Payload.Count()} bytes)");
+                    _logger?.Information($"Adding Payload to Route Request. (Source: {request.SourceNode}, Destionation: {request.DestinationNode}, Name: {request.Name}, Size: {request.Payload.Count()} bytes)");
 
                     routeRequest.AddPayload(request.Payload);
                 }
@@ -81,7 +81,7 @@ namespace asagiv.datapush.server.Models
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, ex.Message);
+                _logger?.Error(ex, ex.Message);
 
                 return await Task.FromResult(new DataPushResponse
                 {
@@ -106,7 +106,7 @@ namespace asagiv.datapush.server.Models
             }
             else
             {
-                _logger.Information($"Route Request Found for {request.DestinationNode} from {routeRequest.SourceNode} (Name: {routeRequest.Name})");
+                _logger?.Information($"Route Request Found for {request.DestinationNode} from {routeRequest.SourceNode} (Name: {routeRequest.Name})");
 
                 // Alert the user that a stream is avaiable.
                 await responseStream.WriteAsync(new DataPullResponse
@@ -122,7 +122,7 @@ namespace asagiv.datapush.server.Models
                 {
                     var payload = routeRequest.GetFromPayload();
 
-                    _logger.Information($"Pushing Data from {routeRequest.SourceNode} to {routeRequest.DestinationNode} (Name: {routeRequest.Name}, Size: {payload.Count()} bytes))");
+                    _logger?.Information($"Pushing Data from {routeRequest.SourceNode} to {routeRequest.DestinationNode} (Name: {routeRequest.Name}, Size: {payload.Count()} bytes))");
 
                     await responseStream.WriteAsync(new DataPullResponse
                     {

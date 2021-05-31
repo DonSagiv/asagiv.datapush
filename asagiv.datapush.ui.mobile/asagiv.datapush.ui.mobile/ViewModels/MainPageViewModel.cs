@@ -53,11 +53,6 @@ namespace asagiv.datapush.ui.mobile.ViewModels
 
             LogEntries = new ObservableCollection<string>();
 
-            Logger.Instance.LogEntryAdd += (s, e) => Application.Current.Dispatcher?.BeginInvokeOnMainThread(new Action(() =>
-            {
-                LogEntries.Add(e);
-            }));
-
             ConnectCommand = new DelegateCommand(async () => await ConnectAsync());
             SelectFileCommand = new DelegateCommand(async () => await SelectFileAsync());
         }
@@ -66,8 +61,6 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         #region Methods
         private async Task ConnectAsync()
         {
-            Logger.Instance.Append("Connecting to server.");
-
             var deviceId = Preferences.Get("deviceId", string.Empty);
 
             if (string.IsNullOrWhiteSpace(deviceId))

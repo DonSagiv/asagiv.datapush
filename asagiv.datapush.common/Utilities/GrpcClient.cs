@@ -1,6 +1,7 @@
 ﻿using Google.Protobuf;
 using Grpc.Core;
 using Grpc.Net.Client;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,6 +14,7 @@ namespace asagiv.datapush.common.Utilities
     {
         #region Fields
         private readonly ChannelBase _channel;
+        private readonly ILogger _logger;
         #endregion
 
         #region Delegates
@@ -29,8 +31,10 @@ namespace asagiv.datapush.common.Utilities
         #endregion
 
         #region Constructor
-        public GrpcClient(string nodeName, string deviceId)
+        public GrpcClient(string nodeName, string deviceId, ILogger logger = null)
         {
+            _logger = logger;
+
             NodeName = nodeName;
 
             DeviceId = deviceId;
@@ -38,14 +42,14 @@ namespace asagiv.datapush.common.Utilities
             PullSubscribers = new List<DataPullSubscriber>();
         }
 
-        public GrpcClient(ChannelBase channel, string nodeName, string deviceId) : this(nodeName, deviceId)
+        public GrpcClient(ChannelBase channel, string nodeName, string deviceId, ILogger logger = null) : this(nodeName, deviceId, logger)
         {
             _channel = channel;
 
             Client = new DataPush.DataPushClient(_channel);
         }
 
-        public GrpcClient(string connectionString, string nodeName, string deviceId) : this(nodeName, deviceId)
+        public GrpcClient(string connectionString, string nodeName, string deviceId, ILogger logger = null) : this(nodeName, deviceId, logger)
         {
             _channel = GrpcChannel.ForAddress(connectionString);
 
@@ -56,16 +60,23 @@ namespace asagiv.datapush.common.Utilities
         #region Methods
         public Task CreatePullSubscriberAsync()
         {
-            var hasSubscriber = PullSubscribers
-                .Any(x => x.DestinationNode == NodeName);
+            var subscriber = PullSubscribers
+                .FirstOrDefault(x => x.DestinationNode == NodeName);
 
-            if (hasSubscriber) return Task.CompletedTask;
+            if (subscriber != null)
+            {
+                _logger?.Information($"Pull Subscriber for {subscriber.DestinationNode} Already Exists.");
 
-            var subscriberToAdd = new DataPullSubscriber(Client, NodeName);
+                return Task.CompletedTask;
+            }
 
-            subscriberToAdd.DataRetrieved += OnPullDataRetrieved;
+            subscriber = new DataPullSubscriber(Client, NodeName);
 
-            PullSubscribers.Add(subscriberToAdd);
+            _logger?.Information($"Creating Pull Subscriber for {subscriber.DestinationNode}.");
+
+            subscriber.DataRetrieved += OnPullDataRetrieved;
+
+            PullSubscribers.Add(subscriber);
 
             return Task.CompletedTask;
         }
@@ -79,7 +90,18 @@ namespace asagiv.datapush.common.Utilities
                 IsPullNode = isPullNode,
             };
 
+            _logger?.Information($"Creating Register Node Request for {DeviceId}. (Name: {NodeName}, IsPullNode: {isPullNode})");
+
             var response = await Client.RegisterNodeAsync(nodeRequest);
+
+            if (response.Successful)
+            {
+                _logger?.Information($"Register Node Request Successful.");
+            }
+            else
+            {
+                _logger?.Error($"Register Node Request Not Successful.");
+            }
 
             return response.PullNodeList;
         }
@@ -105,13 +127,13 @@ namespace asagiv.datapush.common.Utilities
 
         public async Task<bool> PushDataAsync(string destinationNode, string name, byte[] data)
         {
+            _logger?.Information($"Pushing Data to {destinationNode}. (Name: {name}, Size: {data.Count()})");
+
             try
             {
                 var blockSize = 1000000;
 
                 var blockIterations = data.Length / blockSize;
-
-                var blockSizeCheck = 0;
 
                 for (var i = 0; i <= blockIterations; i++)
                 {
@@ -122,6 +144,8 @@ namespace asagiv.datapush.common.Utilities
                         : start + blockSize;
 
                     var dataBlock = data[start..end];
+
+                    _logger?.Information($"Pushing Block {i + 1} of {blockIterations} to {destinationNode} (Name: {name}, Size: {dataBlock.Count()})");
 
                     var request = new DataPushRequest
                     {
@@ -136,14 +160,18 @@ namespace asagiv.datapush.common.Utilities
 
                 return true;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                _logger?.Error(ex, $"Error Pushing Data: {ex.Message})");
+
                 return false;
             }
         }
 
         public void Dispose()
         {
+            _logger?.Information($"Disposing Grpc Client.");
+
             IsDisposed = true;
 
             Disposed?.Invoke(this, EventArgs.Empty);

@@ -18,7 +18,7 @@ namespace asagiv.datapush.server
             _requestHandler = requestHandler;
             _logger = logger;
 
-            _logger.Debug("Data push service instantiated.");
+            _logger?.Debug("Data push service instantiated.");
         }
         #endregion
 
