@@ -1,5 +1,4 @@
-﻿using asagiv.common;
-using Grpc.Core;
+﻿using Grpc.Core;
 using System;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
@@ -7,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace asagiv.datapush.common.Utilities
 {
-    public class DataPullSubscriber : INotifyDisposable
+    public class DataPullSubscriber : IDisposable
     {
         #region Fields
         private readonly IObservable<long> _pullObservable;

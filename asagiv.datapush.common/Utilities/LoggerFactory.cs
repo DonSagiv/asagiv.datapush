@@ -1,6 +1,6 @@
 ﻿using Serilog;
 
-namespace asagiv.datapush.server.common
+namespace asagiv.datapush.common.Utilities
 {
     public static class LoggerFactory
     {

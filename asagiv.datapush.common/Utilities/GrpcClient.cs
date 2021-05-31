@@ -1,5 +1,4 @@
-﻿using asagiv.common;
-using Google.Protobuf;
+﻿using Google.Protobuf;
 using Grpc.Core;
 using Grpc.Net.Client;
 using System;
@@ -10,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace asagiv.datapush.common.Utilities
 {
-    public class GrpcClient : INotifyDisposable
+    public class GrpcClient : IDisposable
     {
         #region Fields
         private readonly ChannelBase _channel;
