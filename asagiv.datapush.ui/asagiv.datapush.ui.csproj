@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\asagiv.datapush.common\asagiv.datapush.common.csproj" />
+    <ProjectReference Include="..\asagiv.datapush.winservice\asagiv.datapush.winservice.csproj" />
   </ItemGroup>
 
 </Project>

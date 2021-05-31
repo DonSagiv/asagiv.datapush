@@ -37,11 +37,7 @@ namespace asagiv.datapush.ui.ViewModels
         #region Constructor
         public MainWindowViewModel()
         {
-            ClientModel = new DataPushClientModel
-            {
-                // Default Value;
-                ConnectionString = "http://localhost:80"
-            };
+            ClientModel = new DataPushClientModel();
 
             DestinationNodes = new ObservableCollection<string>();
 
