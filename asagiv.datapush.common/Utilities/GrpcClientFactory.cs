@@ -1,13 +1,21 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.IO;
 
 namespace asagiv.datapush.common.Utilities
 {
     public static class GrpcClientFactory
     {
-        public static GrpcClient CreateGprcClient(IServiceProvider serviceProvider)
+        public static GrpcClient CreateGprcClient(IServiceProvider serviceProvider = null)
         {
-            return new GrpcClient("http://192.168.4.4:8082", "Windows PC", GetDeviceId());
+            var logger = serviceProvider?.GetService(typeof(ILogger)) as ILogger;
+
+            var nodeName = "Windows PC";
+            var connectionString = "http://localhost:80";
+
+            logger?.Information($"Creating GRPC Client. (Node Name: {nodeName}, Connection String: {connectionString})");
+
+            return new GrpcClient(connectionString, nodeName, GetDeviceId(), logger);
         }
 
         public static string GetDeviceId()

@@ -49,39 +49,6 @@
 
             </DockPanel>
 
-            <DockPanel DockPanel.Dock="Top">
-
-                <Button Margin="10"
-                        DockPanel.Dock="Right"
-                        Content="Set Save Location"
-                        Command="{Binding BrowseSaveLocationCommand}"/>
-
-                <TextBlock Margin="10" Text="Save File Location:"
-                                   DockPanel.Dock="Left"
-                                   VerticalAlignment="Center"/>
-
-                <TextBox Margin="10"
-                         Text="{Binding ClientModel.SaveDirectory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                         VerticalAlignment="Center"/>
-
-            </DockPanel>
-
-            <UniformGrid Columns="2">
-
-                <ComboBox Margin="10"
-                          ItemsSource="{Binding DestinationNodes}"
-                          SelectedItem="{Binding SelectedDestinationNode, Mode=TwoWay}">
-
-                </ComboBox>
-
-                <Button Margin="10"    
-                        Content="Select File to Upload"
-                        Command="{Binding SelectFileToUploadCommand}"/>
-
-            </UniformGrid>
-
-
-
         </StackPanel>
 
         <ListBox Margin="10"

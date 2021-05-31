@@ -1,6 +1,6 @@
 using asagiv.datapush.server.Interfaces;
 using Grpc.Core;
-using Microsoft.Extensions.Logging;
+using Serilog;
 using System.Threading.Tasks;
 
 namespace asagiv.datapush.server
@@ -8,16 +8,17 @@ namespace asagiv.datapush.server
     public class DataPushService : DataPush.DataPushBase
     {
         #region Fields
-        private readonly ILogger<DataPushService> _logger;
+        private readonly ILogger _logger;
         private readonly IRequestHandler _requestHandler;
-
         #endregion
 
         #region Constructor
-        public DataPushService(ILogger<DataPushService> logger, IRequestHandler requestHandler)
+        public DataPushService(IRequestHandler requestHandler, ILogger logger)
         {
-            _logger = logger;
             _requestHandler = requestHandler;
+            _logger = logger;
+
+            _logger?.Debug("Data push service instantiated.");
         }
         #endregion
 

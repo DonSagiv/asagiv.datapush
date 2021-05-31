@@ -8,6 +8,8 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
 COPY ["asagiv.datapush.server/asagiv.datapush.server.csproj", "asagiv.datapush.server/"]
+COPY ["asagiv.datapush.server.common/asagiv.datapush.server.common.csproj", "asagiv.datapush.server.common/"]
+COPY ["asagiv.datapush.common/asagiv.datapush.common.csproj", "asagiv.datapush.common/"]
 RUN dotnet restore "asagiv.datapush.server/asagiv.datapush.server.csproj"
 COPY . .
 WORKDIR "/src/asagiv.datapush.server"

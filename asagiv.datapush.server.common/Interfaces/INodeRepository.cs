@@ -4,6 +4,9 @@ namespace asagiv.datapush.server.common.Interfaces
 {
     public interface INodeRepository
     {
-        IList<IDeviceNode> nodeList { get; }
+        IEnumerable<IDeviceNode> Nodes { get; }
+        IEnumerable<IDeviceNode> PullNodes { get; }
+
+        IDeviceNode GetNode(string nodeName, string deviceId, bool isPullNode);
     }
 }
