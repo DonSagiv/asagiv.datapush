@@ -13,6 +13,19 @@ namespace asagiv.datapush.common.Utilities
         public static LoggerConfiguration DefaultConfig => _defaultConfig;
         #endregion
 
+        public static ILogger CreateLogger(string logFilePath)
+        {
+            var config = InitializeConfig();
+
+            config = GetLogPathDirectory(logFilePath, config);
+
+            var logger = config.CreateLogger();
+
+            logger.Information($"Logger Initialized. ({DateTime.Now.ToLongDateString()})");
+
+            return logger;
+        }
+
         public static ILogger CreateLogger(IServiceProvider serviceProvider)
         {
             string logPath = null;
@@ -22,11 +35,27 @@ namespace asagiv.datapush.common.Utilities
                 logPath = configuration.GetSection("LogFileSinkPath").Value;
             }
 
-            var config = _defaultConfig
+            var config = InitializeConfig();
+            
+            config = GetLogPathDirectory(logPath, config);
+
+            var logger = config.CreateLogger();
+
+            logger.Information($"Logger Initialized. ({DateTime.Now.ToLongDateString()})");
+
+            return logger;
+        }
+
+        private static LoggerConfiguration InitializeConfig()
+        {
+            return _defaultConfig
                 .MinimumLevel.Information()
                 .Enrich.WithThreadId()
-                .WriteTo.Console(outputTemplate:outputTemplate);
+                .WriteTo.Console(outputTemplate: outputTemplate);
+        }
 
+        private static LoggerConfiguration GetLogPathDirectory(string logPath, LoggerConfiguration config)
+        {
             if (!string.IsNullOrWhiteSpace(logPath))
             {
                 var logDirectory = Path.GetDirectoryName(logPath);
@@ -38,14 +67,9 @@ namespace asagiv.datapush.common.Utilities
 
                 config = config.WriteTo.File(logPath,
                     rollingInterval: RollingInterval.Day,
-                    outputTemplate:outputTemplate);
+                    outputTemplate: outputTemplate);
             };
-
-            var logger = config.CreateLogger();
-
-            logger.Information($"Logger Initialized. ({DateTime.Now.ToLongDateString()})");
-
-            return logger;
+            return config;
         }
     }
 }
