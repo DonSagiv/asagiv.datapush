@@ -1,11 +1,9 @@
 ﻿using Prism.Mvvm;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace asagiv.datapush.ui.Models
 {
@@ -19,22 +17,19 @@ namespace asagiv.datapush.ui.Models
         #region Methods
         public async Task InitializeClientAsync()
         {
-            var services = await getServicesAsync();
-
-            StartDataPushService(!services.Contains(serviceName));
+            StartDataPushService(await GetServiceStatus());
         }
 
-        private static async Task<IList<string>> getServicesAsync()
+        private async Task<WinServiceStatus> GetServiceStatus()
         {
             var processStartInfo = new ProcessStartInfo
             {
                 FileName = @"cmd.exe",
-                Verb = "runas",
                 RedirectStandardOutput = true,
                 CreateNoWindow = true
             };
 
-            processStartInfo.ArgumentList.Add(@"/C net start");
+            processStartInfo.ArgumentList.Add(@$"/C sc query {serviceName}");
 
             var process = Process.Start(processStartInfo);
 
@@ -46,22 +41,34 @@ namespace asagiv.datapush.ui.Models
 
             await process.WaitForExitAsync();
 
-            var serviceList = result
-                .Split("\r\n")
-                .Where(x => x.StartsWith("   "))
-                .Select(x => new string(x.Skip(3).ToArray()))
-                .ToList();
-
-            return serviceList;
+            return ParseServiceStatus(result);
         }
 
-        public void StartDataPushService(bool installService = false)
+        public static WinServiceStatus ParseServiceStatus(string serviceQueryResult)
         {
-            MessageBox.Show("Warning!! Installatin of the Data-Push service requires administrate privilages. If you would to install this service, please click \"Yes\" on the upcoming dialog. Otherwise, click \"No\"",
-                "Admin Privileges Warning",
-                MessageBoxButton.OK,
-                MessageBoxImage.Warning);
+            if (serviceQueryResult.Contains("FAILED 1060"))
+            {
+                return WinServiceStatus.NotInstalled;
+            }
 
+            var stateLine = serviceQueryResult
+                .Split("\r\n")
+                .FirstOrDefault(x => x.Contains("STATE"));
+
+            if (stateLine.Contains("RUNNING"))
+            {
+                return WinServiceStatus.Running;
+            }
+            else if (stateLine.Contains("STOPPED"))
+            {
+                return WinServiceStatus.Stopped;
+            }
+
+            return WinServiceStatus.Error;
+        }
+
+        public static void StartDataPushService(WinServiceStatus status)
+        {
             var processStartInfo = new ProcessStartInfo
             {
                 FileName = @"cmd.exe",
@@ -70,17 +77,22 @@ namespace asagiv.datapush.ui.Models
                 CreateNoWindow = false
             };
 
-            if (installService)
+            switch (status)
             {
-                var serviceBinPath = Path.Combine(Directory.GetCurrentDirectory(), serviceExecName);
+                case WinServiceStatus.NotInstalled:
+                    var serviceBinPath = Path.Combine(Directory.GetCurrentDirectory(), serviceExecName);
+                    processStartInfo.ArgumentList.Add($@"/C sc create {serviceName} binpath={serviceBinPath} start=auto & sc start {serviceName}");
+                    break;
+                case WinServiceStatus.Stopped:
+                    processStartInfo.ArgumentList.Add($@"/C sc start {serviceName}");
+                    break;
+                case WinServiceStatus.Running:
+                    processStartInfo.ArgumentList.Add($@"/C sc stop {serviceName} & sc start {serviceName}");
+                    break;
+                case WinServiceStatus.Error:
+                    throw new Exception("Invalid Query Status Detected.");
+            }
 
-                processStartInfo.ArgumentList.Add($@"/C sc create {serviceName} binpath={serviceBinPath} start=auto & sc start {serviceName}");
-            }
-            else
-            {
-                processStartInfo.ArgumentList.Add($@"/C sc start {serviceName}");
-            }
-            
             Process.Start(processStartInfo);
         }
         #endregion
