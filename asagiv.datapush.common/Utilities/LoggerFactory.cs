@@ -32,7 +32,12 @@ namespace asagiv.datapush.common.Utilities
 
             if (serviceProvider.GetService(typeof(IConfiguration)) is IConfiguration configuration)
             {
-                logPath = configuration.GetSection("LogFileSinkPath").Value;
+                var appDataRoot = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                var appDataFolder = Path.Combine(appDataRoot, "asagiv_datapush");
+
+                var logPathRaw = configuration.GetSection("LogFileSinkPath").Value;
+
+                logPath = logPathRaw.Replace("{appdata}", appDataFolder);
             }
 
             var config = InitializeConfig();
