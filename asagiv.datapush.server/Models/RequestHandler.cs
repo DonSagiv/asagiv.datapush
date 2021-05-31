@@ -1,6 +1,4 @@
-﻿using asagiv.datapush.server.common;
-using asagiv.datapush.server.common.Interfaces;
-using asagiv.datapush.server.common.Models;
+﻿using asagiv.datapush.server.common.Interfaces;
 using asagiv.datapush.server.Interfaces;
 using Google.Protobuf;
 using Grpc.Core;
@@ -16,12 +14,14 @@ namespace asagiv.datapush.server.Models
         #region Fields
         private readonly ILogger _logger;
         private readonly INodeRepository _nodeRepository;
+        private readonly IDataRouteRepository _routeRepository;
         #endregion
 
         #region Constructor
-        public RequestHandler(INodeRepository nodeRepository, ILogger logger)
+        public RequestHandler(INodeRepository nodeRepository, IDataRouteRepository routeRepository, ILogger logger)
         {
             _nodeRepository = nodeRepository;
+            _routeRepository = routeRepository;
             _logger = logger;
 
             _logger.Debug("Request Handler Instantiated.");
@@ -33,21 +33,7 @@ namespace asagiv.datapush.server.Models
         {
             _logger.Information($"Register Node Request Received. (Node Name: {request.NodeName}, Device ID: {request.DeviceId}, Is Pull Node: {request.IsPullNode})");
 
-            var node = _nodeRepository.nodeList.FirstOrDefault(x => x.DeviceId == request.DeviceId);
-
-            if(node == null)
-            {
-                _nodeRepository.nodeList.Add(new DeviceNode(request.NodeName, request.DeviceId, request.IsPullNode));
-
-                _logger.Information($"Added New Node to Repository. (Node Name: {request.NodeName}, Device ID: {request.DeviceId}, Is Pull Node: {request.IsPullNode})");
-            }
-            else
-            {
-                node.NodeName = request.NodeName;
-                node.IsPullNode = request.IsPullNode;
-
-                _logger.Information($"Set Node {request.DeviceId} to {request.NodeName}.");
-            }
+            var node = _nodeRepository.GetNode(request.NodeName, request.DeviceId, request.IsPullNode);
 
             var response = new RegisterNodeResponse
             {
@@ -56,8 +42,7 @@ namespace asagiv.datapush.server.Models
             };
 
             var pullNodes = _nodeRepository
-                .nodeList
-                .Where(x => x.IsPullNode)
+                .PullNodes
                 .Select(x => x.NodeName)
                 .ToList();
 
@@ -70,31 +55,23 @@ namespace asagiv.datapush.server.Models
 
         public async Task<DataPushResponse> HandlePushDataAsync(IAsyncStreamReader<DataPushRequest> requestStream)
         {
-            IRouteRequest repositoryItem = null;
-            DataPushRequest currentRequest = null;
+            IRouteRequest routeRequest = null;
+            DataPushRequest request;
 
             try
             {
                 while (await requestStream.MoveNext())
                 {
-                    currentRequest = requestStream.Current;
+                    request = requestStream.Current;
 
-                    if (repositoryItem == null)
+                    if (routeRequest == null)
                     {
-                        repositoryItem = DataRouteRepository.Instance.Repository
-                            .Where(x => x.SourceNode == currentRequest.SourceNode)
-                            .Where(x => x.DestinationNode == currentRequest.DestinationNode)
-                            .FirstOrDefault(x => x.Name == currentRequest.Name);
-
-                        if (repositoryItem == null)
-                        {
-                            repositoryItem = new RouteRequest(currentRequest.SourceNode, currentRequest.DestinationNode, currentRequest.Name);
-
-                            DataRouteRepository.Instance.Repository.Add(repositoryItem);
-                        }
+                        routeRequest = _routeRepository.GetRoutePushRequest(request.SourceNode, request.DestinationNode, request.Name);
                     }
 
-                    repositoryItem.AddToPayload(currentRequest.Payload);
+                    _logger.Information($"Adding Payload to Route Request. (Source: {request.SourceNode}, Destionation: {request.DestinationNode}, Name: {request.Name}, Size: {request.Payload.Count()} bytes)");
+
+                    routeRequest.AddPayload(request.Payload);
                 }
 
                 return await Task.FromResult(new DataPushResponse
@@ -102,8 +79,10 @@ namespace asagiv.datapush.server.Models
                     Confirmation = 1
                 });
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                _logger.Error(ex, ex.Message);
+
                 return await Task.FromResult(new DataPushResponse
                 {
                     Confirmation = -1
@@ -113,11 +92,9 @@ namespace asagiv.datapush.server.Models
 
         public async Task HandlePullDataAsync(DataPullRequest request, IServerStreamWriter<DataPullResponse> responseStream)
         {
-            var repositoryItem = DataRouteRepository.Instance.Repository
-                .Where(x => !x.isRouteCompleted)
-                .FirstOrDefault(x => x.DestinationNode == request.DestinationNode);
+            var routeRequest = _routeRepository.GetRoutePullRequest(request.DestinationNode);
 
-            if (repositoryItem == null)
+            if (routeRequest == null)
             {
                 await responseStream.WriteAsync(new DataPullResponse
                 {
@@ -129,32 +106,34 @@ namespace asagiv.datapush.server.Models
             }
             else
             {
-                repositoryItem.isRouteCompleted = true;
+                _logger.Information($"Route Request Found for {request.DestinationNode} from {routeRequest.SourceNode} (Name: {routeRequest.Name})");
 
                 // Alert the user that a stream is avaiable.
                 await responseStream.WriteAsync(new DataPullResponse
                 {
-                    SourceNode = repositoryItem.SourceNode,
+                    SourceNode = routeRequest.SourceNode,
                     DestinationNode = request.DestinationNode,
-                    Name = repositoryItem.Name,
+                    Name = routeRequest.Name,
                     Payload = ByteString.Empty,
                 });
 
                 // Sends the payload data.
-                while (repositoryItem.PayloadQueue.Count > 0)
+                while (routeRequest.PayloadQueue.Count > 0)
                 {
-                    var response = repositoryItem.GetFromPayload();
+                    var payload = routeRequest.GetFromPayload();
+
+                    _logger.Information($"Pushing Data from {routeRequest.SourceNode} to {routeRequest.DestinationNode} (Name: {routeRequest.Name}, Size: {payload.Count()} bytes))");
 
                     await responseStream.WriteAsync(new DataPullResponse
                     {
-                        SourceNode = repositoryItem.SourceNode,
-                        DestinationNode = repositoryItem.DestinationNode,
-                        Name = repositoryItem.Name,
-                        Payload = response,
+                        SourceNode = routeRequest.SourceNode,
+                        DestinationNode = routeRequest.DestinationNode,
+                        Name = routeRequest.Name,
+                        Payload = payload,
                     });
                 }
 
-                DataRouteRepository.Instance.Repository.Remove(repositoryItem);
+                _routeRepository.CloseRouteRequest(routeRequest);
             }
         }
         #endregion

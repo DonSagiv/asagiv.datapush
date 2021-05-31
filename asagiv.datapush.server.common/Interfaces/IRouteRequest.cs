@@ -13,7 +13,7 @@ namespace asagiv.datapush.server.common.Interfaces
         Queue<ByteString> PayloadQueue { get; }
         bool isRouteCompleted { get; set; }
 
-        void AddToPayload(ByteString payloadItemToAdd);
+        void AddPayload(ByteString payloadItemToAdd);
         ByteString GetFromPayload();
     }
 }

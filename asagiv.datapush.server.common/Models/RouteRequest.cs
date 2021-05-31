@@ -8,6 +8,7 @@ namespace asagiv.datapush.server.common.Models
     public class RouteRequest : IRouteRequest
     {
         #region Properties
+        public Guid RequestId { get; }
         public string SourceNode { get; }
         public string DestinationNode { get; }
         public string Name { get; }
@@ -19,17 +20,18 @@ namespace asagiv.datapush.server.common.Models
         #region Constructor
         public RouteRequest(string sourceNode, string destinationNode, string name)
         {
-            this.SourceNode = sourceNode;
-            this.DestinationNode = destinationNode;
-            this.Name = name;
+            RequestId = Guid.NewGuid();
+            SourceNode = sourceNode;
+            DestinationNode = destinationNode;
+            Name = name;
+            PushDateTime = DateTime.Now;
 
             PayloadQueue = new Queue<ByteString>();
-
-            this.PushDateTime = DateTime.Now;
+            
             isRouteCompleted = false;
         }
 
-        public void AddToPayload(ByteString payloadItemToAdd)
+        public void AddPayload(ByteString payloadItemToAdd)
         {
             PayloadQueue.Enqueue(payloadItemToAdd);
         }
