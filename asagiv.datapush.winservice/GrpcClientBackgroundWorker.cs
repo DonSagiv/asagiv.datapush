@@ -2,6 +2,7 @@ using asagiv.datapush.common.Utilities;
 using asagiv.datapush.winservice.Utilities;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,19 +22,26 @@ namespace asagiv.datapush.winservice
             _downloader = downloader;
             _client = client;
         }
-        
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger?.Information("Initializing Data Push Windows Service.");
-
-            await _client.CreatePullSubscriberAsync();
-            await _client.RegisterNodeAsync(true);
-
-            _client.DataRetrieved += async (s,e) => await _downloader.OnDataRetrievedAsync(e);
-
-            while (!stoppingToken.IsCancellationRequested && !_client.IsDisposed)
+            try
             {
-                await Task.Delay(1000, stoppingToken);
+                _logger?.Information("Initializing Data Push Windows Service.");
+
+                await _client.CreatePullSubscriberAsync();
+                await _client.RegisterNodeAsync(true);
+
+                _client.DataRetrieved += async (s, e) => await _downloader.OnDataRetrievedAsync(e);
+
+                while (!stoppingToken.IsCancellationRequested && !_client.IsDisposed)
+                {
+                    await Task.Delay(1000, stoppingToken);
+                }
+            }
+            catch(Exception ex)
+            {
+                _logger.Error(ex, ex.Message);
             }
         }
     }
