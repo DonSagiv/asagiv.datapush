@@ -12,6 +12,21 @@ namespace asagiv.datapush.ui.Models
         #region Fields
         public const string serviceName = "Data-Push";
         public const string serviceExecName = "asagiv.datapush.winservice.exe";
+        private string _nodeName;
+        private string _connectionString;
+        #endregion
+
+        #region Properties
+        public string NodeName
+        {
+            get { return _nodeName; }
+            set { _nodeName = value; RaisePropertyChanged(nameof(NodeName)); }
+        }
+        public string ConnectionString
+        {
+            get { return _connectionString; }
+            set { _connectionString = value; RaisePropertyChanged(nameof(ConnectionString)); }
+        }
         #endregion
 
         #region Methods
@@ -67,7 +82,7 @@ namespace asagiv.datapush.ui.Models
             return WinServiceStatus.Error;
         }
 
-        public static void StartDataPushService(WinServiceStatus status)
+        public void StartDataPushService(WinServiceStatus status)
         {
             var processStartInfo = new ProcessStartInfo
             {
@@ -81,13 +96,14 @@ namespace asagiv.datapush.ui.Models
             {
                 case WinServiceStatus.NotInstalled:
                     var serviceBinPath = Path.Combine(Directory.GetCurrentDirectory(), serviceExecName);
-                    processStartInfo.ArgumentList.Add($@"/C sc create {serviceName} binpath={serviceBinPath} start=auto & sc start {serviceName}");
+                    processStartInfo.ArgumentList.Add($"/C sc create {serviceName} binpath={serviceBinPath} start=auto & sc start {serviceName}");
+                    // processStartInfo.ArgumentList.Add($"/C sc create {serviceName} binpath={serviceBinPath} start=auto & sc start {serviceName} [\"{NodeName}\" \"{ConnectionString}\"]");
                     break;
                 case WinServiceStatus.Stopped:
-                    processStartInfo.ArgumentList.Add($@"/C sc start {serviceName}");
+                    processStartInfo.ArgumentList.Add($"/C sc start {serviceName} [\"{ NodeName}\" \"{ConnectionString}\"]");
                     break;
                 case WinServiceStatus.Running:
-                    processStartInfo.ArgumentList.Add($@"/C sc stop {serviceName} & sc start {serviceName}");
+                    processStartInfo.ArgumentList.Add($"/C sc stop {serviceName} & sc start {serviceName} [\"{NodeName}\" \"{ConnectionString}\"]");
                     break;
                 case WinServiceStatus.Error:
                     throw new Exception("Invalid Query Status Detected.");

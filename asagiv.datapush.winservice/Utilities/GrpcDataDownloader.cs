@@ -1,6 +1,7 @@
 ﻿using asagiv.datapush.common;
 using asagiv.datapush.common.Utilities;
 using Grpc.Core;
+using Microsoft.Extensions.Configuration;
 using Serilog;
 using System;
 using System.IO;
@@ -12,15 +13,24 @@ namespace asagiv.datapush.winservice.Utilities
     {
         #region Fields
         private readonly ILogger _logger;
-        private const string _saveDirectory = @"C:\Users\DonSa\Desktop\Rob Photos";
+        private readonly string _saveDirectory;
         #endregion
 
         #region Constructor
-        public GrpcDataDownloader(ILogger logger)
+        public GrpcDataDownloader(ILogger logger, IConfiguration configuration)
         {
             _logger = logger;
 
-            _logger?.Information("Initializing GRPC Stream Downloader.");
+            _saveDirectory = configuration.GetSection("DownloadPath")?.Value;
+
+            if(_saveDirectory == null)
+            {
+                _logger.Warning($"Save Diretory Not Specified.");
+            }
+            else
+            {
+                _logger?.Information($"Initializing GRPC Stream Downloader. (Save Directory: {_saveDirectory})");
+            }
         }
         #endregion
 

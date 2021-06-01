@@ -21,7 +21,7 @@ namespace asagiv.datapush.winservice
             _downloader = downloader;
             _client = client;
         }
-
+        
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _logger?.Information("Initializing Data Push Windows Service.");
