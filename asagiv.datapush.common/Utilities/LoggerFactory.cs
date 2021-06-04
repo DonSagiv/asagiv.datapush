@@ -73,7 +73,8 @@ namespace asagiv.datapush.common.Utilities
                 config = config.WriteTo.File(logPath,
                     rollingInterval: RollingInterval.Day,
                     outputTemplate: outputTemplate);
-            };
+            }
+
             return config;
         }
     }

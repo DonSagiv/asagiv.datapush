@@ -15,12 +15,5 @@ namespace asagiv.datapush.testing
             _channel = GrpcChannel.ForAddress("http://localhost:80");
             _client = new DataPush.DataPushClient(_channel);
         }
-
-        [TestCase("Hello World!")]
-        [TestCase("")]
-        public void AssertRequestConfirmation(string payload)
-        {
-
-        }
     }
 }

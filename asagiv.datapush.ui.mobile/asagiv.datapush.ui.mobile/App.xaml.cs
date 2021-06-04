@@ -15,14 +15,17 @@ namespace asagiv.datapush.ui.mobile
 
         protected override void OnStart()
         {
+            // Do nothing for now.
         }
 
         protected override void OnSleep()
         {
+            // Do nothing for now.
         }
 
         protected override void OnResume()
         {
+            // Do nothing for now.
         }
     }
 }

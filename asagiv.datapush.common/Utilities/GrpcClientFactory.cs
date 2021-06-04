@@ -16,11 +16,11 @@ namespace asagiv.datapush.common.Utilities
 
             if(configuration == null)
             {
-                logger.Warning("Unable to find configuration data.");
+                logger?.Warning("Unable to find configuration data.");
             }
 
-            var nodeName = configuration.GetSection("ClientName")?.Value;
-            var connectionString = configuration.GetSection("GrpcServerAddress")?.Value;
+            var nodeName = configuration?.GetSection("ClientName")?.Value;
+            var connectionString = configuration?.GetSection("GrpcServerAddress")?.Value;
 
             logger?.Information($"Creating GRPC Client. (Node Name: {nodeName}, Connection String: {connectionString})");
 

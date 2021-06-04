@@ -37,7 +37,7 @@ namespace asagiv.datapush.server.Models
 
             var response = new RegisterNodeResponse
             {
-                NodeName = request.NodeName,
+                NodeName = node.NodeName,
                 Successful = true
             };
 
@@ -69,7 +69,7 @@ namespace asagiv.datapush.server.Models
                         routeRequest = _routeRepository.GetRoutePushRequest(request.SourceNode, request.DestinationNode, request.Name);
                     }
 
-                    _logger?.Information($"Adding Payload to Route Request. (Source: {request.SourceNode}, Destionation: {request.DestinationNode}, Name: {request.Name}, Size: {request.Payload.Count()} bytes)");
+                    _logger?.Information($"Adding Payload to Route Request. (Source: {request.SourceNode}, Destionation: {request.DestinationNode}, Name: {request.Name}, Size: {request.Payload.Length} bytes)");
 
                     routeRequest.AddPayload(request.Payload);
                 }
@@ -122,7 +122,7 @@ namespace asagiv.datapush.server.Models
                 {
                     var payload = routeRequest.GetFromPayload();
 
-                    _logger?.Information($"Pushing Data from {routeRequest.SourceNode} to {routeRequest.DestinationNode} (Name: {routeRequest.Name}, Size: {payload.Count()} bytes))");
+                    _logger?.Information($"Pushing Data from {routeRequest.SourceNode} to {routeRequest.DestinationNode} (Name: {routeRequest.Name}, Size: {payload.Length} bytes))");
 
                     await responseStream.WriteAsync(new DataPullResponse
                     {

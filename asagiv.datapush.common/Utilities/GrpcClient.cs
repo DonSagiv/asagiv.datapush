@@ -10,10 +10,9 @@ using System.Threading.Tasks;
 
 namespace asagiv.datapush.common.Utilities
 {
-    public class GrpcClient : IDisposable
+    public sealed class GrpcClient : IDisposable
     {
         #region Fields
-        private readonly ChannelBase _channel;
         private readonly ILogger _logger;
         #endregion
 
@@ -44,16 +43,12 @@ namespace asagiv.datapush.common.Utilities
 
         public GrpcClient(ChannelBase channel, string nodeName, string deviceId, ILogger logger = null) : this(nodeName, deviceId, logger)
         {
-            _channel = channel;
-
-            Client = new DataPush.DataPushClient(_channel);
+            Client = new DataPush.DataPushClient(channel);
         }
 
         public GrpcClient(string connectionString, string nodeName, string deviceId, ILogger logger = null) : this(nodeName, deviceId, logger)
         {
-            _channel = GrpcChannel.ForAddress(connectionString);
-
-            Client = new DataPush.DataPushClient(_channel);
+            Client = new DataPush.DataPushClient(GrpcChannel.ForAddress(connectionString);
         }
         #endregion
 
@@ -180,6 +175,8 @@ namespace asagiv.datapush.common.Utilities
             {
                 pullSubscriber.Dispose();
             }
+
+            GC.SuppressFinalize(this);
         }
         #endregion
     }

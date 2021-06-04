@@ -35,7 +35,7 @@ namespace asagiv.datapush.ui.Models
             StartDataPushService(await GetServiceStatus());
         }
 
-        private async Task<WinServiceStatus> GetServiceStatus()
+        private static async Task<WinServiceStatus> GetServiceStatus()
         {
             var processStartInfo = new ProcessStartInfo
             {
@@ -97,7 +97,6 @@ namespace asagiv.datapush.ui.Models
                 case WinServiceStatus.NotInstalled:
                     var serviceBinPath = Path.Combine(Directory.GetCurrentDirectory(), serviceExecName);
                     processStartInfo.ArgumentList.Add($"/C sc create {serviceName} binpath={serviceBinPath} start=auto & sc start {serviceName}");
-                    // processStartInfo.ArgumentList.Add($"/C sc create {serviceName} binpath={serviceBinPath} start=auto & sc start {serviceName} [\"{NodeName}\" \"{ConnectionString}\"]");
                     break;
                 case WinServiceStatus.Stopped:
                     processStartInfo.ArgumentList.Add($"/C sc start {serviceName} [\"{ NodeName}\" \"{ConnectionString}\"]");
@@ -106,7 +105,7 @@ namespace asagiv.datapush.ui.Models
                     processStartInfo.ArgumentList.Add($"/C sc stop {serviceName} & sc start {serviceName} [\"{NodeName}\" \"{ConnectionString}\"]");
                     break;
                 case WinServiceStatus.Error:
-                    throw new Exception("Invalid Query Status Detected.");
+                    throw new ArgumentException("Invalid Query Status Detected.");
             }
 
             Process.Start(processStartInfo);

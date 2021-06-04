@@ -6,15 +6,13 @@ using System.Threading.Tasks;
 
 namespace asagiv.datapush.common.Utilities
 {
-    public class DataPullSubscriber : IDisposable
+    public sealed class DataPullSubscriber : IDisposable
     {
         #region Fields
-        private readonly IObservable<long> _pullObservable;
         private readonly IDisposable _pullSubscribe;
         #endregion
 
         #region Delegages
-        public event EventHandler Disposed;
         public event EventHandler<ResponseStreamContext<DataPullResponse>> DataRetrieved;
         #endregion
 
@@ -30,16 +28,16 @@ namespace asagiv.datapush.common.Utilities
             Client = client;
             DestinationNode = node;
 
-            _pullObservable = Observable.Interval(TimeSpan.FromSeconds(1));
+            var pullObservable = Observable.Interval(TimeSpan.FromSeconds(1));
 
-            _pullSubscribe = _pullObservable
+            _pullSubscribe = pullObservable
                 .ObserveOn(TaskPoolScheduler.Default)
                 .Subscribe(async x => await pollDataAsync(x));
         }
         #endregion
 
         #region 
-        private async Task<bool> pollDataAsync(long Obj)
+        private async Task<bool> pollDataAsync(long _)
         {
             var request = new DataPullRequest { DestinationNode = DestinationNode };
 
@@ -59,9 +57,10 @@ namespace asagiv.datapush.common.Utilities
 
         public void Dispose()
         {
-            IsDisposed = true;
-
             _pullSubscribe.Dispose();
+            GC.SuppressFinalize(this);
+
+            IsDisposed = true;
         }
         #endregion
     }

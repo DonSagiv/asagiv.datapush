@@ -18,8 +18,6 @@ namespace asagiv.datapush.server.common
         #region Fields
         private readonly ILogger _logger;
         private readonly IList<IRouteRequest> _repository;
-        private readonly IObservable<long> _purgeRepositoryObservable;
-        private readonly IDisposable _purgeRepositoryDisposable;
         #endregion
 
         #region Properties
@@ -31,9 +29,9 @@ namespace asagiv.datapush.server.common
         {
             _logger = logger;
 
-            _purgeRepositoryObservable = Observable.Interval(TimeSpan.FromMinutes(1));
+            var purgeRepositoryObservable = Observable.Interval(TimeSpan.FromMinutes(1));
 
-            _purgeRepositoryDisposable = _purgeRepositoryObservable
+            purgeRepositoryObservable
                 .ObserveOn(TaskPoolScheduler.Default)
                 .Subscribe(purgeRepository);
 
