@@ -33,7 +33,7 @@ namespace asagiv.datapush.server.common
 
             purgeRepositoryObservable
                 .ObserveOn(TaskPoolScheduler.Default)
-                .Subscribe(purgeRepository);
+                .Subscribe(PurgeRepository);
 
             _repository = new List<IRouteRequest>();
         }
@@ -60,12 +60,12 @@ namespace asagiv.datapush.server.common
         public IRouteRequest GetRoutePullRequest(string destinationNode)
         {
             var routeRequest = _repository
-                .Where(x => !x.isRouteCompleted)
+                .Where(x => !x.IsRouteCompleted)
                 .FirstOrDefault(x => x.DestinationNode == destinationNode);
 
             if (routeRequest != null)
             {
-                routeRequest.isRouteCompleted = true;
+                routeRequest.IsRouteCompleted = true;
             }
 
             return routeRequest;
@@ -78,7 +78,7 @@ namespace asagiv.datapush.server.common
             _repository.Remove(routeRequest);
         }
 
-        private void purgeRepository(long obj)
+        private void PurgeRepository(long obj)
         {
             var itemsToPurge = _repository
                 .Where(x => x.PushDateTime > DateTime.Now.AddMinutes(-1 * numMinutesPurge));

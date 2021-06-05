@@ -70,9 +70,9 @@ namespace asagiv.datapush.server.Models
                         routeRequest = _routeRepository.GetRoutePushRequest(request.SourceNode, request.DestinationNode, request.Name);
                     }
 
-                    _logger?.Information($"Adding Payload to Route Request. (Source: {request.SourceNode}, Destionation: {request.DestinationNode}, Name: {request.Name}, Size: {request.Payload.Length} bytes)");
+                    _logger?.Information($"Adding Payload to Route Request ({request.BlockNumber} of {request.TotalBlocks} Source: {request.SourceNode}, Destionation: {request.DestinationNode}, Name: {request.Name}, Size: {request.Payload.Length} bytes)");
 
-                    routeRequest.AddPayload(request.Payload);
+                    routeRequest.AddPayload(request.BlockNumber, request.Payload);
                 }
 
                 return await Task.FromResult(new DataPushResponse
@@ -123,14 +123,16 @@ namespace asagiv.datapush.server.Models
                 {
                     var payload = routeRequest.GetFromPayload();
 
-                    _logger?.Information($"Pushing Data from {routeRequest.SourceNode} to {routeRequest.DestinationNode} (Name: {routeRequest.Name}, Size: {payload.Length} bytes))");
+                    _logger?.Information($"Pushing Data from {routeRequest.SourceNode} to {routeRequest.DestinationNode} (Block {payload.BlockNumber} of {routeRequest.TotalBlocks}, Name: {routeRequest.Name}, Size: {payload.Payload.Length} bytes)");
 
                     await responseStream.WriteAsync(new DataPullResponse
                     {
                         SourceNode = routeRequest.SourceNode,
                         DestinationNode = routeRequest.DestinationNode,
                         Name = routeRequest.Name,
-                        Payload = payload,
+                        BlockNumber = payload.BlockNumber,
+                        TotalBlocks = routeRequest.TotalBlocks,
+                        Payload = payload.Payload,
                     });
                 }
 

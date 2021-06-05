@@ -9,7 +9,7 @@ namespace asagiv.datapush.common.Utilities
     public class GrpcFileDownloader
     {
         #region Fields
-        private ILogger _logger;
+        private readonly ILogger _logger;
         #endregion
 
         #region Properties
@@ -30,7 +30,7 @@ namespace asagiv.datapush.common.Utilities
 
             try
             {
-                await downloadFileAsync(responseStream, fileLocation);
+                await DownloadFileAsync(responseStream, fileLocation);
             }
             catch (Exception ex)
             {
@@ -40,7 +40,7 @@ namespace asagiv.datapush.common.Utilities
             }
         }
 
-        private static async Task<FileStream> downloadFileAsync(ResponseStreamContext<DataPullResponse> responseStream, string fileLocation)
+        private static async Task<FileStream> DownloadFileAsync(ResponseStreamContext<DataPullResponse> responseStream, string fileLocation)
         {
             var fs = new FileStream(fileLocation, FileMode.Append);
             {
@@ -53,6 +53,7 @@ namespace asagiv.datapush.common.Utilities
             }
 
             await fs.DisposeAsync();
+
             return fs;
         }
         #endregion

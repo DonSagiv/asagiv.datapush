@@ -12,9 +12,10 @@ namespace asagiv.datapush.server.common.Models
         public string SourceNode { get; }
         public string DestinationNode { get; }
         public string Name { get; }
+        public int TotalBlocks { get; }
         public DateTime PushDateTime { get; }
-        public Queue<ByteString> PayloadQueue { get; }
-        public bool isRouteCompleted { get; set; }
+        public Queue<PayloadItem> PayloadQueue { get; }
+        public bool IsRouteCompleted { get; set; }
         #endregion
 
         #region Constructor
@@ -26,21 +27,21 @@ namespace asagiv.datapush.server.common.Models
             Name = name;
             PushDateTime = DateTime.Now;
 
-            PayloadQueue = new Queue<ByteString>();
+            PayloadQueue = new Queue<PayloadItem>();
             
-            isRouteCompleted = false;
+            IsRouteCompleted = false;
         }
 
-        public void AddPayload(ByteString payloadItemToAdd)
+        public void AddPayload(int blockNumber, ByteString payloadItemToAdd)
         {
-            PayloadQueue.Enqueue(payloadItemToAdd);
+            PayloadQueue.Enqueue(new PayloadItem(blockNumber, payloadItemToAdd));
         }
 
-        public ByteString GetFromPayload()
+        public PayloadItem GetFromPayload()
         {
-            return PayloadQueue.TryDequeue(out ByteString payloadToReturn)
+            return PayloadQueue.TryDequeue(out PayloadItem payloadToReturn)
                 ? payloadToReturn
-                : ByteString.Empty;
+                : null;
         }
         #endregion
     }

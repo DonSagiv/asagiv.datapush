@@ -1,4 +1,5 @@
-﻿using Google.Protobuf;
+﻿using asagiv.datapush.server.common.Models;
+using Google.Protobuf;
 using System;
 using System.Collections.Generic;
 
@@ -9,11 +10,12 @@ namespace asagiv.datapush.server.common.Interfaces
         string SourceNode { get; }
         string DestinationNode { get; }
         string Name { get; }
+        int TotalBlocks { get; }
         DateTime PushDateTime { get; }
-        Queue<ByteString> PayloadQueue { get; }
-        bool isRouteCompleted { get; set; }
+        Queue<PayloadItem> PayloadQueue { get; }
+        bool IsRouteCompleted { get; set; }
 
-        void AddPayload(ByteString payloadItemToAdd);
-        ByteString GetFromPayload();
+        void AddPayload(int blockNumber, ByteString payloadItemToAdd);
+        PayloadItem GetFromPayload();
     }
 }

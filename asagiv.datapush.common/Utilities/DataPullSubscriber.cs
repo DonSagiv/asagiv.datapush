@@ -32,12 +32,12 @@ namespace asagiv.datapush.common.Utilities
 
             _pullSubscribe = pullObservable
                 .ObserveOn(TaskPoolScheduler.Default)
-                .Subscribe(async x => await pollDataAsync(x));
+                .Subscribe(async x => await PollDataAsync());
         }
         #endregion
 
         #region 
-        private async Task<bool> pollDataAsync(long _)
+        private async Task<bool> PollDataAsync()
         {
             var request = new DataPullRequest 
             {
