@@ -34,9 +34,9 @@ namespace asagiv.datapush.winservice.Utilities
         }
         #endregion
 
-        public async Task OnDataRetrievedAsync(ResponseStreamContext<DataPullResponse> e)
+        public async Task OnDataRetrievedAsync(ResponseStreamContext<DataPullResponse> responseStreamContext)
         {
-            var fileLocation = Path.Combine(_saveDirectory, e.ResponseData.Name);
+            var fileLocation = Path.Combine(_saveDirectory, responseStreamContext.ResponseData.Name);
 
             _logger?.Information($"Streaming Pulled Data to {fileLocation}");
 
@@ -44,13 +44,9 @@ namespace asagiv.datapush.winservice.Utilities
             {
                 using var fs = new FileStream(fileLocation, FileMode.Append);
                 {
-                    while (await e.ResponseStream.MoveNext())
+                    while (await responseStreamContext.ResponseStream.MoveNext())
                     {
-                        var byteArray = e.ResponseStream.Current.Payload.ToByteArray();
-
-                        _logger?.Information($"Writing {byteArray.Length} Bytes to {fileLocation}");
-
-                        await fs.WriteAsync(byteArray);
+                        await DownloadStreamBlock(responseStreamContext, fileLocation, fs);
                     }
                 }
 
@@ -62,6 +58,17 @@ namespace asagiv.datapush.winservice.Utilities
 
                 File.Delete(fileLocation);
             }
+        }
+
+        private async Task DownloadStreamBlock(ResponseStreamContext<DataPullResponse> responseStreamContext, string fileLocation, FileStream fs)
+        {
+            var response = responseStreamContext.ResponseStream.Current;
+
+            var byteArray = response.Payload.ToByteArray();
+
+            _logger?.Information($"Writing {byteArray.Length} Bytes to {fileLocation} (Block {response.BlockNumber} of {response.TotalBlocks})");
+
+            await fs.WriteAsync(byteArray);
         }
     }
 }
