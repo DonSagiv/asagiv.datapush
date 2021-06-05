@@ -37,6 +37,7 @@ namespace asagiv.datapush.server.Models
 
             var response = new RegisterNodeResponse
             {
+                RequestId = request.RequestId,
                 NodeName = node.NodeName,
                 Successful = true
             };

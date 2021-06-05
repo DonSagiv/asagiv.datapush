@@ -39,7 +39,11 @@ namespace asagiv.datapush.common.Utilities
         #region 
         private async Task<bool> pollDataAsync(long _)
         {
-            var request = new DataPullRequest { DestinationNode = DestinationNode };
+            var request = new DataPullRequest 
+            {
+                RequestId = Guid.NewGuid().ToString(),
+                DestinationNode = DestinationNode 
+            };
 
             var pullResponse = Client.PullData(request);
 

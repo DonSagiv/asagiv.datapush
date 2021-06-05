@@ -48,7 +48,7 @@ namespace asagiv.datapush.common.Utilities
 
         public GrpcClient(string connectionString, string nodeName, string deviceId, ILogger logger = null) : this(nodeName, deviceId, logger)
         {
-            Client = new DataPush.DataPushClient(GrpcChannel.ForAddress(connectionString);
+            Client = new DataPush.DataPushClient(GrpcChannel.ForAddress(connectionString));
         }
         #endregion
 
@@ -80,6 +80,7 @@ namespace asagiv.datapush.common.Utilities
         {
             var nodeRequest = new RegisterNodeRequest
             {
+                RequestId = Guid.NewGuid().ToString(),
                 DeviceId = DeviceId,
                 NodeName = NodeName,
                 IsPullNode = isPullNode,
@@ -124,9 +125,11 @@ namespace asagiv.datapush.common.Utilities
         {
             _logger?.Information($"Pushing Data to {destinationNode}. (Name: {name}, Size: {data.Count()})");
 
+            var requestId = Guid.NewGuid().ToString();
+
             try
             {
-                var blockSize = 1000000;
+                var blockSize = 2500000;
 
                 var blockIterations = data.Length / blockSize;
 
@@ -144,9 +147,12 @@ namespace asagiv.datapush.common.Utilities
 
                     var request = new DataPushRequest
                     {
+                        RequestId = requestId,
                         SourceNode = NodeName,
                         DestinationNode = destinationNode,
                         Name = name,
+                        BlockNumber = i + 1,
+                        TotalBlocks = blockIterations,
                         Payload = ByteString.CopyFrom(dataBlock)
                     };
 
