@@ -54,8 +54,11 @@ namespace asagiv.datapush.common.Utilities
                 logPath = logPathRaw.Replace("{appdata}", appDataFolder);
             }
 
-            var config = InitializeConfig()
-                .WriteTo.Console(outputTemplate: outputTemplate);
+            var config = InitializeConfig();
+
+#if DEBUG
+            config = config.WriteTo.Console(outputTemplate: outputTemplate);
+#endif
 
             config = GetLogPathDirectory(logPath, config);
 
