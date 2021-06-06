@@ -4,16 +4,23 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace asagiv.datapush.ui.Models
 {
     public class DataPushClientModel : BindableBase
     {
-        #region Fields
+        #region Statocs
         public const string serviceName = "Data-Push";
         public const string serviceExecName = "asagiv.datapush.winservice.exe";
+        #endregion
+
+        #region Fields
+        private readonly string _serviceAppSettingsPath;
         private string _nodeName;
         private string _connectionString;
+        private string _downloadLocation;
         #endregion
 
         #region Properties
@@ -26,6 +33,27 @@ namespace asagiv.datapush.ui.Models
         {
             get { return _connectionString; }
             set { _connectionString = value; RaisePropertyChanged(nameof(ConnectionString)); }
+        }
+        public string DownloadLocation
+        {
+            get { return _downloadLocation; }
+            set { _downloadLocation = value; RaisePropertyChanged(nameof(DownloadLocation)); }
+        }
+        #endregion
+
+        #region Constructor
+        public DataPushClientModel()
+        {
+            var appDirectory = Directory.GetCurrentDirectory();
+            _serviceAppSettingsPath = Path.Combine(appDirectory, "appsettings.json");
+
+            var appSettingsString = File.ReadAllText(_serviceAppSettingsPath);
+
+            var appSettingsJson = JsonConvert.DeserializeObject(appSettingsString) as JObject;
+
+            NodeName = appSettingsJson["ClientName"].ToObject<string>();
+            ConnectionString = appSettingsJson["GrpcServerAddress"].ToObject<string>();
+            DownloadLocation = appSettingsJson["DownloadPath"].ToObject<string>();
         }
         #endregion
 
@@ -92,10 +120,11 @@ namespace asagiv.datapush.ui.Models
                 CreateNoWindow = false
             };
 
+            var serviceBinPath = Path.Combine(Directory.GetCurrentDirectory(), serviceExecName);
+
             switch (status)
             {
                 case WinServiceStatus.NotInstalled:
-                    var serviceBinPath = Path.Combine(Directory.GetCurrentDirectory(), serviceExecName);
                     processStartInfo.ArgumentList.Add($"/C sc create {serviceName} binpath={serviceBinPath} start=auto " +
                         $"& sc failure {serviceName} reset= 120 actions= restart/120000/restart/120000//" +
                         $"& sc start {serviceName}");
