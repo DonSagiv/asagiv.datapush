@@ -1,9 +1,10 @@
-﻿using asagiv.datapush.server.common.Interfaces;
+﻿using asagiv.datapush.server.common.Models;
+using asagiv.datapush.server.Interfaces;
 using Google.Protobuf;
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 
-namespace asagiv.datapush.server.common.Models
+namespace asagiv.datapush.server.Models
 {
     public class RouteRequest : IRouteRequest
     {
@@ -14,20 +15,21 @@ namespace asagiv.datapush.server.common.Models
         public string Name { get; }
         public int TotalBlocks { get; set; }
         public DateTime PushDateTime { get; }
-        public Queue<PayloadItem> PayloadQueue { get; }
+        public ConcurrentQueue<PayloadItem> PayloadQueue { get; }
         public bool IsRouteCompleted { get; set; }
         #endregion
 
         #region Constructor
-        public RouteRequest(string sourceNode, string destinationNode, string name)
+        public RouteRequest(DataPushRequest dataPushRequest)
         {
-            RequestId = Guid.NewGuid();
-            SourceNode = sourceNode;
-            DestinationNode = destinationNode;
-            Name = name;
+            RequestId = Guid.Parse(dataPushRequest.RequestId);
+            SourceNode = dataPushRequest.SourceNode;
+            DestinationNode = dataPushRequest.DestinationNode;
+            Name = dataPushRequest.Name;
+            TotalBlocks = dataPushRequest.TotalBlocks;
             PushDateTime = DateTime.Now;
 
-            PayloadQueue = new Queue<PayloadItem>();
+            PayloadQueue = new ConcurrentQueue<PayloadItem>();
             
             IsRouteCompleted = false;
         }
@@ -41,7 +43,7 @@ namespace asagiv.datapush.server.common.Models
 
         public PayloadItem GetFromPayload()
         {
-            return PayloadQueue.TryDequeue(out PayloadItem payloadToReturn)
+            return PayloadQueue.TryDequeue(out var payloadToReturn)
                 ? payloadToReturn
                 : null;
         }

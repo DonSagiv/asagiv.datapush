@@ -48,10 +48,11 @@ message DataPullRequest {
 
 message DataPullResponse {
   string requestId = 1;
-  string sourceNode = 2;
-  string destinationNode = 3;
-  string name = 4;
-  int32 blockNumber = 5;
-  int32 totalBlocks = 6;
-  bytes payload = 7;
+  string sourceRequestId = 2;
+  string sourceNode = 3;
+  string destinationNode = 4;
+  string name = 5;
+  int32 blockNumber = 6;
+  int32 totalBlocks = 7;
+  bytes payload = 8;
 }

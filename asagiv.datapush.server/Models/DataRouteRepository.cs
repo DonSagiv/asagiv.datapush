@@ -1,5 +1,4 @@
-﻿using asagiv.datapush.server.common.Interfaces;
-using asagiv.datapush.server.common.Models;
+﻿using asagiv.datapush.server.Interfaces;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -7,7 +6,7 @@ using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 
-namespace asagiv.datapush.server.common
+namespace asagiv.datapush.server.Models
 {
     public class DataRouteRepository : IDataRouteRepository
     {
@@ -38,18 +37,21 @@ namespace asagiv.datapush.server.common
             _repository = new List<IRouteRequest>();
         }
 
-        public IRouteRequest GetRoutePushRequest(string sourceNode, string destinationNode, string name)
+        public IRouteRequest AddRouteRequest(DataPushRequest dataPushRequest)
         {
             var routeRequest = _repository
-                            .Where(x => x.SourceNode == sourceNode)
-                            .Where(x => x.DestinationNode == destinationNode)
-                            .FirstOrDefault(x => x.Name == name);
+                            .Where(x => x.SourceNode == dataPushRequest.SourceNode)
+                            .Where(x => x.DestinationNode == dataPushRequest.DestinationNode)
+                            .FirstOrDefault(x => x.Name == dataPushRequest.Name);
 
             if (routeRequest == null)
             {
-                routeRequest = new RouteRequest(sourceNode, destinationNode, name);
+                routeRequest = new RouteRequest(dataPushRequest);
 
-                _logger?.Information($"New Route Request Added. (Source: {sourceNode}, Destionation: {destinationNode}, Name: {name}, ID)");
+                _logger?.Information($"New Route Request Added (Source: {routeRequest.SourceNode}, " +
+                    $"Destionation: {routeRequest.DestinationNode}, " +
+                    $"Name: {routeRequest.Name}, " +
+                    $"ID: {routeRequest.RequestId.ToString()}).");
 
                 _repository.Add(routeRequest);
             }
@@ -57,7 +59,7 @@ namespace asagiv.datapush.server.common
             return routeRequest;
         }
 
-        public IRouteRequest GetRoutePullRequest(string destinationNode)
+        public IRouteRequest GetRouteRequest(string destinationNode)
         {
             var routeRequest = _repository
                 .Where(x => !x.IsRouteCompleted)
@@ -73,7 +75,10 @@ namespace asagiv.datapush.server.common
 
         public void CloseRouteRequest(IRouteRequest routeRequest)
         {
-            _logger?.Information($"Closing Route Request. (Source: {routeRequest.SourceNode}, Destination: {routeRequest.DestinationNode}, Name: {routeRequest.Name})");
+            _logger?.Information($"Closing Route Request " +
+                $"(Source: {routeRequest.SourceNode}, " +
+                $"Destination: {routeRequest.DestinationNode}, " +
+                $"Name: {routeRequest.Name}).");
 
             _repository.Remove(routeRequest);
         }
@@ -85,7 +90,11 @@ namespace asagiv.datapush.server.common
 
             foreach (var itemToPurge in itemsToPurge)
             {
-                _logger?.Warning($"Purging Route Request from Repository. (Source: {itemToPurge.SourceNode}, Destination: {itemToPurge.DestinationNode}, Name:{itemToPurge.Name})");
+                _logger?.Warning($"Purging Route Request from Repository " +
+                    $"(Source: {itemToPurge.SourceNode}, " +
+                    $"Destination: {itemToPurge.DestinationNode}, " +
+                    $"Name:{itemToPurge.Name}).");
+
                 _repository.Remove(itemToPurge);
             }
         }

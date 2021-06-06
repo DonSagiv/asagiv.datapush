@@ -5,6 +5,11 @@
     <UserSecretsId>ed194591-0f7c-4b75-ace1-144a5b9e7f91</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <CodeAnalysisRuleSet>..\.sonarlint\asagiv_datapushcsharp.ruleset</CodeAnalysisRuleSet>
+    <Authors>Ari Sagiv</Authors>
+    <Product>Data Push</Product>
+    <AssemblyVersion>0.0.0.1</AssemblyVersion>
+    <FileVersion>0.0.0.1</FileVersion>
+    <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
   <ItemGroup>
