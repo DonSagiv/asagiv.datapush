@@ -88,18 +88,26 @@ namespace asagiv.datapush.common.Utilities
 
             _logger?.Information($"Creating Register Node Request for {DeviceId}. (Name: {NodeName}, IsPullNode: {isPullNode})");
 
-            var response = await Client.RegisterNodeAsync(nodeRequest);
-
-            if (response.Successful)
+            try
             {
-                _logger?.Information($"Register Node Request Successful.");
-            }
-            else
-            {
-                _logger?.Error($"Register Node Request Not Successful.");
-            }
+                var response = await Client.RegisterNodeAsync(nodeRequest);
 
-            return response.PullNodeList;
+                if (response.Successful)
+                {
+                    _logger?.Information($"Register Node Request Successful.");
+                }
+                else
+                {
+                    _logger?.Error($"Register Node Request Not Successful.");
+                }
+
+                return response.PullNodeList;
+            }
+            catch(Exception ex)
+            {
+                Log.Error(ex, ex.Message);
+                throw;
+            }
         }
 
         private void OnPullDataRetrieved(object sender, ResponseStreamContext<DataPullResponse> e)

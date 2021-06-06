@@ -29,8 +29,8 @@ namespace asagiv.datapush.winservice
             {
                 _logger?.Information("Initializing Data Push Windows Service.");
 
-                await _client.RegisterNodeAsync(true);
                 await _client.CreatePullSubscriberAsync();
+                await _client.RegisterNodeAsync(true);
 
                 _client.DataRetrieved += async (s, e) => await _downloader.OnDataRetrievedAsync(e);
 
