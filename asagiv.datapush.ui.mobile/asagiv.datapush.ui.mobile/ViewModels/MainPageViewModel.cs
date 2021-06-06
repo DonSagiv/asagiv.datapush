@@ -54,18 +54,25 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         #endregion
 
         #region Constructor
-        public MainPageViewModel(ILogger logger)
+        public MainPageViewModel(ILogger logger, RaiseEventLogSink eventLogSink)
         {
             _logger = logger;
-
-            _logger.Information("Initializing View Model.");
 
             DestinationNodeList = new ObservableCollection<string>();
 
             LogEntries = new ObservableCollection<string>();
 
+            eventLogSink.LogEventRaised += OnLogEventRaised;
+
+            _logger.Information("Initializing View Model.");
+
             ConnectCommand = new DelegateCommand(async () => await ConnectAsync());
             SelectFileCommand = new DelegateCommand(async () => await SelectFileAsync());
+        }
+
+        private void OnLogEventRaised(object sender, string e)
+        {
+            LogEntries.Add($"{DateTime.Now}: {e}");
         }
         #endregion
 

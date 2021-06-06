@@ -27,6 +27,7 @@ namespace asagiv.datapush.ui.mobile
         #region Methods
         private void ConfigureServices(ServiceCollection services)
         {
+            services.AddSingleton<RaiseEventLogSink>();
             services.AddSingleton(LoggerFactory.CreateLoggerXamarin);
             services.AddSingleton<MainPage>();
             services.AddSingleton<MainPageViewModel>();

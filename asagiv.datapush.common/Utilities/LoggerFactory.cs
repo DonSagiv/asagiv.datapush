@@ -28,7 +28,10 @@ namespace asagiv.datapush.common.Utilities
 
         public static ILogger CreateLoggerXamarin(IServiceProvider serviceProvider)
         {
-            var config = InitializeConfig();
+            var logEventSink = serviceProvider.GetService(typeof(RaiseEventLogSink)) as RaiseEventLogSink;
+
+            var config = InitializeConfig()
+                .WriteTo.Sink(logEventSink);
 
             var logger = config.CreateLogger();
 
@@ -51,8 +54,9 @@ namespace asagiv.datapush.common.Utilities
                 logPath = logPathRaw.Replace("{appdata}", appDataFolder);
             }
 
-            var config = InitializeConfig();
-            
+            var config = InitializeConfig()
+                .WriteTo.Console(outputTemplate: outputTemplate);
+
             config = GetLogPathDirectory(logPath, config);
 
             var logger = config.CreateLogger();
@@ -66,8 +70,7 @@ namespace asagiv.datapush.common.Utilities
         {
             return _defaultConfig
                 .MinimumLevel.Information()
-                .Enrich.WithThreadId()
-                .WriteTo.Console(outputTemplate: outputTemplate);
+                .Enrich.WithThreadId();
         }
 
         private static LoggerConfiguration GetLogPathDirectory(string logPath, LoggerConfiguration config)
