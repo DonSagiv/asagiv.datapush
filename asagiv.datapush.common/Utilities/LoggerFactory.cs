@@ -26,7 +26,18 @@ namespace asagiv.datapush.common.Utilities
             return logger;
         }
 
-        public static ILogger CreateLogger(IServiceProvider serviceProvider)
+        public static ILogger CreateLoggerXamarin(IServiceProvider serviceProvider)
+        {
+            var config = InitializeConfig();
+
+            var logger = config.CreateLogger();
+
+            logger.Information($"Logger Initialized. ({DateTime.Now.ToLongDateString()})");
+
+            return logger;
+        }
+
+        public static ILogger CreateLoggerWindows(IServiceProvider serviceProvider)
         {
             string logPath = null;
 

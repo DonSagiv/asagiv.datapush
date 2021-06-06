@@ -2,6 +2,7 @@
 using Grpc.Core;
 using Prism.Commands;
 using Prism.Mvvm;
+using Serilog;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -14,6 +15,7 @@ namespace asagiv.datapush.ui.mobile.ViewModels
     public class MainPageViewModel : BindableBase
     {
         #region Fields
+        private readonly ILogger _logger;
         private string _connectionString;
         private string _nodeName;
         private string _selectedDestinationNode;
@@ -52,8 +54,12 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         #endregion
 
         #region Constructor
-        public MainPageViewModel()
+        public MainPageViewModel(ILogger logger)
         {
+            _logger = logger;
+
+            _logger.Information("Initializing View Model.");
+
             DestinationNodeList = new ObservableCollection<string>();
 
             LogEntries = new ObservableCollection<string>();
@@ -78,7 +84,7 @@ namespace asagiv.datapush.ui.mobile.ViewModels
 
             var channel = new Channel(_connectionString, ChannelCredentials.Insecure);
 
-            Client = new GrpcClient(channel, _nodeName, deviceId);
+            Client = new GrpcClient(channel, _nodeName, deviceId, _logger);
 
             var response = await Client.RegisterNodeAsync(false);
 
@@ -97,6 +103,8 @@ namespace asagiv.datapush.ui.mobile.ViewModels
             foreach(var file in files)
             {
                 var filePath = file.FullPath;
+
+                _logger.Information($"Uploading File: {filePath} to {SelectedDestinationNode}");
 
                 var data = await File.ReadAllBytesAsync(filePath);
 

@@ -21,7 +21,7 @@ namespace asagiv.datapush.winservice
                 {
                     services.AddSingleton(GrpcClientFactory.CreateGprcClient);
                     services.AddSingleton<GrpcDataDownloader>();
-                    services.AddSingleton(LoggerFactory.CreateLogger);
+                    services.AddSingleton(LoggerFactory.CreateLoggerWindows);
                     services.AddHostedService<GrpcClientBackgroundWorker>();
                 });
     }

@@ -18,7 +18,7 @@ namespace asagiv.datapush.server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(LoggerFactory.CreateLogger);
+            services.AddSingleton(LoggerFactory.CreateLoggerWindows);
             services.AddSingleton<INodeRepository, NodeRepository>();
             services.AddSingleton<IRequestHandler, RequestHandler>();
             services.AddSingleton<IDataRouteRepository, DataRouteRepository>();
