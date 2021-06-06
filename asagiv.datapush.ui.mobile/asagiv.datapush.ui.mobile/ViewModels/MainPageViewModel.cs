@@ -8,7 +8,6 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Essentials;
-using Xamarin.Forms;
 
 namespace asagiv.datapush.ui.mobile.ViewModels
 {
@@ -18,6 +17,7 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         private string _connectionString;
         private string _nodeName;
         private string _selectedDestinationNode;
+        private bool _isConnected;
         #endregion
 
         #region Properties
@@ -36,6 +36,11 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         {
             get { return _selectedDestinationNode; }
             set { _selectedDestinationNode = value; RaisePropertyChanged(nameof(SelectedDestinationNode)); }
+        }
+        public bool IsConnected
+        {
+            get { return _isConnected; }
+            set { _isConnected = value; RaisePropertyChanged(nameof(IsConnected)); }
         }
         public ObservableCollection<string> LogEntries { get; }
         public GrpcClient Client { get; private set; }

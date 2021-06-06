@@ -11,35 +11,66 @@
         <viewmodels:MainPageViewModel/>
     </d:ContentPage.BindingContext>
 
-    <StackLayout>
+    <ScrollView>
 
-        <Entry Placeholder="Connection String"
-               Margin="10"
-               Text="{Binding ConnectionString, Mode=TwoWay}"/>
+        <StackLayout>
 
-        <Entry Placeholder="Device Name"
-               Margin="10"
-               Text="{Binding NodeName, Mode=TwoWay}"/>
+            <Frame Margin="10">
 
-        <Button Text="Connect"
-                Margin="10"
-                Command="{Binding ConnectCommand}"/>
+                <StackLayout>
 
-        <Picker ItemsSource="{Binding DestinationNodeList}"
-                Margin="10"
-                SelectedItem="{Binding SelectedDestinationNode, Mode=TwoWay}"/>
+                    <Label Text="Connection Settings"/>
 
-        <Button Text="Select File"
-                Margin="10"
-                Command="{Binding SelectFileCommand}"/>
+                    <Entry Placeholder="Connection String"
+                           Margin="10"
+                           Text="{Binding ConnectionString, Mode=TwoWay}"/>
 
-        <ScrollView>
+                    <Entry Placeholder="Device Name"
+                           Margin="10"
+                           Text="{Binding NodeName, Mode=TwoWay}"/>
 
-            <ListView Margin="10"
-                      ItemsSource="{Binding LogEntries}"/>
+                    <Button Text="Connect"
+                            Margin="10"
+                            Command="{Binding ConnectCommand}"/>
 
-        </ScrollView>
+                </StackLayout>
 
-    </StackLayout>
+            </Frame>
+
+            <Frame Margin="10"
+                   IsVisible="{Binding IsConnected}">
+
+                <StackLayout>
+
+                    <Label Text="Push File"/>
+
+                    <Picker ItemsSource="{Binding DestinationNodeList}"
+                            Margin="10"
+                            SelectedItem="{Binding SelectedDestinationNode, Mode=TwoWay}"/>
+
+                    <Button Text="Select File"
+                            Margin="10"
+                            Command="{Binding SelectFileCommand}"/>
+
+                </StackLayout>
+
+            </Frame>
+
+            <Frame Margin="10">
+
+                <StackLayout>
+
+                    <Label Text="Log"/>
+
+                    <ListView Margin="10"
+                              ItemsSource="{Binding LogEntries}"/>
+
+                </StackLayout>
+
+            </Frame>
+
+        </StackLayout>
+
+    </ScrollView>
 
 </ContentPage>
