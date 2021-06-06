@@ -96,13 +96,15 @@ namespace asagiv.datapush.ui.Models
             {
                 case WinServiceStatus.NotInstalled:
                     var serviceBinPath = Path.Combine(Directory.GetCurrentDirectory(), serviceExecName);
-                    processStartInfo.ArgumentList.Add($"/C sc create {serviceName} binpath={serviceBinPath} start=auto & sc start {serviceName}");
+                    processStartInfo.ArgumentList.Add($"/C sc create {serviceName} binpath={serviceBinPath} start=auto " +
+                        $"& sc failure {serviceName} reset= 120 actions= restart/120000/restart/120000//" +
+                        $"& sc start {serviceName}");
                     break;
                 case WinServiceStatus.Stopped:
-                    processStartInfo.ArgumentList.Add($"/C sc start {serviceName} [\"{ NodeName}\" \"{ConnectionString}\"]");
+                    processStartInfo.ArgumentList.Add($"/C sc start {serviceName}");
                     break;
                 case WinServiceStatus.Running:
-                    processStartInfo.ArgumentList.Add($"/C sc stop {serviceName} & sc start {serviceName} [\"{NodeName}\" \"{ConnectionString}\"]");
+                    processStartInfo.ArgumentList.Add($"/C sc stop {serviceName} & sc start {serviceName}");
                     break;
                 case WinServiceStatus.Error:
                     throw new ArgumentException("Invalid Query Status Detected.");
