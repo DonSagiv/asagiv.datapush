@@ -68,8 +68,9 @@ namespace asagiv.datapush.server.Models
                     if (routeRequest == null)
                     {
                         routeRequest = _routeRepository.GetRoutePushRequest(request.SourceNode, request.DestinationNode, request.Name);
+                        routeRequest.TotalBlocks = request.TotalBlocks;
                     }
-
+                    
                     _logger?.Information($"Adding Payload to Route Request ({request.BlockNumber} of {request.TotalBlocks} Source: {request.SourceNode}, Destionation: {request.DestinationNode}, Name: {request.Name}, Size: {request.Payload.Length} bytes)");
 
                     routeRequest.AddPayload(request.BlockNumber, request.Payload);
@@ -101,6 +102,8 @@ namespace asagiv.datapush.server.Models
                 {
                     SourceNode = string.Empty,
                     DestinationNode = request.DestinationNode,
+                    BlockNumber = 0,
+                    TotalBlocks = 0,
                     Name = string.Empty,
                     Payload = ByteString.Empty,
                 });
@@ -114,6 +117,8 @@ namespace asagiv.datapush.server.Models
                 {
                     SourceNode = routeRequest.SourceNode,
                     DestinationNode = request.DestinationNode,
+                    BlockNumber = 0,
+                    TotalBlocks = routeRequest.TotalBlocks,
                     Name = routeRequest.Name,
                     Payload = ByteString.Empty,
                 });

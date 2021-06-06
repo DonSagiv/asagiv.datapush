@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asagiv.datapush.ui.mobile.A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "asagiv.datapush.ui.mobile", "asagiv.datapush.ui.mobile\asagiv.datapush.ui.mobile\asagiv.datapush.ui.mobile.csproj", "{03E5C89C-CB91-4416-8E5B-F1F0F3EB8515}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asagiv.datapush.winservice", "asagiv.datapush.winservice\asagiv.datapush.winservice.csproj", "{047E2421-2987-41C5-B69D-0B8788B29826}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "asagiv.datapush.winservice", "asagiv.datapush.winservice\asagiv.datapush.winservice.csproj", "{047E2421-2987-41C5-B69D-0B8788B29826}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

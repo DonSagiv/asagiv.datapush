@@ -131,9 +131,10 @@ namespace asagiv.datapush.common.Utilities
             {
                 var blockSize = 2500000;
 
-                var blockIterations = data.Length / blockSize;
+                // Convert data length / block size to double, round up, and then convert back to int.
+                var blockIterations = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(data.Length) / blockSize));
 
-                for (var i = 0; i <= blockIterations; i++)
+                for (var i = 0; i < blockIterations; i++)
                 {
                     var start = i * blockSize;
 

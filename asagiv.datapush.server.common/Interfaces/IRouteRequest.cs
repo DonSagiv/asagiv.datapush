@@ -10,7 +10,7 @@ namespace asagiv.datapush.server.common.Interfaces
         string SourceNode { get; }
         string DestinationNode { get; }
         string Name { get; }
-        int TotalBlocks { get; }
+        int TotalBlocks { get; set; }
         DateTime PushDateTime { get; }
         Queue<PayloadItem> PayloadQueue { get; }
         bool IsRouteCompleted { get; set; }

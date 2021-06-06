@@ -12,7 +12,7 @@ namespace asagiv.datapush.server.common.Models
         public string SourceNode { get; }
         public string DestinationNode { get; }
         public string Name { get; }
-        public int TotalBlocks { get; }
+        public int TotalBlocks { get; set; }
         public DateTime PushDateTime { get; }
         public Queue<PayloadItem> PayloadQueue { get; }
         public bool IsRouteCompleted { get; set; }
@@ -31,7 +31,9 @@ namespace asagiv.datapush.server.common.Models
             
             IsRouteCompleted = false;
         }
+        #endregion
 
+        #region Methods
         public void AddPayload(int blockNumber, ByteString payloadItemToAdd)
         {
             PayloadQueue.Enqueue(new PayloadItem(blockNumber, payloadItemToAdd));

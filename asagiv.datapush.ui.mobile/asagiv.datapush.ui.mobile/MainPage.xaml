@@ -4,18 +4,33 @@
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             xmlns:viewmodels="clr-namespace:asagiv.datapush.ui.mobile.ViewModels"
+             xmlns:viewmodels="clr-namespace:asagiv.datapush.ui.mobile.ViewModels" xmlns:mobile="clr-namespace:asagiv.datapush.ui.mobile"
              x:Class="asagiv.datapush.ui.mobile.MainPage">
 
     <d:ContentPage.BindingContext>
         <viewmodels:MainPageViewModel/>
     </d:ContentPage.BindingContext>
 
+    <ContentPage.Resources>
+
+        <Style TargetType="Frame"
+               x:Key="frameStyle">
+
+            <Setter Property="Background"
+                    Value="#44888888"/>
+
+            <Setter Property="Margin"
+                    Value="10"/>
+
+        </Style>
+
+    </ContentPage.Resources>
+
     <ScrollView>
 
         <StackLayout>
 
-            <Frame Margin="10">
+            <Frame Style="{StaticResource frameStyle}">
 
                 <StackLayout>
 
@@ -37,7 +52,7 @@
 
             </Frame>
 
-            <Frame Margin="10"
+            <Frame Style="{StaticResource frameStyle}"
                    IsVisible="{Binding IsConnected}">
 
                 <StackLayout>
@@ -56,7 +71,7 @@
 
             </Frame>
 
-            <Frame Margin="10">
+            <Frame Style="{StaticResource frameStyle}">
 
                 <StackLayout>
 

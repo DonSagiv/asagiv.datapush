@@ -58,6 +58,8 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         {
             _logger = logger;
 
+            IsConnected = false;
+
             DestinationNodeList = new ObservableCollection<string>();
 
             LogEntries = new ObservableCollection<string>();
@@ -101,6 +103,8 @@ namespace asagiv.datapush.ui.mobile.ViewModels
             {
                 DestinationNodeList.Add(item);
             }
+
+            IsConnected = true;
         }
 
         private async Task SelectFileAsync()
