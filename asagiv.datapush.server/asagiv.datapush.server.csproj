@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos\dataPush.proto" GrpcServices="Server" />
+    <Protobuf Include="..\asagiv.datapush.common\Protos\dataPush.proto" GrpcServices="Server" />
   </ItemGroup>
 
   <ItemGroup>

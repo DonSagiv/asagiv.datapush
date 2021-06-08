@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using asagiv.datapush.common;
+using System.Collections.Generic;
 
 namespace asagiv.datapush.server.Interfaces
 {
