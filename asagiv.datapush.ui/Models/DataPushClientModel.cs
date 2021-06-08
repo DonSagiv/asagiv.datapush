@@ -17,7 +17,6 @@ namespace asagiv.datapush.ui.Models
         #endregion
 
         #region Fields
-        private readonly string _serviceAppSettingsPath;
         private string _nodeName;
         private string _connectionString;
         private string _downloadLocation;
@@ -45,9 +44,9 @@ namespace asagiv.datapush.ui.Models
         public DataPushClientModel()
         {
             var appDirectory = Directory.GetCurrentDirectory();
-            _serviceAppSettingsPath = Path.Combine(appDirectory, "appsettings.json");
+            var serviceAppSettingsPath = Path.Combine(appDirectory, "appsettings.json");
 
-            var appSettingsString = File.ReadAllText(_serviceAppSettingsPath);
+            var appSettingsString = File.ReadAllText(serviceAppSettingsPath);
 
             var appSettingsJson = JsonConvert.DeserializeObject(appSettingsString) as JObject;
 
@@ -58,12 +57,12 @@ namespace asagiv.datapush.ui.Models
         #endregion
 
         #region Methods
-        public async Task InitializeClientAsync()
+        public async static Task InitializeClientAsync()
         {
             StartDataPushService(await GetServiceStatus());
         }
 
-        private static async Task<WinServiceStatus> GetServiceStatus()
+        private async static Task<WinServiceStatus> GetServiceStatus()
         {
             var processStartInfo = new ProcessStartInfo
             {
@@ -87,7 +86,7 @@ namespace asagiv.datapush.ui.Models
             return ParseServiceStatus(result);
         }
 
-        public static WinServiceStatus ParseServiceStatus(string serviceQueryResult)
+        private static WinServiceStatus ParseServiceStatus(string serviceQueryResult)
         {
             if (serviceQueryResult.Contains("FAILED 1060"))
             {
@@ -110,7 +109,7 @@ namespace asagiv.datapush.ui.Models
             return WinServiceStatus.Error;
         }
 
-        public void StartDataPushService(WinServiceStatus status)
+        public static void StartDataPushService(WinServiceStatus status)
         {
             var processStartInfo = new ProcessStartInfo
             {

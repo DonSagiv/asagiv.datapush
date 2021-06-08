@@ -1,5 +1,4 @@
 using asagiv.datapush.common.Utilities;
-using asagiv.datapush.winservice.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 

@@ -1,20 +1,17 @@
-﻿using asagiv.datapush.common;
-using asagiv.datapush.common.Utilities;
-using Grpc.Core;
+﻿using Grpc.Core;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace asagiv.datapush.winservice.Utilities
+namespace asagiv.datapush.common.Utilities
 {
     public class GrpcDataDownloader
     {
         #region Fields
         private readonly ILogger _logger;
         private readonly string _saveDirectory;
-        private bool _downloadComplete;
         #endregion
 
         #region Constructor
@@ -37,30 +34,16 @@ namespace asagiv.datapush.winservice.Utilities
 
         public async Task OnDataRetrievedAsync(ResponseStreamContext<DataPullResponse> responseStreamContext)
         {
-            _downloadComplete = false;
-
             var tempFilePath = Path.Combine(_saveDirectory, $"{responseStreamContext.ResponseData.SourceRequestId}.tmp");
 
             _logger?.Information($"Streaming Pulled Data to {tempFilePath}");
 
             try
             {
-                using var fs = new FileStream(tempFilePath, FileMode.Append);
+                if(await DownloadStreamToFileAsync(responseStreamContext, tempFilePath))
                 {
-                    while (await responseStreamContext.ResponseStream.MoveNext())
-                    {
-                        await DownloadStreamBlock(responseStreamContext, tempFilePath, fs);
-                    }
+                    UpdateFileName(responseStreamContext.ResponseData.Name, tempFilePath);
                 }
-
-                await fs.DisposeAsync();
-
-                if (!_downloadComplete)
-                {
-                    return;
-                }
-
-                UpdateFileName(responseStreamContext.ResponseData.Name, tempFilePath);
             }
             catch (Exception ex)
             {
@@ -70,7 +53,24 @@ namespace asagiv.datapush.winservice.Utilities
             }
         }
 
-        private async Task DownloadStreamBlock(ResponseStreamContext<DataPullResponse> responseStreamContext, string tempFilePath, FileStream fs)
+        private async Task<bool> DownloadStreamToFileAsync(ResponseStreamContext<DataPullResponse> responseStreamContext, string tempFilePath)
+        {
+            var downloadComplete = false;
+
+            using var fs = new FileStream(tempFilePath, FileMode.Append);
+            {
+                while (await responseStreamContext.ResponseStream.MoveNext())
+                {
+                    downloadComplete = await DownloadStreamBlockAsync(responseStreamContext, tempFilePath, fs);
+                }
+            }
+
+            await fs.DisposeAsync();
+
+            return downloadComplete;
+        }
+
+        private async Task<bool> DownloadStreamBlockAsync(ResponseStreamContext<DataPullResponse> responseStreamContext, string tempFilePath, FileStream fs)
         {
             var response = responseStreamContext.ResponseStream.Current;
 
@@ -80,10 +80,7 @@ namespace asagiv.datapush.winservice.Utilities
 
             await fs.WriteAsync(byteArray);
 
-            if (response.BlockNumber == response.TotalBlocks)
-            {
-                _downloadComplete = true;
-            }
+            return response.BlockNumber == response.TotalBlocks;
         }
 
         private static void UpdateFileName(string fileName, string tempFilePath)

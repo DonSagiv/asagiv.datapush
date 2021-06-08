@@ -8,9 +8,7 @@ namespace asagiv.datapush.common.Utilities
     public static class LoggerFactory
     {
         #region Statics
-        private static readonly LoggerConfiguration _defaultConfig = new LoggerConfiguration();
         private const string outputTemplate = "{Level:u} {Timestamp:yyyy-MM-dd hh:mm:ss.fff tt} [{ThreadId}] {Message}{NewLine}{Exception}";
-        public static LoggerConfiguration DefaultConfig => _defaultConfig;
         #endregion
 
         public static ILogger CreateLogger(string logFilePath)
@@ -71,7 +69,7 @@ namespace asagiv.datapush.common.Utilities
 
         private static LoggerConfiguration InitializeConfig()
         {
-            return _defaultConfig
+            return new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .Enrich.WithThreadId();
         }

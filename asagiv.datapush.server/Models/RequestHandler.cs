@@ -137,7 +137,7 @@ namespace asagiv.datapush.server.Models
                 });
 
                 // Sends the payload data.
-                while (routeRequest.PayloadQueue.Count > 0)
+                while (!routeRequest.PayloadQueue.IsEmpty)
                 {
                     var payload = routeRequest.GetFromPayload();
 

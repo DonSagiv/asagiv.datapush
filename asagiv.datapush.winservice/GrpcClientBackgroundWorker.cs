@@ -1,5 +1,4 @@
 using asagiv.datapush.common.Utilities;
-using asagiv.datapush.winservice.Utilities;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System;
@@ -23,7 +22,7 @@ namespace asagiv.datapush.winservice
             _client = client;
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        protected async override Task ExecuteAsync(CancellationToken stoppingToken)
         {
             try
             {

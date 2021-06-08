@@ -46,7 +46,7 @@ namespace asagiv.datapush.ui.ViewModels
         #endregion
 
         #region Methods
-        private Task ConnectToServerAsync() => ClientModel.InitializeClientAsync();
+        private static Task ConnectToServerAsync() => DataPushClientModel.InitializeClientAsync();
         #endregion
     }
 }

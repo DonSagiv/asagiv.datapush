@@ -51,7 +51,7 @@ namespace asagiv.datapush.server.Models
                 _logger?.Information($"New Route Request Added (Source: {routeRequest.SourceNode}, " +
                     $"Destionation: {routeRequest.DestinationNode}, " +
                     $"Name: {routeRequest.Name}, " +
-                    $"ID: {routeRequest.RequestId.ToString()}).");
+                    $"ID: {routeRequest.RequestId}).");
 
                 _repository.Add(routeRequest);
             }
