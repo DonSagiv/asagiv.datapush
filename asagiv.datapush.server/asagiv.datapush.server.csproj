@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -14,10 +14,6 @@
 
   <ItemGroup>
     <AdditionalFiles Include="..\.sonarlint\asagiv_datapush\CSharp\SonarLint.xml" Link="SonarLint.xml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Protobuf Include="..\asagiv.datapush.common\Protos\dataPush.proto" GrpcServices="Server" />
   </ItemGroup>
 
   <ItemGroup>
