@@ -22,7 +22,10 @@ namespace asagiv.datapush.server.Models
         #region Constructor
         public RouteRequest(DataPushRequest dataPushRequest)
         {
-            RequestId = Guid.Parse(dataPushRequest.RequestId);
+            RequestId = Guid.TryParse(dataPushRequest.RequestId, out var requestId)
+                ? requestId
+                : Guid.NewGuid();
+
             SourceNode = dataPushRequest.SourceNode;
             DestinationNode = dataPushRequest.DestinationNode;
             Name = dataPushRequest.Name;
