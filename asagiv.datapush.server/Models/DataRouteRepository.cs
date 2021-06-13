@@ -23,7 +23,7 @@ namespace asagiv.datapush.server.Models
         #region Properties
         public IEnumerable<IRouteRequest> Repository => _repository;
         #endregion
-
+        
         #region Constructor
         public DataRouteRepository(ILogger logger)
         {
