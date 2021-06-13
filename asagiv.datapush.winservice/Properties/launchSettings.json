@@ -1,11 +1,12 @@
-﻿{
+{
   "profiles": {
     "asagiv.datapush.winservice": {
       "commandName": "Project",
-      "dotnetRunMessages": "true",
+      "commandLineArgs": "\"Windows PC\" \"http://localhost:80\"",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
-      }
+      },
+      "dotnetRunMessages": "true"
     }
   }
 }

@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using Microsoft.Extensions.Configuration;
+using Serilog;
 using System;
 using System.IO;
 
@@ -9,9 +10,17 @@ namespace asagiv.datapush.common.Utilities
         public static GrpcClient CreateGprcClient(IServiceProvider serviceProvider = null)
         {
             var logger = serviceProvider?.GetService(typeof(ILogger)) as ILogger;
+            var configuration = serviceProvider?.GetService(typeof(IConfiguration)) as IConfiguration;
 
-            var nodeName = "Windows PC";
-            var connectionString = "http://localhost:80";
+            logger?.Information($"Initializing Grpc Client.");
+
+            if(configuration == null)
+            {
+                logger?.Warning("Unable to find configuration data.");
+            }
+
+            var nodeName = configuration?.GetSection("ClientName")?.Value;
+            var connectionString = configuration?.GetSection("GrpcServerAddress")?.Value;
 
             logger?.Information($"Creating GRPC Client. (Node Name: {nodeName}, Connection String: {connectionString})");
 

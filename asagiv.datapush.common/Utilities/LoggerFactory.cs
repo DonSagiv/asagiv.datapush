@@ -8,9 +8,7 @@ namespace asagiv.datapush.common.Utilities
     public static class LoggerFactory
     {
         #region Statics
-        private static readonly LoggerConfiguration _defaultConfig = new LoggerConfiguration();
         private const string outputTemplate = "{Level:u} {Timestamp:yyyy-MM-dd hh:mm:ss.fff tt} [{ThreadId}] {Message}{NewLine}{Exception}";
-        public static LoggerConfiguration DefaultConfig => _defaultConfig;
         #endregion
 
         public static ILogger CreateLogger(string logFilePath)
@@ -26,7 +24,21 @@ namespace asagiv.datapush.common.Utilities
             return logger;
         }
 
-        public static ILogger CreateLogger(IServiceProvider serviceProvider)
+        public static ILogger CreateLoggerXamarin(IServiceProvider serviceProvider)
+        {
+            var logEventSink = serviceProvider.GetService(typeof(RaiseEventLogSink)) as RaiseEventLogSink;
+
+            var config = InitializeConfig()
+                .WriteTo.Sink(logEventSink);
+
+            var logger = config.CreateLogger();
+
+            logger.Information($"Logger Initialized. ({DateTime.Now.ToLongDateString()})");
+
+            return logger;
+        }
+
+        public static ILogger CreateLoggerWindows(IServiceProvider serviceProvider)
         {
             string logPath = null;
 
@@ -41,7 +53,11 @@ namespace asagiv.datapush.common.Utilities
             }
 
             var config = InitializeConfig();
-            
+
+#if DEBUG
+            config = config.WriteTo.Console(outputTemplate: outputTemplate);
+#endif
+
             config = GetLogPathDirectory(logPath, config);
 
             var logger = config.CreateLogger();
@@ -53,10 +69,9 @@ namespace asagiv.datapush.common.Utilities
 
         private static LoggerConfiguration InitializeConfig()
         {
-            return _defaultConfig
+            return new LoggerConfiguration()
                 .MinimumLevel.Information()
-                .Enrich.WithThreadId()
-                .WriteTo.Console(outputTemplate: outputTemplate);
+                .Enrich.WithThreadId();
         }
 
         private static LoggerConfiguration GetLogPathDirectory(string logPath, LoggerConfiguration config)
@@ -73,7 +88,8 @@ namespace asagiv.datapush.common.Utilities
                 config = config.WriteTo.File(logPath,
                     rollingInterval: RollingInterval.Day,
                     outputTemplate: outputTemplate);
-            };
+            }
+
             return config;
         }
     }

@@ -4,42 +4,101 @@
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             xmlns:viewmodels="clr-namespace:asagiv.datapush.ui.mobile.ViewModels"
+             xmlns:viewmodels="clr-namespace:asagiv.datapush.ui.mobile.ViewModels" xmlns:mobile="clr-namespace:asagiv.datapush.ui.mobile" xmlns:controls="clr-namespace:XamarinUniversity.Controls;assembly=XamU.Infrastructure"
              x:Class="asagiv.datapush.ui.mobile.MainPage">
 
     <d:ContentPage.BindingContext>
         <viewmodels:MainPageViewModel/>
     </d:ContentPage.BindingContext>
 
-    <StackLayout>
+    <ContentPage.Resources>
 
-        <Entry Placeholder="Connection String"
-               Margin="10"
-               Text="{Binding ConnectionString, Mode=TwoWay}"/>
+        <Style TargetType="Frame"
+               x:Key="frameStyle">
 
-        <Entry Placeholder="Device Name"
-               Margin="10"
-               Text="{Binding NodeName, Mode=TwoWay}"/>
+            <Setter Property="Background"
+                    Value="#44888888"/>
 
-        <Button Text="Connect"
-                Margin="10"
-                Command="{Binding ConnectCommand}"/>
+            <Setter Property="Margin"
+                    Value="10"/>
 
-        <Picker ItemsSource="{Binding DestinationNodeList}"
-                Margin="10"
-                SelectedItem="{Binding SelectedDestinationNode, Mode=TwoWay}"/>
+        </Style>
 
-        <Button Text="Select File"
-                Margin="10"
-                Command="{Binding SelectFileCommand}"/>
+    </ContentPage.Resources>
 
-        <ScrollView>
+    <ScrollView>
 
-            <ListView Margin="10"
-                      ItemsSource="{Binding LogEntries}"/>
+        <StackLayout>
 
-        </ScrollView>
+            <Frame Style="{StaticResource frameStyle}">
 
-    </StackLayout>
+                <StackLayout>
+
+                    <Label Text="Connection Settings"/>
+
+                    <Entry Placeholder="Connection String"
+                           Margin="10"
+                           Text="{Binding ConnectionString, Mode=TwoWay}"/>
+
+                    <Entry Placeholder="Device Name"
+                           Margin="10"
+                           Text="{Binding NodeName, Mode=TwoWay}"/>
+
+                    <Button Text="Connect"
+                            Margin="10"
+                            Command="{Binding ConnectCommand}"/>
+
+                </StackLayout>
+
+            </Frame>
+
+            <Frame Style="{StaticResource frameStyle}"
+                   IsVisible="{Binding IsConnected}">
+
+                <StackLayout>
+
+                    <Label Text="Push File"/>
+
+                    <Picker ItemsSource="{Binding DestinationNodeList}"
+                            Margin="10"
+                            SelectedItem="{Binding SelectedDestinationNode, Mode=TwoWay}"/>
+
+                    <Button Text="Select File"
+                            Margin="10"
+                            Command="{Binding SelectFileCommand}"/>
+
+                </StackLayout>
+
+            </Frame>
+
+            <Frame Style="{StaticResource frameStyle}">
+
+                <StackLayout>
+
+                    <Label Text="Log"/>
+
+                    <controls:ItemsControl ItemsSource="{Binding LogEntries}">
+
+                        <controls:ItemsControl.ItemsPanel>
+                            <StackLayout/>
+                        </controls:ItemsControl.ItemsPanel>
+
+                        <controls:ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Label Margin="10"
+                                       Text="{Binding .}"
+                                       LineBreakMode="WordWrap"/>
+                            </DataTemplate>
+                        </controls:ItemsControl.ItemTemplate>
+
+                    </controls:ItemsControl>
+
+                </StackLayout>
+
+            </Frame>
+
+        </StackLayout>
+
+    </ScrollView>
 
 </ContentPage>

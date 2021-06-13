@@ -2,22 +2,24 @@
 using Grpc.Core;
 using Prism.Commands;
 using Prism.Mvvm;
+using Serilog;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Essentials;
-using Xamarin.Forms;
 
 namespace asagiv.datapush.ui.mobile.ViewModels
 {
     public class MainPageViewModel : BindableBase
     {
         #region Fields
+        private readonly ILogger _logger;
         private string _connectionString;
         private string _nodeName;
         private string _selectedDestinationNode;
+        private bool _isConnected;
         #endregion
 
         #region Properties
@@ -37,6 +39,11 @@ namespace asagiv.datapush.ui.mobile.ViewModels
             get { return _selectedDestinationNode; }
             set { _selectedDestinationNode = value; RaisePropertyChanged(nameof(SelectedDestinationNode)); }
         }
+        public bool IsConnected
+        {
+            get { return _isConnected; }
+            set { _isConnected = value; RaisePropertyChanged(nameof(IsConnected)); }
+        }
         public ObservableCollection<string> LogEntries { get; }
         public GrpcClient Client { get; private set; }
         #endregion
@@ -47,14 +54,27 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         #endregion
 
         #region Constructor
-        public MainPageViewModel()
+        public MainPageViewModel(ILogger logger, RaiseEventLogSink eventLogSink)
         {
+            _logger = logger;
+
+            IsConnected = false;
+
             DestinationNodeList = new ObservableCollection<string>();
 
             LogEntries = new ObservableCollection<string>();
 
+            eventLogSink.LogEventRaised += OnLogEventRaised;
+
+            _logger.Information("Initializing View Model.");
+
             ConnectCommand = new DelegateCommand(async () => await ConnectAsync());
             SelectFileCommand = new DelegateCommand(async () => await SelectFileAsync());
+        }
+
+        private void OnLogEventRaised(object sender, string e)
+        {
+            LogEntries.Add($"{DateTime.Now}: {e}");
         }
         #endregion
 
@@ -73,7 +93,7 @@ namespace asagiv.datapush.ui.mobile.ViewModels
 
             var channel = new Channel(_connectionString, ChannelCredentials.Insecure);
 
-            Client = new GrpcClient(channel, _nodeName, deviceId);
+            Client = new GrpcClient(channel, _nodeName, deviceId, _logger);
 
             var response = await Client.RegisterNodeAsync(false);
 
@@ -83,6 +103,8 @@ namespace asagiv.datapush.ui.mobile.ViewModels
             {
                 DestinationNodeList.Add(item);
             }
+
+            IsConnected = true;
         }
 
         private async Task SelectFileAsync()
@@ -92,6 +114,8 @@ namespace asagiv.datapush.ui.mobile.ViewModels
             foreach(var file in files)
             {
                 var filePath = file.FullPath;
+
+                _logger.Information($"Uploading File: {filePath} to {SelectedDestinationNode}");
 
                 var data = await File.ReadAllBytesAsync(filePath);
 

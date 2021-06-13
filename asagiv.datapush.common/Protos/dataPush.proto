@@ -12,36 +12,47 @@ service DataPush {
 
 message RegisterNodeRequest
 {
-  string nodeName = 1;
-  string deviceId = 2;
-  bool isPullNode = 3;
+  string requestId = 1;
+  string nodeName = 2;
+  string deviceId = 3;
+  bool isPullNode = 4;
 }
 
 message RegisterNodeResponse
 {
-  string nodeName = 1;
-  bool successful = 2;
-  repeated string pullNodeList = 3;
+  string requestId = 1;
+  string nodeName = 2;
+  bool successful = 3;
+  repeated string pullNodeList = 4;
 }
 
 message DataPushRequest {
-  string sourceNode = 1;
-  string destinationNode = 2;
-  string name = 3;
-  bytes payload = 4;
+  string requestId = 1;
+  string sourceNode = 2;
+  string destinationNode = 3;
+  string name = 4;
+  int32 blockNumber = 5;
+  int32 totalBlocks = 6;
+  bytes payload = 7;
 }
 
 message DataPushResponse {
-  int32 confirmation = 1;
+  string requestId = 1;
+  int32 confirmation = 2;
 }
 
 message DataPullRequest {
-  string destinationNode = 1;
+  string requestId = 1;
+  string destinationNode = 2;
 }
 
 message DataPullResponse {
-  string sourceNode = 1;
-  string destinationNode = 2;
-  string name = 3;
-  bytes payload = 4;
+  string requestId = 1;
+  string sourceRequestId = 2;
+  string sourceNode = 3;
+  string destinationNode = 4;
+  string name = 5;
+  int32 blockNumber = 6;
+  int32 totalBlocks = 7;
+  bytes payload = 8;
 }

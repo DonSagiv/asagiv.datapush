@@ -10,46 +10,61 @@
 
     <DockPanel>
 
-        <StackPanel DockPanel.Dock="Top">
+        <DockPanel DockPanel.Dock="Top">
 
-            <DockPanel>
+            <Button Margin="10"
+                    Width="100"
+                    DockPanel.Dock="Right"
+                    Content="Start Service"
+                    Command="{Binding ConnectToServerCommand}"/>
 
-                <Button Margin="10"
-                        DockPanel.Dock="Right"
-                        Content="Connect to Server"
-                        Command="{Binding ConnectToServerCommand}"/>
+            <StackPanel>
 
-                <UniformGrid Columns="2">
+                <DockPanel>
 
-                    <DockPanel>
+                    <TextBlock Margin="10"
+                               Width="125"
+                               Text="Connection String:"
+                               DockPanel.Dock="Left"
+                               VerticalAlignment="Center"/>
 
-                        <TextBlock Margin="10" Text="Connection String:"
-                                   DockPanel.Dock="Left"
-                                   VerticalAlignment="Center"/>
+                    <TextBox Margin="10"
+                             Text="{Binding ClientModel.ConnectionString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             VerticalAlignment="Center"/>
 
-                        <TextBox Margin="10"
-                                 Text="{Binding ClientModel.ConnectionString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 VerticalAlignment="Center"/>
+                </DockPanel>
 
-                    </DockPanel>
+                <DockPanel>
 
-                    <DockPanel>
+                    <TextBlock Margin="10"
+                               Width="125"
+                               Text="Device Name:"
+                               DockPanel.Dock="Left"
+                               VerticalAlignment="Center"/>
 
-                        <TextBlock Margin="10" Text="Device Name:"
-                                   DockPanel.Dock="Left"
-                                   VerticalAlignment="Center"/>
+                    <TextBox Margin="10"
+                             Text="{Binding ClientModel.NodeName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             VerticalAlignment="Center"/>
 
-                        <TextBox Margin="10"
-                                 Text="{Binding ClientModel.NodeName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 VerticalAlignment="Center"/>
+                </DockPanel>
 
-                    </DockPanel>
+                <DockPanel>
 
-                </UniformGrid>
+                    <TextBlock Margin="10"
+                               Text="Download Location:"
+                               Width="125"
+                               DockPanel.Dock="Left"
+                               VerticalAlignment="Center"/>
 
-            </DockPanel>
+                    <TextBox Margin="10"
+                             Text="{Binding ClientModel.DownloadLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             VerticalAlignment="Center"/>
 
-        </StackPanel>
+                </DockPanel>
+
+            </StackPanel>
+
+        </DockPanel>
 
         <ListBox Margin="10"
                  DockPanel.Dock="Bottom"

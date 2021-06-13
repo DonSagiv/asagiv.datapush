@@ -10,10 +10,9 @@ using System.Threading.Tasks;
 
 namespace asagiv.datapush.common.Utilities
 {
-    public class GrpcClient : IDisposable
+    public sealed class GrpcClient : IDisposable
     {
         #region Fields
-        private readonly ChannelBase _channel;
         private readonly ILogger _logger;
         #endregion
 
@@ -44,16 +43,12 @@ namespace asagiv.datapush.common.Utilities
 
         public GrpcClient(ChannelBase channel, string nodeName, string deviceId, ILogger logger = null) : this(nodeName, deviceId, logger)
         {
-            _channel = channel;
-
-            Client = new DataPush.DataPushClient(_channel);
+            Client = new DataPush.DataPushClient(channel);
         }
 
         public GrpcClient(string connectionString, string nodeName, string deviceId, ILogger logger = null) : this(nodeName, deviceId, logger)
         {
-            _channel = GrpcChannel.ForAddress(connectionString);
-
-            Client = new DataPush.DataPushClient(_channel);
+            Client = new DataPush.DataPushClient(GrpcChannel.ForAddress(connectionString));
         }
         #endregion
 
@@ -85,6 +80,7 @@ namespace asagiv.datapush.common.Utilities
         {
             var nodeRequest = new RegisterNodeRequest
             {
+                RequestId = Guid.NewGuid().ToString(),
                 DeviceId = DeviceId,
                 NodeName = NodeName,
                 IsPullNode = isPullNode,
@@ -92,18 +88,26 @@ namespace asagiv.datapush.common.Utilities
 
             _logger?.Information($"Creating Register Node Request for {DeviceId}. (Name: {NodeName}, IsPullNode: {isPullNode})");
 
-            var response = await Client.RegisterNodeAsync(nodeRequest);
-
-            if (response.Successful)
+            try
             {
-                _logger?.Information($"Register Node Request Successful.");
-            }
-            else
-            {
-                _logger?.Error($"Register Node Request Not Successful.");
-            }
+                var response = await Client.RegisterNodeAsync(nodeRequest);
 
-            return response.PullNodeList;
+                if (response.Successful)
+                {
+                    _logger?.Information($"Register Node Request Successful.");
+                }
+                else
+                {
+                    _logger?.Error($"Register Node Request Not Successful.");
+                }
+
+                return response.PullNodeList;
+            }
+            catch(Exception ex)
+            {
+                Log.Error(ex, ex.Message);
+                throw;
+            }
         }
 
         private void OnPullDataRetrieved(object sender, ResponseStreamContext<DataPullResponse> e)
@@ -129,13 +133,16 @@ namespace asagiv.datapush.common.Utilities
         {
             _logger?.Information($"Pushing Data to {destinationNode}. (Name: {name}, Size: {data.Count()})");
 
+            var requestId = Guid.NewGuid().ToString();
+
             try
             {
-                var blockSize = 1000000;
+                var blockSize = 2500000;
 
-                var blockIterations = data.Length / blockSize;
+                // Convert data length / block size to double, round up, and then convert back to int.
+                var blockIterations = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(data.Length) / blockSize));
 
-                for (var i = 0; i <= blockIterations; i++)
+                for (var i = 0; i < blockIterations; i++)
                 {
                     var start = i * blockSize;
 
@@ -149,9 +156,12 @@ namespace asagiv.datapush.common.Utilities
 
                     var request = new DataPushRequest
                     {
+                        RequestId = requestId,
                         SourceNode = NodeName,
                         DestinationNode = destinationNode,
                         Name = name,
+                        BlockNumber = i + 1,
+                        TotalBlocks = blockIterations,
                         Payload = ByteString.CopyFrom(dataBlock)
                     };
 
@@ -180,6 +190,8 @@ namespace asagiv.datapush.common.Utilities
             {
                 pullSubscriber.Dispose();
             }
+
+            GC.SuppressFinalize(this);
         }
         #endregion
     }
