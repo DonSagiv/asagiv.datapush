@@ -2,6 +2,7 @@ using asagiv.datapush.common;
 using Google.Protobuf;
 using NUnit.Framework;
 using System;
+using asagiv.datapush.common.Utilities;
 
 namespace asagiv.datapush.testing
 {
@@ -27,13 +28,13 @@ namespace asagiv.datapush.testing
             {
                 _ = new DataPushRequest
                 {
+                    RequestId = requestId.ToString(),
                     Name = name,
                     BlockNumber = blockNumber,
                     TotalBlocks = totalBlocks,
                     DestinationNode = destinationNode,
                     SourceNode = sourceNode,
-                    Payload = payload,
-                    RequestId = requestId,
+                    Payload = ByteString.CopyFrom(payload.ToByteArray()),
                 };
             });
         }
