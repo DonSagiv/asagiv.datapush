@@ -17,6 +17,9 @@ namespace asagiv.datapush.ui.Models
         #endregion
 
         #region Fields
+        private readonly string _appDirectory;
+        private readonly string _serviceAppSettingsPath;
+        private readonly JObject _appSettingsJson;
         private string _nodeName;
         private string _connectionString;
         private string _downloadLocation;
@@ -43,26 +46,42 @@ namespace asagiv.datapush.ui.Models
         #region Constructor
         public DataPushClientModel()
         {
-            var appDirectory = Directory.GetCurrentDirectory();
-            var serviceAppSettingsPath = Path.Combine(appDirectory, "appsettings.json");
+            _appDirectory = Directory.GetCurrentDirectory();
+            _serviceAppSettingsPath = Path.Combine(_appDirectory, "appsettings.json");
 
-            var appSettingsString = File.ReadAllText(serviceAppSettingsPath);
+            var appSettingsString = File.ReadAllText(_serviceAppSettingsPath);
 
-            var appSettingsJson = JsonConvert.DeserializeObject(appSettingsString) as JObject;
+            _appSettingsJson = JsonConvert.DeserializeObject(appSettingsString) as JObject;
 
-            NodeName = appSettingsJson["ClientName"].ToObject<string>();
-            ConnectionString = appSettingsJson["GrpcServerAddress"].ToObject<string>();
-            DownloadLocation = appSettingsJson["DownloadPath"].ToObject<string>();
+            NodeName = _appSettingsJson["ClientName"].ToObject<string>();
+            ConnectionString = _appSettingsJson["GrpcServerAddress"].ToObject<string>();
+            DownloadLocation = _appSettingsJson["DownloadPath"].ToObject<string>();
         }
         #endregion
 
         #region Methods
+        public async Task UpdateServiceSettingsAsync()
+        {
+            _appSettingsJson["ClientName"] = NodeName;
+            _appSettingsJson["GrpcServerAddress"] = ConnectionString;
+            _appSettingsJson["DownloadPath"] = DownloadLocation;
+
+            var appSettingsString = _appSettingsJson.ToString();
+
+            await File.WriteAllTextAsync(_serviceAppSettingsPath, appSettingsString);
+        }
+
         public async static Task InitializeClientAsync()
         {
             StartDataPushService(await GetServiceStatus());
         }
 
-        private async static Task<WinServiceStatus> GetServiceStatus()
+        public async static Task StopClientAsync()
+        {
+            StopDataPushService(await GetServiceStatus());
+        }
+
+        public async static Task<WinServiceStatus> GetServiceStatus()
         {
             var processStartInfo = new ProcessStartInfo
             {
@@ -107,6 +126,31 @@ namespace asagiv.datapush.ui.Models
             }
 
             return WinServiceStatus.Error;
+        }
+
+        public static void StopDataPushService(WinServiceStatus status)
+        {
+            var processStartInfo = new ProcessStartInfo
+            {
+                FileName = @"cmd.exe",
+                UseShellExecute = true,
+                Verb = "runas",
+                CreateNoWindow = false
+            };
+
+            switch (status)
+            {
+                case WinServiceStatus.NotInstalled:
+                case WinServiceStatus.Stopped:
+                    return;
+                case WinServiceStatus.Running:
+                    processStartInfo.ArgumentList.Add($"/C sc stop {serviceName}");
+                    break;
+                case WinServiceStatus.Error:
+                    throw new ArgumentException("Invalid Query Status Detected.");
+            }
+
+            Process.Start(processStartInfo);
         }
 
         public static void StartDataPushService(WinServiceStatus status)
