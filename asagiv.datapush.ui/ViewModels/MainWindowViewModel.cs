@@ -29,7 +29,8 @@ namespace asagiv.datapush.ui.ViewModels
         #endregion
 
         #region Commands
-        public ICommand ConnectToServerCommand { get; }
+        public ICommand StartServiceCommand { get; }
+        public ICommand UpdateSettingsCommand { get; }
         public ICommand SelectFileToUploadCommand { get; }
         public ICommand BrowseSaveLocationCommand { get; }
         #endregion
@@ -41,12 +42,10 @@ namespace asagiv.datapush.ui.ViewModels
 
             DestinationNodes = new ObservableCollection<string>();
 
-            ConnectToServerCommand = new DelegateCommand(async () => await ConnectToServerAsync());
-        }
-        #endregion
+            StartServiceCommand = new DelegateCommand(async () => await DataPushClientModel.InitializeClientAsync());
 
-        #region Methods
-        private static Task ConnectToServerAsync() => DataPushClientModel.InitializeClientAsync();
+            UpdateSettingsCommand = new DelegateCommand(async () => await ClientModel.UpdateServiceSettingsAsync());
+        }
         #endregion
     }
 }

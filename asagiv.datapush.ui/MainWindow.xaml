@@ -8,68 +8,78 @@
         d:DataContext="{d:DesignInstance vm:MainWindowViewModel, IsDesignTimeCreatable=False}"
         Title="MainWindow" Height="450" Width="800">
 
-    <DockPanel>
+	<DockPanel>
 
-        <DockPanel DockPanel.Dock="Top">
+		<GroupBox Header="Windows Service Settings"
+					  DockPanel.Dock="Top"
+					  Margin="10">
 
-            <Button Margin="10"
-                    Width="100"
-                    DockPanel.Dock="Right"
-                    Content="Start Service"
-                    Command="{Binding ConnectToServerCommand}"/>
+			<StackPanel>
 
-            <StackPanel>
+				<DockPanel>
 
-                <DockPanel>
-
-                    <TextBlock Margin="10"
+					<TextBlock Margin="10"
                                Width="125"
                                Text="Connection String:"
                                DockPanel.Dock="Left"
                                VerticalAlignment="Center"/>
 
-                    <TextBox Margin="10"
+					<TextBox Margin="10"
                              Text="{Binding ClientModel.ConnectionString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                              VerticalAlignment="Center"/>
 
-                </DockPanel>
+				</DockPanel>
 
-                <DockPanel>
+				<DockPanel>
 
-                    <TextBlock Margin="10"
+					<TextBlock Margin="10"
                                Width="125"
                                Text="Device Name:"
                                DockPanel.Dock="Left"
                                VerticalAlignment="Center"/>
 
-                    <TextBox Margin="10"
+					<TextBox Margin="10"
                              Text="{Binding ClientModel.NodeName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                              VerticalAlignment="Center"/>
 
-                </DockPanel>
+				</DockPanel>
 
-                <DockPanel>
+				<DockPanel>
 
-                    <TextBlock Margin="10"
+					<TextBlock Margin="10"
                                Text="Download Location:"
                                Width="125"
                                DockPanel.Dock="Left"
                                VerticalAlignment="Center"/>
 
-                    <TextBox Margin="10"
+					<TextBox Margin="10"
                              Text="{Binding ClientModel.DownloadLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                              VerticalAlignment="Center"/>
 
-                </DockPanel>
+				</DockPanel>
 
-            </StackPanel>
+				<UniformGrid Columns="2">
 
-        </DockPanel>
+					<Button Margin="10"
+                            DockPanel.Dock="Right"
+                            Content="Update Settings"
+                            Command="{Binding UpdateSettingsCommand}"/>
 
-        <ListBox Margin="10"
+					<Button Margin="10"
+                            DockPanel.Dock="Right"
+                            Content="Start Service"
+                            Command="{Binding StartServiceCommand}"/>
+
+				</UniformGrid>
+
+			</StackPanel>
+
+		</GroupBox>
+
+		<ListBox Margin="10"
                  DockPanel.Dock="Bottom"
                  ItemsSource="{Binding LogEntries}"/>
 
-    </DockPanel>
+	</DockPanel>
 
 </Window>
