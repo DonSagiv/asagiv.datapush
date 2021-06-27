@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 
 namespace asagiv.datapush.ui.Models
 {
-    public class DataPushClientModel : BindableBase
+    public class WindowsServiceSettingsModel : BindableBase
     {
         #region Statocs
         public const string serviceName = "Data-Push";
@@ -44,7 +44,7 @@ namespace asagiv.datapush.ui.Models
         #endregion
 
         #region Constructor
-        public DataPushClientModel()
+        public WindowsServiceSettingsModel()
         {
             _appDirectory = Directory.GetCurrentDirectory();
             _serviceAppSettingsPath = Path.Combine(_appDirectory, "appsettings.json");
