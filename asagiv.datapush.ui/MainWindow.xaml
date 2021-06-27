@@ -3,10 +3,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:vm="clr-namespace:asagiv.datapush.ui.ViewModels"
-        mc:Ignorable="d"
+        xmlns:vm="clr-namespace:asagiv.datapush.ui.ViewModels" xmlns:utilities="clr-namespace:asagiv.datapush.ui.Utilities"
+		mc:Ignorable="d"
         d:DataContext="{d:DesignInstance vm:MainWindowViewModel, IsDesignTimeCreatable=False}"
         Title="MainWindow" Height="450" Width="800">
+
+	<Window.Resources>
+		<utilities:ServiceStatusValueConverter x:Key="ssc"/>
+	</Window.Resources>
 
 	<DockPanel>
 
@@ -58,19 +62,37 @@
 
 				</DockPanel>
 
-				<UniformGrid Columns="2">
+				<DockPanel>
 
-					<Button Margin="10"
-                            DockPanel.Dock="Right"
-                            Content="Update Settings"
-                            Command="{Binding UpdateSettingsCommand}"/>
+					<Ellipse Width="20"
+							 Height="20"
+							 Margin="10"
+							 Stroke="Black"
+							 StrokeThickness="2"
+							 DockPanel.Dock="Right"
+							 Fill="{Binding Status, Converter={StaticResource ssc}}"
+							 VerticalAlignment="Center"/>
 
-					<Button Margin="10"
-                            DockPanel.Dock="Right"
-                            Content="Start Service"
-                            Command="{Binding StartServiceCommand}"/>
+					<UniformGrid Columns="3">
 
-				</UniformGrid>
+						<Button Margin="10"
+                                DockPanel.Dock="Right"
+                                Content="Update Settings"
+                                Command="{Binding UpdateSettingsCommand}"/>
+
+						<Button Margin="10"
+                                DockPanel.Dock="Right"
+                                Content="Start Service"
+                                Command="{Binding StartServiceCommand}"/>
+
+						<Button Margin="10"
+                                DockPanel.Dock="Right"
+                                Content="Stop Service"
+                                Command="{Binding StopServiceCommand}"/>
+
+					</UniformGrid>
+
+				</DockPanel>
 
 			</StackPanel>
 

@@ -76,7 +76,12 @@ namespace asagiv.datapush.ui.Models
             StartDataPushService(await GetServiceStatus());
         }
 
-        private async static Task<WinServiceStatus> GetServiceStatus()
+        public async static Task StopClientAsync()
+        {
+            StopDataPushService(await GetServiceStatus());
+        }
+
+        public async static Task<WinServiceStatus> GetServiceStatus()
         {
             var processStartInfo = new ProcessStartInfo
             {
@@ -121,6 +126,31 @@ namespace asagiv.datapush.ui.Models
             }
 
             return WinServiceStatus.Error;
+        }
+
+        public static void StopDataPushService(WinServiceStatus status)
+        {
+            var processStartInfo = new ProcessStartInfo
+            {
+                FileName = @"cmd.exe",
+                UseShellExecute = true,
+                Verb = "runas",
+                CreateNoWindow = false
+            };
+
+            switch (status)
+            {
+                case WinServiceStatus.NotInstalled:
+                case WinServiceStatus.Stopped:
+                    return;
+                case WinServiceStatus.Running:
+                    processStartInfo.ArgumentList.Add($"/C sc stop {serviceName}");
+                    break;
+                case WinServiceStatus.Error:
+                    throw new ArgumentException("Invalid Query Status Detected.");
+            }
+
+            Process.Start(processStartInfo);
         }
 
         public static void StartDataPushService(WinServiceStatus status)
