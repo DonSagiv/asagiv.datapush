@@ -3,102 +3,117 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
              mc:Ignorable="d"
              xmlns:viewmodels="clr-namespace:asagiv.datapush.ui.mobile.ViewModels" xmlns:mobile="clr-namespace:asagiv.datapush.ui.mobile" xmlns:controls="clr-namespace:XamarinUniversity.Controls;assembly=XamU.Infrastructure"
              x:Class="asagiv.datapush.ui.mobile.MainPage">
 
-    <d:ContentPage.BindingContext>
-        <viewmodels:MainPageViewModel/>
-    </d:ContentPage.BindingContext>
+	<d:ContentPage.BindingContext>
+		<viewmodels:MainPageViewModel/>
+	</d:ContentPage.BindingContext>
 
-    <ContentPage.Resources>
+	<ContentPage.Resources>
 
-        <Style TargetType="Frame"
+		<Style TargetType="Frame"
                x:Key="frameStyle">
 
-            <Setter Property="Background"
+			<Setter Property="Background"
                     Value="#44888888"/>
 
-            <Setter Property="Margin"
+			<Setter Property="Margin"
                     Value="10"/>
 
-        </Style>
+		</Style>
 
-    </ContentPage.Resources>
+	</ContentPage.Resources>
 
-    <ScrollView>
+	<ScrollView>
 
-        <StackLayout>
+		<StackLayout>
 
-            <Frame Style="{StaticResource frameStyle}">
+			<Frame Style="{StaticResource frameStyle}">
 
-                <StackLayout>
+				<StackLayout>
 
-                    <Label Text="Connection Settings"/>
+					<Label Text="Connection Settings"/>
 
-                    <Entry Placeholder="Connection String"
+					<Entry Placeholder="Connection String"
                            Margin="10"
                            Text="{Binding ConnectionString, Mode=TwoWay}"/>
 
-                    <Entry Placeholder="Device Name"
+					<Entry Placeholder="Device Name"
                            Margin="10"
                            Text="{Binding NodeName, Mode=TwoWay}"/>
 
-                    <Button Text="Connect"
+					<Button Text="Connect"
                             Margin="10"
                             Command="{Binding ConnectCommand}"/>
 
-                </StackLayout>
+				</StackLayout>
 
-            </Frame>
+			</Frame>
 
-            <Frame Style="{StaticResource frameStyle}"
+			<Frame Style="{StaticResource frameStyle}"
                    IsVisible="{Binding IsConnected}">
 
-                <StackLayout>
+				<StackLayout>
 
-                    <Label Text="Push File"/>
+					<Label Text="Push File"/>
 
-                    <Picker ItemsSource="{Binding DestinationNodeList}"
+					<Picker ItemsSource="{Binding DestinationNodeList}"
                             Margin="10"
                             SelectedItem="{Binding SelectedDestinationNode, Mode=TwoWay}"/>
 
-                    <Button Text="Select File"
+					<Button Text="Select File"
                             Margin="10"
                             Command="{Binding SelectFileCommand}"/>
 
-                </StackLayout>
+				</StackLayout>
 
-            </Frame>
+			</Frame>
 
-            <Frame Style="{StaticResource frameStyle}">
+			<Frame Style="{StaticResource frameStyle}">
 
-                <StackLayout>
+				<StackLayout>
 
-                    <Label Text="Log"/>
+					<Label Text="Log"/>
 
-                    <controls:ItemsControl ItemsSource="{Binding LogEntries}">
+					<controls:ItemsControl ItemsSource="{Binding PushContextList}">
 
-                        <controls:ItemsControl.ItemsPanel>
-                            <StackLayout/>
-                        </controls:ItemsControl.ItemsPanel>
+						<controls:ItemsControl.ItemsPanel>
+							<StackLayout/>
+						</controls:ItemsControl.ItemsPanel>
 
-                        <controls:ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Label Margin="10"
-                                       Text="{Binding .}"
-                                       LineBreakMode="WordWrap"/>
-                            </DataTemplate>
-                        </controls:ItemsControl.ItemTemplate>
+						<controls:ItemsControl.ItemTemplate>
+							<DataTemplate>
 
-                    </controls:ItemsControl>
+								<Frame>
 
-                </StackLayout>
+									<xct:DockLayout>
 
-            </Frame>
+										<Label Margin="10"
+											   xct:DockLayout.Dock="Top"
+											   Text="{Binding Description}"
+											   LineBreakMode="WordWrap"/>
 
-        </StackLayout>
+										<ProgressBar Margin="10"
+													 Progress="{Binding DataPushProgress}"/>
 
-    </ScrollView>
+									</xct:DockLayout>
+
+								</Frame>
+
+							</DataTemplate>
+						</controls:ItemsControl.ItemTemplate>
+
+					</controls:ItemsControl>
+
+				</StackLayout>
+
+			</Frame>
+
+		</StackLayout>
+
+	</ScrollView>
 
 </ContentPage>
