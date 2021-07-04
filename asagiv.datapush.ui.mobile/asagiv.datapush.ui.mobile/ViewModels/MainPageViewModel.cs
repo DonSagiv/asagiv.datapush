@@ -1,11 +1,11 @@
-﻿using asagiv.datapush.common.Utilities;
+﻿using asagiv.datapush.common.Models;
+using asagiv.datapush.common.Utilities;
 using Grpc.Core;
 using Prism.Commands;
 using Prism.Mvvm;
 using Serilog;
 using System;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Essentials;
@@ -34,6 +34,7 @@ namespace asagiv.datapush.ui.mobile.ViewModels
             set { _nodeName = value; RaisePropertyChanged(nameof(NodeName)); }
         }
         public ObservableCollection<string> DestinationNodeList { get; }
+        public ObservableCollection<DataPushContext> PushContextList { get; }
         public string SelectedDestinationNode
         {
             get { return _selectedDestinationNode; }
@@ -44,7 +45,6 @@ namespace asagiv.datapush.ui.mobile.ViewModels
             get { return _isConnected; }
             set { _isConnected = value; RaisePropertyChanged(nameof(IsConnected)); }
         }
-        public ObservableCollection<string> LogEntries { get; }
         public GrpcClient Client { get; private set; }
         #endregion
 
@@ -61,20 +61,12 @@ namespace asagiv.datapush.ui.mobile.ViewModels
             IsConnected = false;
 
             DestinationNodeList = new ObservableCollection<string>();
-
-            LogEntries = new ObservableCollection<string>();
-
-            eventLogSink.LogEventRaised += OnLogEventRaised;
+            PushContextList = new ObservableCollection<DataPushContext>();
 
             _logger.Information("Initializing View Model.");
 
             ConnectCommand = new DelegateCommand(async () => await ConnectAsync());
-            SelectFileCommand = new DelegateCommand(async () => await SelectFileAsync());
-        }
-
-        private void OnLogEventRaised(object sender, string e)
-        {
-            LogEntries.Add($"{DateTime.Now}: {e}");
+            SelectFileCommand = new DelegateCommand(async () => await PushFilesAsync());
         }
         #endregion
 
@@ -107,22 +99,35 @@ namespace asagiv.datapush.ui.mobile.ViewModels
             IsConnected = true;
         }
 
-        private async Task SelectFileAsync()
+        private async Task PushFilesAsync()
         {
             var files = await FilePicker.PickMultipleAsync();
 
             foreach(var file in files)
             {
-                var filePath = file.FullPath;
-
-                _logger.Information($"Uploading File: {filePath} to {SelectedDestinationNode}");
-
-                var data = await File.ReadAllBytesAsync(filePath);
-
-                var fileName = Path.GetFileName(filePath);
-
-                await Client.PushDataAsync(SelectedDestinationNode, fileName, data);
+                await PushFileAsync(file);
             }
+        }
+
+        private async Task PushFileAsync(FileResult file)
+        {
+            try
+            {
+                var contextToAdd = await GetPushContext(file.FullPath);
+
+                PushContextList.Insert(0, contextToAdd);
+
+                await contextToAdd.PushDataAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger?.Error(ex.ToString());
+            }
+        }
+
+        private async Task<DataPushContext> GetPushContext(string fileName)
+        {
+            return await Client.CreatePushFileContextAsync(SelectedDestinationNode, fileName);
         }
         #endregion
     }

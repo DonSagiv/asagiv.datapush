@@ -1,4 +1,5 @@
-﻿using asagiv.datapush.common.Utilities;
+﻿using asagiv.datapush.common.Models;
+using asagiv.datapush.common.Utilities;
 using Prism.Mvvm;
 using System;
 using System.Collections.ObjectModel;
@@ -26,6 +27,7 @@ namespace asagiv.datapush.ui.Models
             set { _connectionString = value; RaisePropertyChanged(nameof(ConnectionString)); }
         }
         public ObservableCollection<string> PullNodes { get; }
+        public ObservableCollection<DataPushContext> PushContextList { get; }
         #endregion
 
         #region Constructor
@@ -35,6 +37,7 @@ namespace asagiv.datapush.ui.Models
             NodeName = "Windows PC";
 
             PullNodes = new ObservableCollection<string>();
+            PushContextList = new ObservableCollection<DataPushContext>();
         }
         #endregion
 
@@ -61,7 +64,11 @@ namespace asagiv.datapush.ui.Models
         {
             try
             {
-                await _client.PushFileAsync(destinationNode, filePath);
+                var contextToAdd = await _client.CreatePushFileContextAsync(destinationNode, filePath);
+
+                PushContextList.Insert(0, contextToAdd);
+
+                await contextToAdd.PushDataAsync();
             }
             catch(Exception ex)
             {

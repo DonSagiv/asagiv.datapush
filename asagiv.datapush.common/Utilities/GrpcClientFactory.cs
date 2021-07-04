@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using asagiv.datapush.common.Models;
+using Microsoft.Extensions.Configuration;
 using Serilog;
 using System;
 using System.IO;

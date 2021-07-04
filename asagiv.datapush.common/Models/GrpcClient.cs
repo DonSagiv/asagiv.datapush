@@ -1,5 +1,4 @@
-﻿using Google.Protobuf;
-using Grpc.Core;
+﻿using Grpc.Core;
 using Grpc.Net.Client;
 using Serilog;
 using System;
@@ -8,7 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace asagiv.datapush.common.Utilities
+namespace asagiv.datapush.common.Models
 {
     public sealed class GrpcClient : IDisposable
     {
@@ -30,17 +29,6 @@ namespace asagiv.datapush.common.Utilities
         #endregion
 
         #region Constructor
-        public GrpcClient(string nodeName, string deviceId, ILogger logger = null)
-        {
-            _logger = logger;
-
-            NodeName = nodeName;
-
-            DeviceId = deviceId;
-
-            PullSubscribers = new List<DataPullSubscriber>();
-        }
-
         public GrpcClient(ChannelBase channel, string nodeName, string deviceId, ILogger logger = null) : this(nodeName, deviceId, logger)
         {
             Client = new DataPush.DataPushClient(channel);
@@ -49,6 +37,17 @@ namespace asagiv.datapush.common.Utilities
         public GrpcClient(string connectionString, string nodeName, string deviceId, ILogger logger = null) : this(nodeName, deviceId, logger)
         {
             Client = new DataPush.DataPushClient(GrpcChannel.ForAddress(connectionString));
+        }
+
+        private GrpcClient(string nodeName, string deviceId, ILogger logger = null)
+        {
+            _logger = logger;
+
+            NodeName = nodeName;
+
+            DeviceId = deviceId;
+
+            PullSubscribers = new List<DataPullSubscriber>();
         }
         #endregion
 
@@ -115,67 +114,23 @@ namespace asagiv.datapush.common.Utilities
             DataRetrieved?.Invoke(sender, e);
         }
 
-        public async Task<bool> PushFileAsync(string destinationNode, string filePath)
+        public async Task<DataPushContext> CreatePushFileContextAsync(string destinationNode, string filePath)
         {
             if (string.IsNullOrWhiteSpace(filePath))
             {
-                return false;
+                return null;
             }
 
             var data = await File.ReadAllBytesAsync(filePath);
 
             var name = Path.GetFileName(filePath);
 
-            return await PushDataAsync(destinationNode, name, data);
+            return CreatePushDataContext(destinationNode, name, data);
         }
 
-        public async Task<bool> PushDataAsync(string destinationNode, string name, byte[] data)
+        public DataPushContext CreatePushDataContext(string destinationNode, string name, byte[] data)
         {
-            _logger?.Information($"Pushing Data to {destinationNode}. (Name: {name}, Size: {data.Count()})");
-
-            var requestId = Guid.NewGuid().ToString();
-
-            try
-            {
-                var blockSize = 2500000;
-
-                // Convert data length / block size to double, round up, and then convert back to int.
-                var blockIterations = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(data.Length) / blockSize));
-
-                for (var i = 0; i < blockIterations; i++)
-                {
-                    var start = i * blockSize;
-
-                    var end = start + blockSize >= data.Length
-                        ? data.Length
-                        : start + blockSize;
-
-                    var dataBlock = data[start..end];
-
-                    _logger?.Information($"Pushing Block {i + 1} of {blockIterations} to {destinationNode} (Name: {name}, Size: {dataBlock.Count()})");
-
-                    var request = new DataPushRequest
-                    {
-                        RequestId = requestId,
-                        SourceNode = NodeName,
-                        DestinationNode = destinationNode,
-                        Name = name,
-                        BlockNumber = i + 1,
-                        TotalBlocks = blockIterations,
-                        Payload = ByteString.CopyFrom(dataBlock)
-                    };
-
-                    await Client.PushData().RequestStream.WriteAsync(request);
-                }
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger?.Error(ex, $"Error Pushing Data: {ex.Message})");
-
-                return false;
-            }
+            return new DataPushContext(Client, NodeName, destinationNode, name, data);
         }
 
         public void Dispose()

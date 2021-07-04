@@ -4,7 +4,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 
-namespace asagiv.datapush.common.Utilities
+namespace asagiv.datapush.common.Models
 {
     public sealed class DataPullSubscriber : IDisposable
     {
