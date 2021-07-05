@@ -1,9 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{548F797C-686D-4BA3-BECE-4DDCA3BAC611}</ProjectGuid>
+    <ProjectGuid>{46923C72-86E5-4562-9DD7-08F24F9DE090}</ProjectGuid>
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TemplateGuid>{c9e5eea5-ca05-42a1-839b-61506e0a37df}</TemplateGuid>
     <OutputType>Library</OutputType>
@@ -23,7 +23,6 @@
     <AndroidHttpClientHandlerType>Xamarin.Android.Net.AndroidClientHandler</AndroidHttpClientHandlerType>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <CodeAnalysisRuleSet>..\..\.sonarlint\asagiv_datapushcsharp.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,14 +33,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AndroidLinkMode>None</AndroidLinkMode>
-    <CodeAnalysisRuleSet>..\..\.sonarlint\asagiv_datapushcsharp.ruleset</CodeAnalysisRuleSet>
-    <AndroidKeyStore>false</AndroidKeyStore>
-    <AotAssemblies>false</AotAssemblies>
-    <EnableLLVM>false</EnableLLVM>
-    <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
-    <BundleAssemblies>false</BundleAssemblies>
-    <AndroidCreatePackagePerAbi>false</AndroidCreatePackagePerAbi>
-    <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -52,11 +43,6 @@
     <WarningLevel>4</WarningLevel>
     <AndroidManagedSymbols>true</AndroidManagedSymbols>
     <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
-    <CodeAnalysisRuleSet>..\..\.sonarlint\asagiv_datapushcsharp.ruleset</CodeAnalysisRuleSet>
-    <AotAssemblies>false</AotAssemblies>
-    <EnableLLVM>false</EnableLLVM>
-    <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
-    <BundleAssemblies>false</BundleAssemblies>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Android" />
@@ -68,23 +54,8 @@
     <Reference Include="System.Numerics.Vectors" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Grpc.Core">
-      <Version>2.34.0</Version>
-    </PackageReference>
-    <PackageReference Include="Grpc.Core.Xamarin">
-      <Version>2.34.0</Version>
-    </PackageReference>
-    <PackageReference Include="Grpc.Net.Client">
-      <Version>2.34.0</Version>
-    </PackageReference>
-    <PackageReference Include="Grpc.Net.Common">
-      <Version>2.34.0</Version>
-    </PackageReference>
     <PackageReference Include="Xamarin.Forms" Version="5.0.0.2012" />
     <PackageReference Include="Xamarin.Essentials" Version="1.6.1" />
-    <PackageReference Include="XamarinUniversity.Infrastructure">
-      <Version>2.2.0</Version>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainActivity.cs" />
@@ -92,9 +63,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\.sonarlint\asagiv_datapushcsharp.ruleset">
-      <Link>asagiv_datapushcsharp.ruleset</Link>
-    </None>
     <None Include="Resources\AboutResources.txt" />
     <None Include="Assets\AboutAssets.txt" />
     <None Include="Properties\AndroidManifest.xml" />
@@ -120,14 +88,9 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\asagiv.datapush.ui.mobile\asagiv.datapush.ui.mobile.csproj">
-      <Project>{5BAC5CD2-89E4-446E-8435-13AF4C8823A2}</Project>
+      <Project>{B9171447-0496-425F-B123-CA3CD3A847EB}</Project>
       <Name>asagiv.datapush.ui.mobile</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <AdditionalFiles Include="..\..\.sonarlint\asagiv_datapush\CSharp\SonarLint.xml">
-      <Link>SonarLint.xml</Link>
-    </AdditionalFiles>
-  </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
+ <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
 </Project>

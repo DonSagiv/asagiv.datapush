@@ -34,7 +34,7 @@ namespace asagiv.datapush.server.Models
             PushDateTime = DateTime.Now;
 
             PayloadQueue = new ConcurrentQueue<PayloadItem>();
-            
+
             IsRouteCompleted = false;
         }
         #endregion
