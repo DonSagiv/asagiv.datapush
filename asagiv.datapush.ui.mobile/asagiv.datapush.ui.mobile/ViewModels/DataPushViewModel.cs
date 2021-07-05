@@ -43,6 +43,7 @@ namespace asagiv.datapush.ui.mobile.ViewModels
             set { _selectedDestinationNode = value; RaisePropertyChanged(nameof(SelectedDestinationNode)); }
         }
         public ObservableCollection<string> DestinationNodeList { get; }
+        public ObservableCollection<DataPushContext> PushDataContextList { get; }
         #endregion
 
         #region Commands
@@ -58,6 +59,8 @@ namespace asagiv.datapush.ui.mobile.ViewModels
             PushFilesCommand = new DelegateCommand(async () => await PushFilesAsync());
 
             DestinationNodeList = new ObservableCollection<string>();
+
+            PushDataContextList = new ObservableCollection<DataPushContext>();
         }
         #endregion
 
@@ -102,6 +105,8 @@ namespace asagiv.datapush.ui.mobile.ViewModels
             foreach (var file in files)
             {
                 var context = await _client.CreatePushFileContextAsync(SelectedDestinationNode, file.FullPath);
+
+                PushDataContextList.Insert(0, context);
 
                 await context.PushDataAsync();
             }

@@ -2,49 +2,77 @@
 			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 			 xmlns:vm="clr-namespace:asagiv.datapush.ui.mobile.ViewModels"
 			 xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
-			 x:DataType="vm:DataPushViewModel"
+			 xmlns:d="http://xamarin.com/schemas/2014/forms/design"
 			 x:Class="asagiv.datapush.ui.mobile.Views.DataPushView">
 
-	<xct:DockLayout>
+	<d:ContentView.BindingContext>
+		<vm:DataPushViewModel/>
+	</d:ContentView.BindingContext>
 
-		<Frame xct:DockLayout.Dock="Top">
+	<ScrollView>
 
-			<StackLayout>
+		<xct:DockLayout>
 
-				<Label Text="Connection Settings"/>
+			<Frame xct:DockLayout.Dock="Top">
 
-				<Editor Placeholder="Connection String"
-						Text="{Binding ConnectionString, Mode=TwoWay}"/>
+				<StackLayout>
 
-				<Editor Placeholder="Device Name"
-						Text="{Binding NodeName, Mode=TwoWay}"/>
+					<Label Text="Connection Settings"/>
 
-				<Button Text="Connect to Server"
-						Command="{Binding ConnectToServerCommand}"/>
+					<Editor Placeholder="Connection String"
+							Text="{Binding ConnectionString, Mode=TwoWay}"/>
 
-			</StackLayout>
+					<Editor Placeholder="Device Name"
+							Text="{Binding NodeName, Mode=TwoWay}"/>
 
-		</Frame>
+					<Button Text="Connect to Server"
+							Command="{Binding ConnectToServerCommand}"/>
 
-		<Frame xct:DockLayout.Dock="Top"
+				</StackLayout>
+
+			</Frame>
+
+			<Frame xct:DockLayout.Dock="Top"
 			   IsVisible="{Binding IsConnected}">
 
-			<StackLayout>
+				<StackLayout>
 
-				<Label Text="Send File To"/>
+					<Label Text="Send File To"/>
 
-				<Picker ItemsSource="{Binding DestinationNodeList}"
-						SelectedItem="{Binding SelectedDestinationNode, Mode=TwoWay}"/>
+					<Picker ItemsSource="{Binding DestinationNodeList}"
+							SelectedItem="{Binding SelectedDestinationNode, Mode=TwoWay}"/>
 
-				<Button Text="Send File"
-						Command="{Binding PushFilesCommand}"/>
+					<Button Text="Send File"
+							Command="{Binding PushFilesCommand}"/>
+
+				</StackLayout>
+
+			</Frame>
+
+			<StackLayout BindableLayout.ItemsSource="{Binding PushDataContextList}">
+
+				<BindableLayout.ItemTemplate>
+					<DataTemplate>
+
+						<Frame>
+
+							<StackLayout>
+
+								<Label Text="{Binding Description}"/>
+
+								<ProgressBar Progress="{Binding DataPushProgress}"/>
+
+							</StackLayout>
+
+						</Frame>
+
+					</DataTemplate>
+				</BindableLayout.ItemTemplate>
 
 			</StackLayout>
 
-		</Frame>
+		</xct:DockLayout>
 
-		<ScrollView/>
-
-	</xct:DockLayout>
+	</ScrollView>
 
 </ContentView>
