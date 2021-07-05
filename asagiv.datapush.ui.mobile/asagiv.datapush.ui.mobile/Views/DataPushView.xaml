@@ -1,9 +1,48 @@
 ﻿<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="asagiv.datapush.ui.mobile.Views.DataPushView">
-  <ContentView.Content>
-      <StackLayout>
-          <Label Text="Hello Xamarin.Forms!" />
-      </StackLayout>
-  </ContentView.Content>
+			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+			 xmlns:vm="clr-namespace:asagiv.datapush.ui.mobile.ViewModels"
+			 xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
+			 xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+			 x:Class="asagiv.datapush.ui.mobile.Views.DataPushView">
+
+	<d:ContentView.BindingContext>
+		<vm:DataPushViewModel/>
+	</d:ContentView.BindingContext>
+
+	<xct:DockLayout>
+
+		<Frame xct:DockLayout.Dock="Top">
+
+			<StackLayout>
+
+				<Label Text="Connection Settings"/>
+
+				<Editor Placeholder="Connection String"/>
+
+				<Editor Placeholder="Device Name"/>
+
+				<Button Text="Connect to Server"/>
+
+			</StackLayout>
+			
+		</Frame>
+
+		<Frame xct:DockLayout.Dock="Top">
+
+			<StackLayout>
+
+				<Label Text="Send File To"/>
+
+				<Picker/>
+
+				<Button Text="Send File"/>
+
+			</StackLayout>
+			
+		</Frame>
+
+		<ScrollView/>
+
+	</xct:DockLayout>
+
 </ContentView>

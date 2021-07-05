@@ -4,5 +4,49 @@
              x:Class="asagiv.datapush.ui.mobile.App">
     <Application.Resources>
 
-    </Application.Resources>
+		<Style TargetType="Frame">
+
+			<Setter Property="Background"
+					Value="#44888888"/>
+			
+			<Setter Property="Margin"
+					Value="10"/>
+
+		</Style>
+
+		<Style TargetType="Editor">
+
+			<Setter Property="Margin"
+					Value="10"/>
+
+		</Style>
+
+		<Style TargetType="Label">
+
+			<Setter Property="Margin"
+					Value="10"/>
+
+			<Setter Property="HorizontalTextAlignment"
+					Value="Center"/>
+
+			<Setter Property="VerticalTextAlignment"
+					Value="Center"/>
+
+		</Style>
+
+		<Style TargetType="Button">
+
+			<Setter Property="Margin"
+					Value="10"/>
+
+		</Style>
+
+		<Style TargetType="Picker">
+
+			<Setter Property="Margin"
+					Value="10"/>
+
+		</Style>
+
+	</Application.Resources>
 </Application>

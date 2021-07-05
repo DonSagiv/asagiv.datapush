@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms;
+﻿using asagiv.datapush.ui.mobile.Views;
+using Xamarin.Forms;
 
 namespace asagiv.datapush.ui.mobile
 {
