@@ -5,6 +5,7 @@
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <CodeAnalysisRuleSet>..\.sonarlint\asagiv_datapushcsharp.ruleset</CodeAnalysisRuleSet>
+    <ApplicationIcon>2442125.svg.2021_07_05_20_23_13.0.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
