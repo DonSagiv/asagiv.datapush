@@ -1,4 +1,5 @@
-﻿using Grpc.Core;
+﻿using asagiv.datapush.common.Models;
+using Grpc.Core;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using System;

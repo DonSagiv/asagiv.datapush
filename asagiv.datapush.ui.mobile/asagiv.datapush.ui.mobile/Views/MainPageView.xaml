@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<TabbedPage xmlns="http://xamarin.com/schemas/2014/forms"
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+			xmlns:d="http://xamarin.com/schemas/2014/forms/design" xmlns:viewmodels="clr-namespace:asagiv.datapush.ui.mobile.ViewModels" xmlns:views="clr-namespace:asagiv.datapush.ui.mobile.Views"
+			x:Class="asagiv.datapush.ui.mobile.Views.MainPageView">
+
+	<d:TabbedPage.BindingContext>
+		<viewmodels:MainPageViewModel/>
+	</d:TabbedPage.BindingContext>
+
+	<ContentPage Title="Data Push">
+
+		<views:DataPushView x:Name="DataPushView"/>
+
+	</ContentPage>
+
+	<ContentPage Title="Connections">
+		
+	</ContentPage>
+
+</TabbedPage>

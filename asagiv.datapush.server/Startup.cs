@@ -1,5 +1,4 @@
 ﻿using asagiv.datapush.common.Utilities;
-using asagiv.datapush.server.common;
 using asagiv.datapush.server.common.Interfaces;
 using asagiv.datapush.server.common.Models;
 using asagiv.datapush.server.Interfaces;
@@ -35,12 +34,10 @@ namespace asagiv.datapush.server
 
             app.UseRouting();
 
-            app.UseEndpoints(endpoints =>
-            {
+            app.UseEndpoints(endpoints => {
                 endpoints.MapGrpcService<DataPushService>();
 
-                endpoints.MapGet("/", async context =>
-                {
+                endpoints.MapGet("/", async context => {
                     await context.Response.WriteAsync("Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
                 });
             });

@@ -1,10 +1,6 @@
-﻿using Google.Protobuf;
-using Grpc.Core;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Grpc.Core;
 
-namespace asagiv.datapush.common.Utilities
+namespace asagiv.datapush.common.Models
 {
     public class ResponseStreamContext<T>
     {
