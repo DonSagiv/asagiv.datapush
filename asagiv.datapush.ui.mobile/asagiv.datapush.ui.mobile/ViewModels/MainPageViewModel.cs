@@ -8,7 +8,9 @@ namespace asagiv.datapush.ui.mobile.ViewModels
 
         public MainPageViewModel()
         {
-            DataPushViewModel = new DataPushViewModel();
+            var viewModelObject = App.ServiceProvider.GetService(typeof(DataPushViewModel));
+
+            DataPushViewModel = viewModelObject as DataPushViewModel;
         }
     }
 }

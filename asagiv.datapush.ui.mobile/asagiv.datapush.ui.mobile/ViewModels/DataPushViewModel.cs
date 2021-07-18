@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Essentials;
+using System.Collections.Generic;
 
 namespace asagiv.datapush.ui.mobile.ViewModels
 {
@@ -25,12 +26,22 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         public string ConnectionString
         {
             get { return _connectionString; }
-            set { _connectionString = value; RaisePropertyChanged(nameof(ConnectionString)); }
+            set 
+            {
+                _connectionString = value;
+                RaisePropertyChanged(nameof(ConnectionString));
+                Preferences.Set(nameof(_connectionString), _connectionString);
+            }
         }
         public string NodeName
         {
             get { return _nodeName; }
-            set { _nodeName = value; RaisePropertyChanged(nameof(NodeName)); }
+            set 
+            {
+                _nodeName = value;
+                RaisePropertyChanged(nameof(NodeName));
+                Preferences.Set(nameof(_nodeName), _nodeName);
+            }
         }
         public bool IsConnected
         {
@@ -40,7 +51,12 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         public string SelectedDestinationNode
         {
             get { return _selectedDestinationNode; }
-            set { _selectedDestinationNode = value; RaisePropertyChanged(nameof(SelectedDestinationNode)); }
+            set 
+            {
+                _selectedDestinationNode = value;
+                RaisePropertyChanged(nameof(SelectedDestinationNode));
+                Preferences.Set(nameof(_selectedDestinationNode), _selectedDestinationNode);
+            }
         }
         public ObservableCollection<string> DestinationNodeList { get; }
         public ObservableCollection<DataPushContext> PushDataContextList { get; }
@@ -54,6 +70,11 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         #region Constructor
         public DataPushViewModel()
         {
+            // Retrieves last-used connection settings.
+            // Todo: create list of saved connection settings.
+            ConnectionString = Preferences.Get(nameof(_connectionString), string.Empty);
+            NodeName = Preferences.Get(nameof(_nodeName), string.Empty);
+
             ConnectToServerCommand = new DelegateCommand(async () => await ConnectToServerAsync());
 
             PushFilesCommand = new DelegateCommand(async () => await PushFilesAsync());
@@ -65,30 +86,42 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         #endregion
 
         #region Methods
-        private async Task ConnectToServerAsync()
+        public async Task ConnectToServerAsync()
         {
+            // Allows app to use HTTP insecure connections.
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
+            // Get the device ID.
             var deviceId = Preferences.Get("deviceId", string.Empty);
 
+            // If there is no device ID, make one up and save it.
             if (string.IsNullOrWhiteSpace(deviceId))
             {
                 deviceId = Guid.NewGuid().ToString();
                 Preferences.Set("deviceId", deviceId);
             }
 
+            // Create a new connection channel with HTTP insecure credentials.
+            // Todo: consider TLS/SSL
             var channel = new Channel(_connectionString, ChannelCredentials.Insecure);
 
+            // Start the GRPC Client.
             _client = new GrpcClient(channel, _nodeName, deviceId);
 
             var response = await _client.RegisterNodeAsync(false);
 
+            // Populate the Destination Node list.
             DestinationNodeList.Clear();
 
             foreach (var item in response)
             {
                 DestinationNodeList.Add(item);
             }
+
+            // Retrieve the last known destination node.
+            var previouslySelectedNode = Preferences.Get(nameof(_selectedDestinationNode), string.Empty);
+
+            SelectedDestinationNode = DestinationNodeList.FirstOrDefault(x => x == previouslySelectedNode);
 
             IsConnected = true;
         }
@@ -97,14 +130,21 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         {
             var files = await FilePicker.PickMultipleAsync();
 
-            if(files == null || !files.Any())
+            if (files == null || !files.Any())
             {
                 return;
             }
 
+            var fileNames = files.Select(x => x.FullPath);
+
+            await PushFilesAsync(fileNames);
+        }
+
+        public async Task PushFilesAsync(IEnumerable<string> files)
+        {
             foreach (var file in files)
             {
-                var context = await _client.CreatePushFileContextAsync(SelectedDestinationNode, file.FullPath);
+                var context = await _client.CreatePushFileContextAsync(SelectedDestinationNode, file);
 
                 PushDataContextList.Insert(0, context);
 
