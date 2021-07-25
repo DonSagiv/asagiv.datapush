@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Essentials;
 using System.Collections.Generic;
+using asagiv.datapush.ui.mobile.Utilities;
+using System.IO;
+using Xamarin.Forms;
 
 namespace asagiv.datapush.ui.mobile.ViewModels
 {
@@ -70,6 +73,8 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         #region Constructor
         public DataPushViewModel()
         {
+            LoggerInstance.Instance.Log.Information($"Initializing DataPushViewModel.");
+
             // Retrieves last-used connection settings.
             // Todo: create list of saved connection settings.
             ConnectionString = Preferences.Get(nameof(_connectionString), string.Empty);
@@ -88,6 +93,8 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         #region Methods
         public async Task ConnectToServerAsync()
         {
+            LoggerInstance.Instance.Log.Information($"Connecting to PushRocket server: connection string {_connectionString}.");
+
             // Allows app to use HTTP insecure connections.
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 
@@ -105,8 +112,10 @@ namespace asagiv.datapush.ui.mobile.ViewModels
             // Todo: consider TLS/SSL
             var channel = new Channel(_connectionString, ChannelCredentials.Insecure);
 
+            LoggerInstance.Instance.Log.Information($"Registering Node: {_nodeName} for device {deviceId}.");
+
             // Start the GRPC Client.
-            _client = new GrpcClient(channel, _nodeName, deviceId);
+            _client = new GrpcClient(channel, _nodeName, deviceId, LoggerInstance.Instance.Log);
 
             var response = await _client.RegisterNodeAsync(false);
 
@@ -124,6 +133,8 @@ namespace asagiv.datapush.ui.mobile.ViewModels
             SelectedDestinationNode = DestinationNodeList.FirstOrDefault(x => x == previouslySelectedNode);
 
             IsConnected = true;
+
+            LoggerInstance.Instance.Log.Information($"Node Registration and Connection Successful.");
         }
 
         private async Task PushFilesAsync()
@@ -140,16 +151,62 @@ namespace asagiv.datapush.ui.mobile.ViewModels
             await PushFilesAsync(fileNames);
         }
 
+        public async Task PushShareStreamContexts(IEnumerable<ShareStreamContext> shareStreamContexts)
+        {
+            foreach(var streamContext in shareStreamContexts)
+            {
+                var shareName = $"{streamContext.ShareFileName ?? Guid.NewGuid().ToString()}.{streamContext.Extension}";
+
+                LoggerInstance.Instance.Log.Information($"Creating Context for File: {shareName}.");
+
+                using var ms = new MemoryStream();
+                using (streamContext.InputStream)
+                {
+                    await streamContext.InputStream.CopyToAsync(ms);
+
+                    var data = ms.ToArray();
+
+                    await streamContext.InputStream.FlushAsync();
+
+                    var pushContext = _client.CreatePushDataContext(SelectedDestinationNode, shareName, data);
+
+                    await PushDataAsync(pushContext);
+                }
+            }
+        }
+
         public async Task PushFilesAsync(IEnumerable<string> files)
         {
             foreach (var file in files)
             {
+                LoggerInstance.Instance.Log.Information($"Creating Context for File: {file}.");
+
                 var context = await _client.CreatePushFileContextAsync(SelectedDestinationNode, file);
 
-                PushDataContextList.Insert(0, context);
-
-                await context.PushDataAsync();
+                await PushDataAsync(context);
             }
+        }
+
+        private async Task PushDataAsync(DataPushContext context)
+        {
+            LoggerInstance.Instance.Log.Information($"Pushing Data for Context: {context.Name}.");
+
+            try
+            {
+                Device.BeginInvokeOnMainThread(() => 
+                {
+                    PushDataContextList.Insert(0, context);
+                });
+                
+            }
+            catch(Exception e)
+            {
+                LoggerInstance.Instance.Log.Error(e, e.Message);
+            }
+
+            await context.PushDataAsync();
+
+            LoggerInstance.Instance.Log.Information($"Data Push Successful.");
         }
         #endregion
     }

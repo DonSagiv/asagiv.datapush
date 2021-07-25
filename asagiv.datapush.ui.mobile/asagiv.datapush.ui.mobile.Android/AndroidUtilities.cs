@@ -1,6 +1,7 @@
 ﻿using Android.Content;
 using Android.Net;
 using Android.Webkit;
+using asagiv.datapush.ui.mobile.Utilities;
 using asagiv.datapush.ui.mobile.ViewModels;
 using System.Collections.Generic;
 using System.IO;
@@ -22,37 +23,53 @@ namespace asagiv.datapush.ui.mobile.Droid
 
             if (!viewModel.IsConnected)
             {
+                LoggerInstance.Instance.Log.Information("Connecting to Server.");
+
                 await viewModel.ConnectToServerAsync();
             }
 
-            var uriList = GetClipData(intent, context).ToList();
+            var shareStreamContexts = GetClipData(intent, context).ToList();
 
-            // await viewModel.PushFilesAsync(uriList);
+            await viewModel.PushShareStreamContexts(shareStreamContexts);
         }
 
-        private static IEnumerable<Uri> GetClipData(Intent intent, Context context)
+        private static IEnumerable<ShareStreamContext> GetClipData(Intent intent, Context context)
         {
-            var a = ContentResolver.QueryArgGroupColumns.ToList();
-
+            // Get Clip Data URIs.
             var clipData = Enumerable.Range(0, intent.ClipData.ItemCount)
                 .Select(x => intent.ClipData.GetItemAt(x).Uri)
                 .ToList();
 
-            var firstClip = clipData.FirstOrDefault();
+            LoggerInstance.Instance.Log.Information($"Found {clipData} clips.");
 
-            // Get Data Type.
-            var mimeType = context.ContentResolver.GetType(firstClip);
+            // Create Streams
+            var shareStreamContextEnumerable = clipData.Select(x => getShareStreamContext(context, x));
+
+            return shareStreamContextEnumerable;
+        }
+
+        private static ShareStreamContext getShareStreamContext(Context context, Uri x)
+        {
+            string filePath, fileName = null;
+
+            filePath = FilesHelper.GetActualPathForFile(x, context);
+
+            if (filePath != null)
+            {
+                LoggerInstance.Instance.Log.Information($"File Name Found: {filePath}.");
+
+                fileName = Path.GetFileNameWithoutExtension(filePath);
+            }
+
+                        // Get Data Type.
+            var mimeType = context.ContentResolver.GetType(x);
+
+            // Get Extension from Mime Type.
             var extension = MimeTypeMap.Singleton.GetExtensionFromMimeType(mimeType);
 
-            using var stream = context.ContentResolver.OpenInputStream(firstClip);
+            LoggerInstance.Instance.Log.Information($"File Found of Type: {extension}.");
 
-            using var ms = new MemoryStream();
-
-            stream.CopyTo(ms);
-
-            var data = ms.ToArray();
-
-            return clipData;
+            return new ShareStreamContext(context.ContentResolver.OpenInputStream(x), extension, fileName);
         }
 
         private static DataPushViewModel GetViewModel()

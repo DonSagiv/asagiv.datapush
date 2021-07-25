@@ -4,10 +4,11 @@ using Android.Runtime;
 using Android.OS;
 using Android.Content;
 using System.Threading.Tasks;
+using asagiv.datapush.ui.mobile.Utilities;
 
 namespace asagiv.datapush.ui.mobile.Droid
 {
-    [Activity(Label = "asagiv.datapush.ui.mobile", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize )]
+    [Activity(Label = "asagiv.datapush.ui.mobile", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, LaunchMode = LaunchMode.SingleTop, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize )]
     [IntentFilter(new[] { Intent.ActionSend }, Categories = new[] { Intent.CategoryDefault }, DataMimeType = @"image/*")]
     [IntentFilter(new[] { Intent.ActionSendMultiple }, Categories = new[] { Intent.CategoryDefault }, DataMimeType = @"image/*")]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
@@ -27,20 +28,19 @@ namespace asagiv.datapush.ui.mobile.Droid
 
             if (Intent.Action == Intent.ActionSend || Intent.Action == Intent.ActionSendMultiple)
             {
+                LoggerInstance.Instance.Log.Information("Intents Found.");
+
                 Task.Run(async () => await AndroidUtilities.SendDataAsync(Intent, ApplicationContext));
             }
         }
 
-        protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
+        protected override void OnNewIntent(Intent intent)
         {
-            if (data == null)
+            if (intent.Action == Intent.ActionSend || intent.Action == Intent.ActionSendMultiple)
             {
-                return;
-            }
+                LoggerInstance.Instance.Log.Information("Intents Found.");
 
-            if (data.Action == Intent.ActionSend || data.Action == Intent.ActionSendMultiple)
-            {
-                Task.Run(async () => await AndroidUtilities.SendDataAsync(Intent, ApplicationContext));
+                Task.Run(async () => await AndroidUtilities.SendDataAsync(intent, ApplicationContext));
             }
         }
 
