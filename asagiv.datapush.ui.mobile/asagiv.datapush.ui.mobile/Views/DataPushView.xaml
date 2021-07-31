@@ -33,7 +33,7 @@
 			</Frame>
 
 			<Frame xct:DockLayout.Dock="Top"
-			   IsVisible="{Binding IsConnected}">
+			       IsVisible="{Binding IsConnected}">
 
 				<StackLayout>
 
