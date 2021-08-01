@@ -1,4 +1,5 @@
-﻿using Grpc.Core;
+﻿using asagiv.datapush.common.Interfaces;
+using Grpc.Core;
 using Grpc.Net.Client;
 using Serilog;
 using System;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace asagiv.datapush.common.Models
 {
-    public sealed class GrpcClient : IDisposable
+    public sealed class GrpcClient : IGrpcClient
     {
         #region Fields
         private readonly ILogger _logger;
@@ -17,12 +18,12 @@ namespace asagiv.datapush.common.Models
 
         #region Delegates
         public event EventHandler Disposed;
-        public event EventHandler<ResponseStreamContext<DataPullResponse>> DataRetrieved;
+        public event EventHandler<IResponseStreamContext<DataPullResponse>> DataRetrieved;
         #endregion
 
         #region Properties
         public DataPush.DataPushClient Client { get; }
-        public IList<DataPullSubscriber> PullSubscribers { get; }
+        public IList<IDataPullSubscriber> PullSubscribers { get; }
         public string NodeName { get; set; }
         public string DeviceId { get; set; }
         public bool IsDisposed { get; private set; }
@@ -47,7 +48,7 @@ namespace asagiv.datapush.common.Models
 
             DeviceId = deviceId;
 
-            PullSubscribers = new List<DataPullSubscriber>();
+            PullSubscribers = new List<IDataPullSubscriber>();
         }
         #endregion
 
@@ -109,12 +110,12 @@ namespace asagiv.datapush.common.Models
             }
         }
 
-        private void OnPullDataRetrieved(object sender, ResponseStreamContext<DataPullResponse> e)
+        private void OnPullDataRetrieved(object sender, IResponseStreamContext<DataPullResponse> e)
         {
             DataRetrieved?.Invoke(sender, e);
         }
 
-        public async Task<DataPushContext> CreatePushFileContextAsync(string destinationNode, string filePath)
+        public async Task<IDataPushContext> CreatePushFileContextAsync(string destinationNode, string filePath)
         {
             if (string.IsNullOrWhiteSpace(filePath))
             {
@@ -128,7 +129,7 @@ namespace asagiv.datapush.common.Models
             return CreatePushDataContext(destinationNode, name, data);
         }
 
-        public DataPushContext CreatePushDataContext(string destinationNode, string name, byte[] data)
+        public IDataPushContext CreatePushDataContext(string destinationNode, string name, byte[] data)
         {
             return new DataPushContext(Client, NodeName, destinationNode, name, data);
         }

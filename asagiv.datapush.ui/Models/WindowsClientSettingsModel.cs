@@ -1,4 +1,5 @@
-﻿using asagiv.datapush.common.Models;
+﻿using asagiv.datapush.common.Interfaces;
+using asagiv.datapush.common.Models;
 using asagiv.datapush.common.Utilities;
 using Prism.Mvvm;
 using System;
@@ -10,7 +11,7 @@ namespace asagiv.datapush.ui.Models
     public class WindowsClientSettingsModel : BindableBase
     {
         #region Fields
-        private GrpcClient _client;
+        private IGrpcClient _client;
         private string _nodeName;
         private string _connectionString;
         #endregion
@@ -27,7 +28,7 @@ namespace asagiv.datapush.ui.Models
             set { _connectionString = value; RaisePropertyChanged(nameof(ConnectionString)); }
         }
         public ObservableCollection<string> PullNodes { get; }
-        public ObservableCollection<DataPushContext> PushContextList { get; }
+        public ObservableCollection<IDataPushContext> PushContextList { get; }
         #endregion
 
         #region Constructor
@@ -37,7 +38,7 @@ namespace asagiv.datapush.ui.Models
             NodeName = "Windows PC";
 
             PullNodes = new ObservableCollection<string>();
-            PushContextList = new ObservableCollection<DataPushContext>();
+            PushContextList = new ObservableCollection<IDataPushContext>();
         }
         #endregion
 

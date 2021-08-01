@@ -1,4 +1,5 @@
-﻿using Google.Protobuf;
+﻿using asagiv.datapush.common.Interfaces;
+using Google.Protobuf;
 using Serilog;
 using System;
 using System.ComponentModel;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace asagiv.datapush.common.Models
 {
-    public class DataPushContext : INotifyPropertyChanged
+    public class DataPushContext : IDataPushContext, INotifyPropertyChanged
     {
         #region Statics
         public const int blockSize = 2500000;
@@ -34,12 +35,12 @@ namespace asagiv.datapush.common.Models
         public int NumberOfBlocks
         {
             get { return _numberOfBlocks; }
-            set { _numberOfBlocks = value; RaisePropertyChanged(nameof(NumberOfBlocks)); }
+            private set { _numberOfBlocks = value; RaisePropertyChanged(nameof(NumberOfBlocks)); }
         }
         public double DataPushProgress
         {
             get { return _dataPushProgress; }
-            set { _dataPushProgress = value; RaisePropertyChanged(nameof(DataPushProgress)); }
+            private set { _dataPushProgress = value; RaisePropertyChanged(nameof(DataPushProgress)); }
         }
         #endregion
 

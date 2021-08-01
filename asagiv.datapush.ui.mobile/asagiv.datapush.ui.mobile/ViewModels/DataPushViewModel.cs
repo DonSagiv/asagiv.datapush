@@ -12,13 +12,14 @@ using System.Collections.Generic;
 using asagiv.datapush.ui.mobile.Utilities;
 using System.IO;
 using Xamarin.Forms;
+using asagiv.datapush.common.Interfaces;
 
 namespace asagiv.datapush.ui.mobile.ViewModels
 {
     public class DataPushViewModel : BindableBase
     {
         #region Fields
-        private GrpcClient _client;
+        private IGrpcClient _client;
         private string _connectionString;
         private string _nodeName;
         private bool _isConnected;
@@ -62,7 +63,7 @@ namespace asagiv.datapush.ui.mobile.ViewModels
             }
         }
         public ObservableCollection<string> DestinationNodeList { get; }
-        public ObservableCollection<DataPushContext> PushDataContextList { get; }
+        public ObservableCollection<IDataPushContext> PushDataContextList { get; }
         #endregion
 
         #region Commands
@@ -86,7 +87,7 @@ namespace asagiv.datapush.ui.mobile.ViewModels
 
             DestinationNodeList = new ObservableCollection<string>();
 
-            PushDataContextList = new ObservableCollection<DataPushContext>();
+            PushDataContextList = new ObservableCollection<IDataPushContext>();
         }
         #endregion
 
@@ -187,7 +188,7 @@ namespace asagiv.datapush.ui.mobile.ViewModels
             }
         }
 
-        private async Task PushDataAsync(DataPushContext context)
+        private async Task PushDataAsync(IDataPushContext context)
         {
             LoggerInstance.Instance.Log.Information($"Pushing Data for Context: {context.Name}.");
 

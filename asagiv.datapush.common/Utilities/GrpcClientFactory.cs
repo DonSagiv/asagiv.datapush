@@ -1,4 +1,5 @@
-﻿using asagiv.datapush.common.Models;
+﻿using asagiv.datapush.common.Interfaces;
+using asagiv.datapush.common.Models;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using System;
@@ -8,7 +9,7 @@ namespace asagiv.datapush.common.Utilities
 {
     public static class GrpcClientFactory
     {
-        public static GrpcClient CreateGprcClient(IServiceProvider serviceProvider = null)
+        public static IGrpcClient CreateGprcClient(IServiceProvider serviceProvider = null)
         {
             var logger = serviceProvider?.GetService(typeof(ILogger)) as ILogger;
             var configuration = serviceProvider?.GetService(typeof(IConfiguration)) as IConfiguration;

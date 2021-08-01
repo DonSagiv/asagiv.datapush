@@ -1,4 +1,5 @@
-﻿using Grpc.Core;
+﻿using asagiv.datapush.common.Interfaces;
+using Grpc.Core;
 using System;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
@@ -6,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace asagiv.datapush.common.Models
 {
-    public sealed class DataPullSubscriber : IDisposable
+    public sealed class DataPullSubscriber : IDataPullSubscriber
     {
         #region Fields
         private readonly IDisposable _pullSubscribe;
         #endregion
 
         #region Delegages
-        public event EventHandler<ResponseStreamContext<DataPullResponse>> DataRetrieved;
+        public event EventHandler<IResponseStreamContext<DataPullResponse>> DataRetrieved;
         #endregion
 
         #region Properties
@@ -36,7 +37,7 @@ namespace asagiv.datapush.common.Models
         }
         #endregion
 
-        #region 
+        #region Methods
         private async Task<bool> PollDataAsync()
         {
             var request = new DataPullRequest 

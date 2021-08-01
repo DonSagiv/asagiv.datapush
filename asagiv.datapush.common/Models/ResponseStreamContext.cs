@@ -1,8 +1,9 @@
-﻿using Grpc.Core;
+﻿using asagiv.datapush.common.Interfaces;
+using Grpc.Core;
 
 namespace asagiv.datapush.common.Models
 {
-    public class ResponseStreamContext<T>
+    internal class ResponseStreamContext<T> : IResponseStreamContext<T>
     {
         public T ResponseData { get; }
         public IAsyncStreamReader<T> ResponseStream { get; }

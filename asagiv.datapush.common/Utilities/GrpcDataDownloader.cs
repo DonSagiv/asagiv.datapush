@@ -1,4 +1,5 @@
-﻿using asagiv.datapush.common.Models;
+﻿using asagiv.datapush.common.Interfaces;
+using asagiv.datapush.common.Models;
 using Grpc.Core;
 using Microsoft.Extensions.Configuration;
 using Serilog;
@@ -33,7 +34,7 @@ namespace asagiv.datapush.common.Utilities
         }
         #endregion
 
-        public async Task OnDataRetrievedAsync(ResponseStreamContext<DataPullResponse> responseStreamContext)
+        public async Task OnDataRetrievedAsync(IResponseStreamContext<DataPullResponse> responseStreamContext)
         {
             var tempFilePath = Path.Combine(_saveDirectory, $"{responseStreamContext.ResponseData.SourceRequestId}.tmp");
 
@@ -54,7 +55,7 @@ namespace asagiv.datapush.common.Utilities
             }
         }
 
-        private async Task<bool> DownloadStreamToFileAsync(ResponseStreamContext<DataPullResponse> responseStreamContext, string tempFilePath)
+        private async Task<bool> DownloadStreamToFileAsync(IResponseStreamContext<DataPullResponse> responseStreamContext, string tempFilePath)
         {
             var downloadComplete = false;
 
@@ -71,7 +72,7 @@ namespace asagiv.datapush.common.Utilities
             return downloadComplete;
         }
 
-        private async Task<bool> DownloadStreamBlockAsync(ResponseStreamContext<DataPullResponse> responseStreamContext, string tempFilePath, FileStream fs)
+        private async Task<bool> DownloadStreamBlockAsync(IResponseStreamContext<DataPullResponse> responseStreamContext, string tempFilePath, FileStream fs)
         {
             var response = responseStreamContext.ResponseStream.Current;
 
