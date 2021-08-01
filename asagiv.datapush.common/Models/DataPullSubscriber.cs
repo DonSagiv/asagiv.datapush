@@ -27,6 +27,7 @@ namespace asagiv.datapush.common.Models
         public DataPullSubscriber(DataPush.DataPushClient client, string node)
         {
             Client = client;
+
             DestinationNode = node;
 
             var pullObservable = Observable.Interval(TimeSpan.FromSeconds(1));
