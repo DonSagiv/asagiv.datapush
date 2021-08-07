@@ -19,6 +19,14 @@ namespace asagiv.datapush.ui.Views
             WindowsClientView.SetViewModel(ViewModel.WindowsClientViewModel);
             ConnectionSettingsView.SetViewModel(ViewModel.ConnectionSettingsViewModel);
             WindowsServiceView.SetViewModel(ViewModel.WindowsServiceViewModel);
+
+            Loaded += OnWindowLoadedAsync;
+        }
+
+        private async void OnWindowLoadedAsync(object sender, RoutedEventArgs e)
+        {
+            // Top level execution only!
+            await ViewModel?.InitializeAsync();
         }
     }
 }

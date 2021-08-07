@@ -1,4 +1,5 @@
 ﻿using Prism.Mvvm;
+using System.Threading.Tasks;
 
 namespace asagiv.datapush.ui.ViewModels
 {
@@ -16,6 +17,13 @@ namespace asagiv.datapush.ui.ViewModels
             WindowsClientViewModel = new WindowsClientViewModel();
             ConnectionSettingsViewModel = new ConnectionSettingsViewModel();
             WindowsServiceViewModel = new WindowsServiceViewModel();
+        }
+        #endregion
+
+        #region Methods
+        public Task InitializeAsync()
+        {
+            return ConnectionSettingsViewModel.InitializeAsync();
         }
         #endregion
     }

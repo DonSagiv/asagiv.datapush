@@ -6,10 +6,49 @@
 			 xmlns:vm="clr-namespace:asagiv.datapush.ui.ViewModels"
 			 d:DataContext="{d:DesignInstance vm:ConnectionSettingsViewModel}"
              mc:Ignorable="d">
-	
-    <Grid>
-            
-    </Grid>
+
+	<DockPanel>
+
+		<ListBox Margin="10"
+				 DockPanel.Dock="Left"
+				 Width="200"
+				 ItemsSource="{Binding ClientConnectionSettingsList}"
+				 SelectedItem="{Binding SelectedClientConnection, Mode=TwoWay}"
+				 DisplayMemberPath="ConnectionName"/>
+
+		<GroupBox Header="Connection Settings Data"
+				  Margin="10">
+
+			<StackPanel>
+
+				<DockPanel>
+
+					<TextBlock Text="Connection Name"
+							   Margin="10"
+							   VerticalAlignment="Center"/>
+
+					<TextBox Text="{Binding SelectedClientConnection.ConnectionName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+							 Margin="10"/>
+
+				</DockPanel>
+
+				<DockPanel>
+
+					<TextBlock Text="Connection String"
+							   Margin="10"
+							   VerticalAlignment="Center"/>
+
+					<TextBox Text="{Binding SelectedClientConnection.String, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+							 Margin="10"/>
+
+				</DockPanel>
+
+
+			</StackPanel>
+			
+		</GroupBox>
+
+	</DockPanel>
 	
 </UserControl>
 
