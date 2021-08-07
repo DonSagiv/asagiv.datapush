@@ -9,11 +9,10 @@ namespace asagiv.datapush.common.Utilities
         {
             var bf = new BinaryFormatter();
 
-            using(var ms = new MemoryStream())
-            {
-                bf.Serialize(ms, inputObject);
-                return ms.ToArray();
-            }
+            using var ms = new MemoryStream();
+
+            bf.Serialize(ms, inputObject);
+            return ms.ToArray();
         }
     }
 }

@@ -43,12 +43,12 @@ namespace asagiv.datapush.ui.mobile.Droid
             LoggerInstance.Instance.Log.Information($"Found {clipData} clips.");
 
             // Create Streams
-            var shareStreamContextEnumerable = clipData.Select(x => getShareStreamContext(context, x));
+            var shareStreamContextEnumerable = clipData.Select(x => GetShareStreamContext(context, x));
 
             return shareStreamContextEnumerable;
         }
 
-        private static ShareStreamContext getShareStreamContext(Context context, Uri x)
+        private static ShareStreamContext GetShareStreamContext(Context context, Uri x)
         {
             string filePath, fileName = null;
 

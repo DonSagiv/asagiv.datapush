@@ -16,8 +16,9 @@ namespace asagiv.datapush.ui.Views
             ViewModel = new MainWindowViewModel();
             DataContext = ViewModel;
 
-            WindowsClientView.setViewModel(ViewModel.WindowsClientViewModel);
-            WindowsServiceView.setViewModel(ViewModel.WindowsServiceViewModel);
+            WindowsClientView.SetViewModel(ViewModel.WindowsClientViewModel);
+            ConnectionSettingsView.SetViewModel(ViewModel.ConnectionSettingsViewModel);
+            WindowsServiceView.SetViewModel(ViewModel.WindowsServiceViewModel);
         }
     }
 }

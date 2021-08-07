@@ -24,6 +24,12 @@
 
 			</TabItem>
 
+			<TabItem Header="ConnectionSettings">
+
+				<views:ConnectionSettingsView x:Name="ConnectionSettingsView"/>
+
+			</TabItem>
+
 			<TabItem Header="Windows Service Settings">
 
 				<views:WindowsServiceView x:Name="WindowsServiceView"/>

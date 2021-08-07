@@ -149,8 +149,8 @@ namespace asagiv.datapush.ui.mobile.Droid
                 }
 
                 // Google Disk document .legacy
-                return IsDiskLegacyContentUri(uri) 
-                    ? GetDriveFileAbsolutePath(context, uri) 
+                return IsDiskLegacyContentUri(uri)
+                    ? GetDriveFileAbsolutePath(context, uri)
                     : GetDataColumn(context, uri, null, null);
             }
             // File
@@ -170,7 +170,10 @@ namespace asagiv.datapush.ui.mobile.Droid
         /// <returns>Created file</returns>
         public static Java.IO.File GenerateFileName(string name, Java.IO.File directory)
         {
-            if (name == null) return null;
+            if (name == null)
+            {
+                return null;
+            }
 
             var file = new Java.IO.File(directory, name);
 
@@ -203,7 +206,6 @@ namespace asagiv.datapush.ui.mobile.Droid
             }
             catch (Exception ex)
             {
-                var a = ex;
                 // Figure out what to do after.
             }
 
@@ -230,8 +232,12 @@ namespace asagiv.datapush.ui.mobile.Droid
                     var column_index = cursor.GetColumnIndexOrThrow(OpenableColumns.DisplayName);
                     var fileName = cursor.GetString(column_index);
 
-                    if (uri == null) return null;
-                    ContentResolver resolver = context.ContentResolver;
+                    if (uri == null)
+                    {
+                        return null;
+                    }
+                        
+                    var resolver = context.ContentResolver;
 
                     var outputFilePath = new Java.IO.File(context.CacheDir, fileName).AbsolutePath;
 
@@ -261,7 +267,9 @@ namespace asagiv.datapush.ui.mobile.Droid
             finally
             {
                 if (cursor != null)
+                {
                     cursor.Close();
+                }
 
                 input.Close();
                 output.Close();
@@ -344,21 +352,23 @@ namespace asagiv.datapush.ui.mobile.Droid
             {
                 bos = new BufferedOutputStream(System.IO.File.OpenWrite(destinationPath));
 
-                int bufferSize = 1024 * 4;
-                byte[] buffer = new byte[bufferSize];
+                var bufferSize = 1024 * 4;
+                var buffer = new byte[bufferSize];
 
                 while (true)
                 {
-                    int len = await stream.ReadAsync(buffer, 0, bufferSize);
+                    var len = await stream.ReadAsync(buffer, 0, bufferSize);
+
                     if (len == 0)
+                    {
                         break;
+                    }
+
                     await bos.WriteAsync(buffer, 0, len);
                 }
-
             }
             catch (Exception ex)
             {
-                var a = ex;
                 // Figure out what to do after.
             }
             finally
@@ -377,7 +387,6 @@ namespace asagiv.datapush.ui.mobile.Droid
                 }
                 catch (Exception ex)
                 {
-                    var a = ex;
                     // Figure out what to do after.
                 }
             }
@@ -411,7 +420,9 @@ namespace asagiv.datapush.ui.mobile.Droid
             finally
             {
                 if (cursor != null)
+                {
                     cursor.Close();
+                }
             }
             return null;
         }

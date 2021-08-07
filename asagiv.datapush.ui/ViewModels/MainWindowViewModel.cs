@@ -6,6 +6,7 @@ namespace asagiv.datapush.ui.ViewModels
     {
         #region ViewModels
         public WindowsClientViewModel WindowsClientViewModel { get; }
+        public ConnectionSettingsViewModel ConnectionSettingsViewModel { get; }
         public WindowsServiceViewModel WindowsServiceViewModel { get; }
         #endregion
 
@@ -13,6 +14,7 @@ namespace asagiv.datapush.ui.ViewModels
         public MainWindowViewModel()
         {
             WindowsClientViewModel = new WindowsClientViewModel();
+            ConnectionSettingsViewModel = new ConnectionSettingsViewModel();
             WindowsServiceViewModel = new WindowsServiceViewModel();
         }
         #endregion

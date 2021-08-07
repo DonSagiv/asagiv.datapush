@@ -8,7 +8,7 @@ namespace asagiv.datapush.ui.mobile.Utilities
     public class LoggerInstance
     {
         #region Statics
-        private static Lazy<LoggerInstance> _lazyInstance = new Lazy<LoggerInstance>(() => new LoggerInstance());
+        private readonly static Lazy<LoggerInstance> _lazyInstance = new Lazy<LoggerInstance>(() => new LoggerInstance());
         public static LoggerInstance Instance => _lazyInstance.Value;
         #endregion
 

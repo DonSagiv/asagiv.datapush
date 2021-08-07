@@ -17,7 +17,7 @@ namespace asagiv.datapush.ui.Views
         #endregion
 
         #region Methods
-        public void setViewModel(WindowsServiceViewModel viewModelInput)
+        public void SetViewModel(WindowsServiceViewModel viewModelInput)
         {
             ViewModel = viewModelInput;
             DataContext = ViewModel;
