@@ -8,6 +8,7 @@ namespace asagiv.datapush.ui.Utilities
     {
         #region Statics
         private static Lazy<WinUiDataPushDbContext> _lazyInstance = new Lazy<WinUiDataPushDbContext>(() => new WinUiDataPushDbContext());
+        public static WinUiDataPushDbContext Instance => _lazyInstance.Value;
         #endregion
 
         #region Methods
