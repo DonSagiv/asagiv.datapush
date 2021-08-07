@@ -1,16 +1,19 @@
-﻿using System;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace asagiv.datapush.common.Models
 {
     public class ClientConnectionSettings
     {
         #region Properties
-        public string ConnectionString { get; }
-        public bool IsPullNode { get; }
+        [Key]
+        public long Id { get; set; }
+        public string ConnectionString { get; set; }
+        public bool IsPullNode { get; set; }
         #endregion
 
         #region Constructor
-        public ClientConnectionSettings(string connectionString, bool isPullNode)
+        protected ClientConnectionSettings() { }
+        public ClientConnectionSettings(string connectionString, bool isPullNode) : this()
         {
             ConnectionString = connectionString;
             IsPullNode = isPullNode;

@@ -18,7 +18,7 @@ namespace asagiv.datapush.ui.Utilities
 
             var appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 
-            optionsBuilder.UseSqlite($"Data Source={appDataFolder}//DataPushDb.db;");
+            optionsBuilder.UseSqlite($"Data Source={appDataFolder}//asagiv_datapush//DataPushDb.db;");
         }
         #endregion
     }

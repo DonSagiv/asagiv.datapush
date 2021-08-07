@@ -5,6 +5,6 @@ namespace asagiv.datapush.common.Utilities
 {
     public abstract class DataPushDbContextBase : DbContext
     {
-        public DbSet<ClientConnectionSettings> ConnectionSettingsSet { get; }
+        public DbSet<ClientConnectionSettings> ConnectionSettingsSet { get; set; }
     }
 }
