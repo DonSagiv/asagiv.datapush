@@ -1,3 +1,4 @@
+using asagiv.datapush.common.Interfaces;
 using asagiv.datapush.common.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -19,7 +20,7 @@ namespace asagiv.datapush.winservice
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddSingleton(GrpcClientFactory.CreateGprcClient);
-                    services.AddSingleton<GrpcDataDownloader>();
+                    services.AddSingleton<IGrpcDataDownloader, GrpcDataDownloader>();
                     services.AddSingleton(LoggerFactory.CreateLoggerWindows);
                     services.AddHostedService<GrpcClientBackgroundWorker>();
                 });

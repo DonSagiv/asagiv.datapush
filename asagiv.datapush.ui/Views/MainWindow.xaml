@@ -4,202 +4,58 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:asagiv.datapush.ui.ViewModels"
-		xmlns:utilities="clr-namespace:asagiv.datapush.ui.Utilities"
-		xmlns:models="clr-namespace:asagiv.datapush.common.Models;assembly=asagiv.datapush.common"
+		xmlns:views="clr-namespace:asagiv.datapush.ui.Views"
+		xmlns:commonInterfaces="clr-namespace:asagiv.datapush.common.Interfaces;assembly=asagiv.datapush.common"
 		mc:Ignorable="d"
         d:DataContext="{d:DesignInstance vm:MainWindowViewModel, IsDesignTimeCreatable=False}"
 		WindowStartupLocation="CenterScreen"
         Title="MainWindow"
-		Height="900"
+		Height="600"
 		Width="800">
-
-	<Window.Resources>
-		<utilities:ServiceStatusValueConverter x:Key="ssc"/>
-	</Window.Resources>
 
 	<DockPanel>
 
-		<GroupBox Header="Windows Service Settings"
-					  DockPanel.Dock="Top"
-					  Margin="10">
+		<TabControl DockPanel.Dock="Top"
+					Margin="10">
 
-			<DockPanel>
+			<TabItem Header="Windows Client">
 
-				<UniformGrid Columns="1"
-							 DockPanel.Dock="Right">
+				<views:WindowsClientView x:Name="WindowsClientView"/>
 
-					<Button Margin="10"
-                                DockPanel.Dock="Right"
-                                Content="Update Settings"
-                                Command="{Binding UpdateSettingsCommand}"/>
+			</TabItem>
 
-					<Button Margin="10"
-                                DockPanel.Dock="Right"
-                                Content="Start Service"
-                                Command="{Binding StartServiceCommand}"/>
+			<TabItem Header="Windows Service Settings">
 
-					<Button Margin="10"
-                                DockPanel.Dock="Right"
-                                Content="Stop Service"
-                                Command="{Binding StopServiceCommand}"/>
+				<views:WindowsServiceView x:Name="WindowsServiceView"/>
 
-				</UniformGrid>
+			</TabItem>
 
-				<StackPanel>
+		</TabControl>
 
-					<DockPanel>
+		<ScrollViewer>
 
-						<TextBlock Margin="10"
-                               Width="125"
-                               Text="Connection String:"
-                               DockPanel.Dock="Left"
-                               VerticalAlignment="Center"/>
+			<ItemsControl ItemsSource="{Binding WindowsClientViewModel.ClientModel.PushContextList}">
+				
+				<ItemsControl.ItemTemplate>
+					
+					<DataTemplate DataType="{x:Type commonInterfaces:IDataPushContext}">
 
-						<Ellipse Width="20"
-							     Height="20"
-							     Margin="10"
-							     Stroke="Black"
-							     StrokeThickness="2"
-							     DockPanel.Dock="Right"
-							     Fill="{Binding Status, Converter={StaticResource ssc}}"
-							     VerticalAlignment="Center"/>
-
-						<TextBox Margin="10"
-                             Text="{Binding ServiceModel.ConnectionString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                             VerticalAlignment="Center"/>
-
-					</DockPanel>
-
-					<DockPanel>
-
-						<TextBlock Margin="10"
-                                   Width="125"
-                                   Text="Device Name:"
-                                   DockPanel.Dock="Left"
-                                   VerticalAlignment="Center"/>
-
-						<TextBox Margin="10"
-                                 Text="{Binding ServiceModel.NodeName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 VerticalAlignment="Center"/>
-
-					</DockPanel>
-
-					<DockPanel>
-
-						<TextBlock Margin="10"
-								   Text="Download Location:"
-								   Width="125"
-								   DockPanel.Dock="Left"
-								   VerticalAlignment="Center"/>
-
-						<TextBox Margin="10"
-								 Text="{Binding ServiceModel.DownloadLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-								 VerticalAlignment="Center"/>
-
-					</DockPanel>
-
-				</StackPanel>
-
-			</DockPanel>
-
-		</GroupBox>
-
-		<GroupBox Header="Windows Client Settings"
-				  Margin="10">
-
-			<DockPanel>
-
-				<DockPanel DockPanel.Dock="Top">
-
-					<UniformGrid Columns="1"
-								DockPanel.Dock="Right">
-
-						<Button Margin="10"
-                                DockPanel.Dock="Right"
-                                Content="Connect"
-                                Command="{Binding ConnectClientCommand}"/>
-
-						<Button Margin="10"
-                                DockPanel.Dock="Right"
-                                Content="Push Files"
-                                Command="{Binding SelectFileToUploadCommand}"/>
-
-					</UniformGrid>
-
-					<StackPanel>
-
-						<DockPanel>
-
-							<TextBlock Margin="10"
-                               Width="125"
-                               Text="Connection String:"
-                               DockPanel.Dock="Left"
-                               VerticalAlignment="Center"/>
-
-							<TextBox Margin="10"
-                             Text="{Binding ClientModel.ConnectionString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                             VerticalAlignment="Center"/>
-
-						</DockPanel>
-
-						<DockPanel>
-
-							<TextBlock Margin="10"
-                               Width="125"
-                               Text="Device Name:"
-                               DockPanel.Dock="Left"
-                               VerticalAlignment="Center"/>
-
-							<TextBox Margin="10"
-                             Text="{Binding ClientModel.NodeName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                             VerticalAlignment="Center"/>
-
-						</DockPanel>
-
-						<DockPanel>
-
-							<TextBlock Margin="10"
-                               Width="125"
-                               Text="Push To:"
-                               DockPanel.Dock="Left"
-                               VerticalAlignment="Center"/>
-
-							<ComboBox Margin="10"
-							  ItemsSource="{Binding ClientModel.PullNodes}"
-							  IsTextSearchEnabled="False"
-                              SelectedItem="{Binding SelectedDestinationNode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                              VerticalAlignment="Center"/>
-
-						</DockPanel>
-
-					</StackPanel>
-
-				</DockPanel>
-
-				<ScrollViewer>
-
-					<ItemsControl ItemsSource="{Binding ClientModel.PushContextList}">
-						<ItemsControl.ItemTemplate>
-							<DataTemplate DataType="{x:Type models:DataPushContext}">
-
-								<GroupBox Header="{Binding Description}"
+						<GroupBox Header="{Binding Description}"
 										  Margin="10">
 
-									<ProgressBar Value="{Binding DataPushProgress}" 
+							<ProgressBar Value="{Binding DataPushProgress}" 
 												 Maximum="1"
 												 Margin="10"/>
 
-								</GroupBox>
-								
-							</DataTemplate>
-						</ItemsControl.ItemTemplate>
-					</ItemsControl>
+						</GroupBox>
+
+					</DataTemplate>
 					
-				</ScrollViewer>
+				</ItemsControl.ItemTemplate>
+				
+			</ItemsControl>
 
-			</DockPanel>
-
-		</GroupBox>
+		</ScrollViewer>
 
 	</DockPanel>
 

@@ -131,7 +131,7 @@ namespace asagiv.datapush.common.Models
 
         public IDataPushContext CreatePushDataContext(string destinationNode, string name, byte[] data)
         {
-            return new DataPushContext(Client, NodeName, destinationNode, name, data);
+            return new DataPushContextBase(Client, NodeName, destinationNode, name, data);
         }
 
         public void Dispose()

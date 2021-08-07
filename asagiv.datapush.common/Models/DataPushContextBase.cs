@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace asagiv.datapush.common.Models
 {
-    public class DataPushContext : IDataPushContext, INotifyPropertyChanged
+    public class DataPushContextBase : IDataPushContext, INotifyPropertyChanged
     {
         #region Statics
         public const int blockSize = 2500000;
@@ -45,7 +45,7 @@ namespace asagiv.datapush.common.Models
         #endregion
 
         #region Constructor
-        public DataPushContext(DataPush.DataPushClient client, string sourceNode, string destinationNode, string name, byte[] payload, ILogger logger = null)
+        public DataPushContextBase(DataPush.DataPushClient client, string sourceNode, string destinationNode, string name, byte[] payload, ILogger logger = null)
         {
             SourceNode = sourceNode;
             DestinationNode = destinationNode;

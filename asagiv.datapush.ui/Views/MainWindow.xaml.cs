@@ -5,11 +5,19 @@ namespace asagiv.datapush.ui.Views
 {
     public partial class MainWindow : Window
     {
+        #region Properties
+        public MainWindowViewModel ViewModel { get; }
+        #endregion
+
         public MainWindow()
         {
             InitializeComponent();
 
-            DataContext = new MainWindowViewModel();
+            ViewModel = new MainWindowViewModel();
+            DataContext = ViewModel;
+
+            WindowsClientView.setViewModel(ViewModel.WindowsClientViewModel);
+            WindowsServiceView.setViewModel(ViewModel.WindowsServiceViewModel);
         }
     }
 }

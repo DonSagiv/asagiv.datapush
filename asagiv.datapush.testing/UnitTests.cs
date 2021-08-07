@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using Microsoft.Extensions.Hosting;
+using asagiv.datapush.common.Utilities;
 
 namespace asagiv.datapush.testing
 {

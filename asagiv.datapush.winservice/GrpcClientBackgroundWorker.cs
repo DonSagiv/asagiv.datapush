@@ -1,5 +1,4 @@
-using asagiv.datapush.common.Models;
-using asagiv.datapush.common.Utilities;
+using asagiv.datapush.common.Interfaces;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System;
@@ -12,11 +11,11 @@ namespace asagiv.datapush.winservice
     {
         #region Fields
         private readonly ILogger _logger;
-        private readonly GrpcDataDownloader _downloader;
-        private readonly GrpcClient _client;
+        private readonly IGrpcDataDownloader _downloader;
+        private readonly IGrpcClient _client;
         #endregion
 
-        public GrpcClientBackgroundWorker(ILogger logger, GrpcDataDownloader downloader, GrpcClient client)
+        public GrpcClientBackgroundWorker(ILogger logger, IGrpcDataDownloader downloader, IGrpcClient client)
         {
             _logger = logger;
             _downloader = downloader;
