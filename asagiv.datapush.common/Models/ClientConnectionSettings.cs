@@ -7,7 +7,7 @@ namespace asagiv.datapush.common.Models
     public class ClientConnectionSettings : INotifyPropertyChanged, IClientConnectionSettings
     {
         #region Fields
-        private long _id;
+        private uint _id;
         private string _connectionName;
         private string _connectionString;
         private bool _isPullNode;
@@ -19,7 +19,7 @@ namespace asagiv.datapush.common.Models
 
         #region Properties
         [Key]
-        public long Id
+        public uint Id
         {
             get { return _id; }
             set { _id = value; RaisePropertyChanged(nameof(Id)); }

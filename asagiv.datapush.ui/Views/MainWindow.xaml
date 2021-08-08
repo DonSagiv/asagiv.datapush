@@ -5,7 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:asagiv.datapush.ui.ViewModels"
 		xmlns:views="clr-namespace:asagiv.datapush.ui.Views"
-		xmlns:commonInterfaces="clr-namespace:asagiv.datapush.common.Interfaces;assembly=asagiv.datapush.common"
 		mc:Ignorable="d"
         d:DataContext="{d:DesignInstance vm:MainWindowViewModel, IsDesignTimeCreatable=False}"
 		WindowStartupLocation="CenterScreen"
@@ -13,56 +12,38 @@
 		Height="600"
 		Width="800">
 
-	<DockPanel>
-
-		<TabControl DockPanel.Dock="Top"
+	<TabControl DockPanel.Dock="Top"
 					Margin="10">
 
-			<TabItem Header="Windows Client">
+		<TabItem Header="Windows Client">
 
-				<views:WindowsClientView x:Name="WindowsClientView"/>
+			<views:WindowsClientView x:Name="WindowsClientView"/>
 
-			</TabItem>
+		</TabItem>
 
-			<TabItem Header="ConnectionSettings">
+		<TabItem Header="Settings">
 
-				<views:ConnectionSettingsView x:Name="ConnectionSettingsView"/>
+			<DockPanel>
 
-			</TabItem>
+				<GroupBox Margin="10"
+						  DockPanel.Dock="Top"
+						  Header="Windows Service Settings">
 
-			<TabItem Header="Windows Service Settings">
+					<views:WindowsServiceView x:Name="WindowsServiceView"/>
 
-				<views:WindowsServiceView x:Name="WindowsServiceView"/>
+				</GroupBox>
 
-			</TabItem>
+				<GroupBox Margin="10"
+						  Header="Connection Settings">
 
-		</TabControl>
+					<views:ConnectionSettingsView x:Name="ConnectionSettingsView"/>
 
-		<ScrollViewer>
+				</GroupBox>
 
-			<ItemsControl ItemsSource="{Binding WindowsClientViewModel.ClientModel.PushContextList}">
-				
-				<ItemsControl.ItemTemplate>
-					
-					<DataTemplate DataType="{x:Type commonInterfaces:IDataPushContext}">
+			</DockPanel>
 
-						<GroupBox Header="{Binding Description}"
-										  Margin="10">
+		</TabItem>
 
-							<ProgressBar Value="{Binding DataPushProgress}" 
-												 Maximum="1"
-												 Margin="10"/>
-
-						</GroupBox>
-
-					</DataTemplate>
-					
-				</ItemsControl.ItemTemplate>
-				
-			</ItemsControl>
-
-		</ScrollViewer>
-
-	</DockPanel>
+	</TabControl>
 
 </Window>

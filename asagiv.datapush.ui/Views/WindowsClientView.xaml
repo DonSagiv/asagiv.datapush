@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:vm="clr-namespace:asagiv.datapush.ui.ViewModels"
+			 xmlns:commonInterfaces="clr-namespace:asagiv.datapush.common.Interfaces;assembly=asagiv.datapush.common"
 			 d:DataContext="{d:DesignInstance vm:WindowsClientViewModel, IsDesignTimeCreatable=False}"
              mc:Ignorable="d" >
 
@@ -75,6 +76,37 @@
 			</StackPanel>
 
 		</DockPanel>
+
+		<TextBlock Text="Pushed Data"
+				   DockPanel.Dock="Top"
+				   Margin="10"
+				   TextAlignment="Center"/>
+
+		<ScrollViewer Margin="10"
+					  VerticalScrollBarVisibility="Auto">
+
+			<ItemsControl ItemsSource="{Binding ClientModel.PushContextList}">
+
+				<ItemsControl.ItemTemplate>
+
+					<DataTemplate DataType="{x:Type commonInterfaces:IDataPushContext}">
+
+						<GroupBox Header="{Binding Description}"
+										  Margin="10">
+
+							<ProgressBar Value="{Binding DataPushProgress}" 
+												 Maximum="1"
+												 Margin="10"/>
+
+						</GroupBox>
+
+					</DataTemplate>
+
+				</ItemsControl.ItemTemplate>
+
+			</ItemsControl>
+
+		</ScrollViewer>
 
 	</DockPanel>
 
