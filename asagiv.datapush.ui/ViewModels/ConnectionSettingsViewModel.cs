@@ -1,9 +1,9 @@
 ﻿using asagiv.datapush.common.Models;
 using asagiv.datapush.ui.Utilities;
+using DynamicData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Prism.Commands;
-using Prism.Mvvm;
+using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,7 +12,7 @@ using System.Windows.Input;
 
 namespace asagiv.datapush.ui.ViewModels
 {
-    public class ConnectionSettingsViewModel : BindableBase
+    public class ConnectionSettingsViewModel : ReactiveObject
     {
         #region Fields
         private ClientConnectionSettings _selectedClientConnection;
@@ -23,7 +23,7 @@ namespace asagiv.datapush.ui.ViewModels
         public ClientConnectionSettings SelectedClientConnection
         {
             get { return _selectedClientConnection; }
-            set { _selectedClientConnection = value; RaisePropertyChanged(nameof(SelectedClientConnection)); }
+            set { this.RaiseAndSetIfChanged(ref _selectedClientConnection, value); }
         }
         #endregion
 
@@ -38,9 +38,9 @@ namespace asagiv.datapush.ui.ViewModels
         {
             ClientConnectionSettingsList = new ObservableCollection<ClientConnectionSettings>();
 
-            NewConnectionSettingsCommand = new DelegateCommand(CreateNewConnectionSettings);
-            SaveConnectionSettingsCommand = new DelegateCommand(SaveConnectionSettingsAsync);
-            DeleteConnectionSettingsCommand = new DelegateCommand(DeleteConnectionSettingsAsync);
+            NewConnectionSettingsCommand = ReactiveCommand.Create(() => CreateNewConnectionSettings());
+            SaveConnectionSettingsCommand = ReactiveCommand.Create(() => SaveConnectionSettingsAsync());
+            DeleteConnectionSettingsCommand = ReactiveCommand.Create(() => DeleteConnectionSettingsAsync());
         }
         #endregion
 

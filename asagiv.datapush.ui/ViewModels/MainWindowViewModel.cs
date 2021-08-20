@@ -1,9 +1,9 @@
-﻿using Prism.Mvvm;
+﻿using ReactiveUI;
 using System.Threading.Tasks;
 
 namespace asagiv.datapush.ui.ViewModels
 {
-    public class MainWindowViewModel : BindableBase
+    public class MainWindowViewModel : ReactiveObject
     {
         #region ViewModels
         public WindowsClientViewModel WindowsClientViewModel { get; }
@@ -21,9 +21,10 @@ namespace asagiv.datapush.ui.ViewModels
         #endregion
 
         #region Methods
-        public Task InitializeAsync()
+        public async Task InitializeAsync()
         {
-            return ConnectionSettingsViewModel.InitializeAsync();
+            await WindowsClientViewModel.InitializeAsync();
+            await ConnectionSettingsViewModel.InitializeAsync();
         }
         #endregion
     }

@@ -1,6 +1,5 @@
 ﻿using asagiv.datapush.ui.Models;
-using Prism.Commands;
-using Prism.Mvvm;
+using ReactiveUI;
 using System;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -8,7 +7,7 @@ using System.Windows.Input;
 
 namespace asagiv.datapush.ui.ViewModels
 {
-    public class WindowsServiceViewModel : BindableBase
+    public class WindowsServiceViewModel : ReactiveObject
     {
         #region Fields
         private WinServiceStatus _status;
@@ -19,7 +18,7 @@ namespace asagiv.datapush.ui.ViewModels
         public WinServiceStatus Status
         {
             get { return _status; }
-            set { _status = value; RaisePropertyChanged(nameof(Status)); }
+            set { this.RaiseAndSetIfChanged(ref _status,  value); }
         }
         #endregion
 
@@ -34,9 +33,9 @@ namespace asagiv.datapush.ui.ViewModels
         {
             ServiceModel = new WindowsServiceSettingsModel();
 
-            StartServiceCommand = new DelegateCommand(async () => await StartServiceAsync());
-            StopServiceCommand = new DelegateCommand(async () => await StopServiceAsync());
-            UpdateSettingsCommand = new DelegateCommand(async () => await ServiceModel.UpdateServiceSettingsAsync());
+            StartServiceCommand = ReactiveCommand.Create(async () => await StartServiceAsync());
+            StopServiceCommand = ReactiveCommand.Create(async () => await StopServiceAsync());
+            UpdateSettingsCommand = ReactiveCommand.Create(async () => await ServiceModel.UpdateServiceSettingsAsync());
 
             // Check the status of the service every second.
             _ = Observable.Interval(TimeSpan.FromSeconds(1))

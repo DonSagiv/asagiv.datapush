@@ -12,20 +12,10 @@
 
 		<DockPanel DockPanel.Dock="Top">
 
-			<UniformGrid Columns="1"
-								DockPanel.Dock="Right">
-
-				<Button Margin="10"
-                                DockPanel.Dock="Right"
-                                Content="Connect"
-                                Command="{Binding ConnectClientCommand}"/>
-
-				<Button Margin="10"
-                                DockPanel.Dock="Right"
-                                Content="Push Files"
-                                Command="{Binding SelectFileToUploadCommand}"/>
-
-			</UniformGrid>
+			<Button Margin="10"
+					DockPanel.Dock="Right"
+                    Content="Push Files"
+                    Command="{Binding SelectFileToUploadCommand}"/>
 
 			<StackPanel>
 
@@ -33,27 +23,16 @@
 
 					<TextBlock Margin="10"
                                Width="125"
-                               Text="Connection String:"
+                               Text="Connection Setting:"
                                DockPanel.Dock="Left"
                                VerticalAlignment="Center"/>
 
-					<TextBox Margin="10"
-                             Text="{Binding ClientModel.ConnectionString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                             VerticalAlignment="Center"/>
-
-				</DockPanel>
-
-				<DockPanel>
-
-					<TextBlock Margin="10"
-                               Width="125"
-                               Text="Device Name:"
-                               DockPanel.Dock="Left"
-                               VerticalAlignment="Center"/>
-
-					<TextBox Margin="10"
-                             Text="{Binding ClientModel.NodeName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                             VerticalAlignment="Center"/>
+					<ComboBox Margin="10"
+							  ItemsSource="{Binding ConnectionSettingsList}"
+							  SelectedItem="{Binding ClientModel.ConnectionSettings, Mode=TwoWay}"
+							  IsTextSearchEnabled="False"
+							  VerticalAlignment="Center"
+							  DisplayMemberPath="ConnectionName"/>
 
 				</DockPanel>
 
@@ -66,9 +45,9 @@
                                VerticalAlignment="Center"/>
 
 					<ComboBox Margin="10"
-							  ItemsSource="{Binding ClientModel.PullNodes}"
+							  ItemsSource="{Binding PullNodes}"
 							  IsTextSearchEnabled="False"
-                              SelectedItem="{Binding SelectedDestinationNode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                              SelectedItem="{Binding ClientModel.PullNode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                               VerticalAlignment="Center"/>
 
 				</DockPanel>
@@ -77,7 +56,7 @@
 
 		</DockPanel>
 
-		<TextBlock Text="Pushed Data"
+		<TextBlock Text="Pushed Data History"
 				   DockPanel.Dock="Top"
 				   Margin="10"
 				   TextAlignment="Center"/>
@@ -85,7 +64,7 @@
 		<ScrollViewer Margin="10"
 					  VerticalScrollBarVisibility="Auto">
 
-			<ItemsControl ItemsSource="{Binding ClientModel.PushContextList}">
+			<ItemsControl ItemsSource="{Binding PushContextList}">
 
 				<ItemsControl.ItemTemplate>
 

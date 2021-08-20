@@ -1,80 +1,121 @@
 ﻿using asagiv.datapush.common.Interfaces;
 using asagiv.datapush.common.Models;
 using asagiv.datapush.common.Utilities;
-using Prism.Mvvm;
+using ReactiveUI;
 using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace asagiv.datapush.ui.Models
 {
-    public class WindowsClientSettingsModel : BindableBase
+    public class WindowsClientSettingsModel : ReactiveObject, IDisposable
     {
         #region Fields
         private IGrpcClient _client;
+        private string _pullNode;
         private string _nodeName;
-        private string _connectionString;
+        private IClientConnectionSettings _connectionSettings;
         #endregion
 
         #region Properties
+        public IClientConnectionSettings ConnectionSettings
+        {
+            get { return _connectionSettings; }
+            set { this.RaiseAndSetIfChanged(ref _connectionSettings, value); }
+        }
         public string NodeName
         {
             get { return _nodeName; }
-            set { _nodeName = value; RaisePropertyChanged(nameof(NodeName)); }
+            set { this.RaiseAndSetIfChanged(ref _nodeName, value); }
         }
-        public string ConnectionString
+        public string PullNode
         {
-            get { return _connectionString; }
-            set { _connectionString = value; RaisePropertyChanged(nameof(ConnectionString)); }
-        }
-        public ObservableCollection<string> PullNodes { get; }
-        public ObservableCollection<IDataPushContext> PushContextList { get; }
-        #endregion
-
-        #region Constructor
-        public WindowsClientSettingsModel()
-        {
-            ConnectionString = "http://192.168.4.4:8082";
-            NodeName = "Windows PC";
-
-            PullNodes = new ObservableCollection<string>();
-            PushContextList = new ObservableCollection<IDataPushContext>();
+            get { return _pullNode; }
+            set { this.RaiseAndSetIfChanged(ref _pullNode, value); }
         }
         #endregion
 
         #region Methods
-        public async Task ConnectClientAsync()
+        public async Task<IList<string>> ConnectClientAsync()
         {
-            PullNodes.Clear();
+            var pullNodes = new List<string>();
+
+            if (!IsConnectionSettingSelected())
+            {
+                return pullNodes;
+            }
 
             try
             {
-                _client = new GrpcClient(ConnectionString, NodeName, GrpcClientFactory.GetDeviceId());
+                _client = new GrpcClient(ConnectionSettings.ConnectionString, NodeName, GrpcClientFactory.GetDeviceId());
 
                 var pullNodesToAdd = await _client.RegisterNodeAsync(false);
 
-                PullNodes.AddRange(pullNodesToAdd);
+                pullNodes.AddRange(pullNodesToAdd);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 // TODO: Log Error.
             }
+
+            return pullNodes;
         }
 
-        public async Task PushFileAsync(string destinationNode, string filePath)
+        public async Task<IDataPushContext> CreatePushContextAsync(string filePath)
         {
+            if (!IsPullNodeSelected())
+            {
+                return null;
+            }
+
             try
             {
-                var contextToAdd = await _client.CreatePushFileContextAsync(destinationNode, filePath);
+                var contextToAdd = await _client.CreatePushFileContextAsync(PullNode, filePath);
 
-                PushContextList.Insert(0, contextToAdd);
-
-                await contextToAdd.PushDataAsync();
+                return contextToAdd;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 // TODO: Log Error.
             }
+
+            return null;
+        }
+
+        private bool IsPullNodeSelected()
+        {
+            if (string.IsNullOrWhiteSpace(PullNode))
+            {
+                MessageBox.Show("Please select a destination.",
+                    "No destination selected.",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool IsConnectionSettingSelected()
+        {
+            if (_connectionSettings == null)
+            {
+                MessageBox.Show("Please select a Connection Setting.",
+                    "Connection Setting not selcted.",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+
+                return false;
+            }
+
+            return true;
+        }
+
+        public void Dispose()
+        {
+            _client.Dispose();
         }
         #endregion
     }

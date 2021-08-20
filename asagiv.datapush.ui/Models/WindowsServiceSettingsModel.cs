@@ -1,15 +1,15 @@
-﻿using Prism.Mvvm;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ReactiveUI;
 
 namespace asagiv.datapush.ui.Models
 {
-    public class WindowsServiceSettingsModel : BindableBase
+    public class WindowsServiceSettingsModel : ReactiveObject
     {
         #region Statocs
         public const string serviceName = "Data-Push";
@@ -29,17 +29,17 @@ namespace asagiv.datapush.ui.Models
         public string NodeName
         {
             get { return _nodeName; }
-            set { _nodeName = value; RaisePropertyChanged(nameof(NodeName)); }
+            set { this.RaiseAndSetIfChanged(ref _nodeName, value); }
         }
         public string ConnectionString
         {
             get { return _connectionString; }
-            set { _connectionString = value; RaisePropertyChanged(nameof(ConnectionString)); }
+            set { this.RaiseAndSetIfChanged(ref _connectionString, value); }
         }
         public string DownloadLocation
         {
             get { return _downloadLocation; }
-            set { _downloadLocation = value; RaisePropertyChanged(nameof(DownloadLocation)); }
+            set { this.RaiseAndSetIfChanged(ref _downloadLocation, value); }
         }
         #endregion
 
