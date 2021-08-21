@@ -1,4 +1,5 @@
 ﻿using asagiv.datapush.ui.ViewModels;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace asagiv.datapush.ui.Views
@@ -13,6 +14,8 @@ namespace asagiv.datapush.ui.Views
         public WindowsClientView()
         {
             InitializeComponent();
+
+            IsVisibleChanged += async (s, e) => await OnVisibilityChanged();
         }
         #endregion
 
@@ -21,6 +24,22 @@ namespace asagiv.datapush.ui.Views
         {
             ViewModel = viewModelInput;
             DataContext = ViewModel;
+        }
+
+        private async ValueTask OnVisibilityChanged()
+        {
+            // Lazy load connection settings.
+
+            if (!IsVisible)
+            {
+                // "Hot" path
+                return; 
+            }
+            else
+            {
+                // "Cold" path
+                await ViewModel.RefreshConnectionSettingsAsync();
+            }
         }
         #endregion
     }

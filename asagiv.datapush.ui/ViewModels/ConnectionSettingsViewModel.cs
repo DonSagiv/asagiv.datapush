@@ -45,11 +45,6 @@ namespace asagiv.datapush.ui.ViewModels
         #endregion
 
         #region Methods
-        public Task InitializeAsync()
-        {
-            return RefreshConnectionStringsAsync();
-        }
-
         public async Task RefreshConnectionStringsAsync()
         {
             ClientConnectionSettingsList.Clear();

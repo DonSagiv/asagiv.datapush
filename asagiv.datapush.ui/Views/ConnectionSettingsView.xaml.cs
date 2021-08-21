@@ -1,4 +1,5 @@
 ﻿using asagiv.datapush.ui.ViewModels;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace asagiv.datapush.ui.Views
@@ -13,6 +14,8 @@ namespace asagiv.datapush.ui.Views
         public ConnectionSettingsView()
         {
             InitializeComponent();
+
+            IsVisibleChanged += async(s,e) => await OnVisibiltyChangedAsync();
         }
         #endregion
 
@@ -21,6 +24,18 @@ namespace asagiv.datapush.ui.Views
         {
             ViewModel = viewModelInput;
             DataContext = ViewModel;
+        }
+
+        private async ValueTask OnVisibiltyChangedAsync()
+        {
+            if (!IsVisible)
+            {
+                return;
+            }
+            else
+            {
+                await ViewModel.RefreshConnectionStringsAsync();
+            }
         }
         #endregion
     }

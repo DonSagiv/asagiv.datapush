@@ -13,15 +13,17 @@
 		Width="800">
 
 	<TabControl DockPanel.Dock="Top"
-					Margin="10">
+				Margin="10">
 
-		<TabItem Header="Windows Client">
+		<TabItem Header="Windows Client"
+				 x:Name="WindowsClientTab">
 
 			<views:WindowsClientView x:Name="WindowsClientView"/>
 
 		</TabItem>
 
-		<TabItem Header="Settings">
+		<TabItem Header="Settings"
+				 x:Name="SettingsTab">
 
 			<DockPanel>
 

@@ -19,13 +19,5 @@ namespace asagiv.datapush.ui.ViewModels
             WindowsServiceViewModel = new WindowsServiceViewModel();
         }
         #endregion
-
-        #region Methods
-        public async Task InitializeAsync()
-        {
-            await WindowsClientViewModel.InitializeAsync();
-            await ConnectionSettingsViewModel.InitializeAsync();
-        }
-        #endregion
     }
 }

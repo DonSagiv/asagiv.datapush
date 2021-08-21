@@ -1,5 +1,4 @@
 ﻿using asagiv.datapush.ui.ViewModels;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace asagiv.datapush.ui.Views
@@ -20,13 +19,6 @@ namespace asagiv.datapush.ui.Views
             WindowsClientView.SetViewModel(ViewModel.WindowsClientViewModel);
             ConnectionSettingsView.SetViewModel(ViewModel.ConnectionSettingsViewModel);
             WindowsServiceView.SetViewModel(ViewModel.WindowsServiceViewModel);
-
-            Loaded += async (s,e) => await OnWindowLoadedAsync(s,e);
-        }
-
-        private async Task OnWindowLoadedAsync(object sender, RoutedEventArgs e)
-        {
-            await ViewModel?.InitializeAsync();
         }
     }
 }
