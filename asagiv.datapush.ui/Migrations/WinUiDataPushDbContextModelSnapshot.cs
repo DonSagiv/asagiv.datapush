@@ -13,7 +13,7 @@ namespace asagiv.datapush.ui.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "5.0.8");
+                .HasAnnotation("ProductVersion", "5.0.9");
 
             modelBuilder.Entity("asagiv.datapush.common.Models.ClientConnectionSettings", b =>
                 {
@@ -29,6 +29,9 @@ namespace asagiv.datapush.ui.Migrations
 
                     b.Property<bool>("IsPullNode")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("NodeName")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 

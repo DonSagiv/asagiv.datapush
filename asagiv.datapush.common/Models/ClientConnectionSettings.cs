@@ -10,6 +10,7 @@ namespace asagiv.datapush.common.Models
         private uint _id;
         private string _connectionName;
         private string _connectionString;
+        private string _nodeName;
         private bool _isPullNode;
         #endregion
 
@@ -33,6 +34,11 @@ namespace asagiv.datapush.common.Models
         {
             get { return _connectionString; }
             set { _connectionString = value; RaisePropertyChanged(nameof(ConnectionString)); }
+        }
+        public string NodeName
+        {
+            get { return _nodeName; }
+            set { _nodeName = value; RaisePropertyChanged(nameof(NodeName)); }
         }
         public bool IsPullNode
         {

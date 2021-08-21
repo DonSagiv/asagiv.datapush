@@ -40,8 +40,4 @@
     <ProjectReference Include="..\asagiv.datapush.winservice\asagiv.datapush.winservice.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Migrations\" />
-  </ItemGroup>
-
 </Project>

@@ -16,11 +16,6 @@ namespace asagiv.datapush.ui.ViewModels
 {
     public class WindowsClientViewModel : ReactiveObject
     {
-        #region Fields
-        private string _selectedDestinationNode;
-        private IClientConnectionSettings _selectedConnectionSettings;
-        #endregion
-
         #region Properties
         public ObservableCollection<IClientConnectionSettings> ConnectionSettingsList { get; }
         public ObservableCollection<IDataPushContext> PushContextList { get; }
