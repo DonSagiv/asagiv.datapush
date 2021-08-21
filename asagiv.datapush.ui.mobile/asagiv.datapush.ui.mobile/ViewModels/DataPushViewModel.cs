@@ -109,6 +109,12 @@ namespace asagiv.datapush.ui.mobile.ViewModels
                 Preferences.Set("deviceId", deviceId);
             }
 
+            var connectionSetting = new ClientConnectionSettings
+            {
+                ConnectionString = _connectionString,
+                NodeName = _nodeName,
+            };
+
             // Create a new connection channel with HTTP insecure credentials.
             // Todo: consider TLS/SSL
             var channel = new Channel(_connectionString, ChannelCredentials.Insecure);
@@ -116,7 +122,7 @@ namespace asagiv.datapush.ui.mobile.ViewModels
             LoggerInstance.Instance.Log.Information($"Registering Node: {_nodeName} for device {deviceId}.");
 
             // Start the GRPC Client.
-            _client = new GrpcClient(channel, _nodeName, deviceId, LoggerInstance.Instance.Log);
+            _client = new GrpcClient(connectionSetting, deviceId, LoggerInstance.Instance.Log);
 
             var response = await _client.RegisterNodeAsync(false);
 

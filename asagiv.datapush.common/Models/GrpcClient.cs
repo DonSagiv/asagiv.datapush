@@ -14,6 +14,7 @@ namespace asagiv.datapush.common.Models
     {
         #region Fields
         private readonly ILogger _logger;
+        private IClientConnectionSettings _clientConnectionSettings;
         #endregion
 
         #region Delegates
@@ -24,27 +25,21 @@ namespace asagiv.datapush.common.Models
         #region Properties
         public DataPush.DataPushClient Client { get; }
         public IList<IDataPullSubscriber> PullSubscribers { get; }
-        public string NodeName { get; set; }
         public string DeviceId { get; set; }
         public bool IsDisposed { get; private set; }
         #endregion
 
         #region Constructor
-        public GrpcClient(ChannelBase channel, string nodeName, string deviceId, ILogger logger = null) : this(nodeName, deviceId, logger)
+        public GrpcClient(IClientConnectionSettings clientConnectionSettings, string deviceId, ILogger logger = null) : this(deviceId, logger)
         {
-            Client = new DataPush.DataPushClient(channel);
+            _clientConnectionSettings = clientConnectionSettings;
+
+            Client = new DataPush.DataPushClient(GrpcChannel.ForAddress(clientConnectionSettings.ConnectionString));
         }
 
-        public GrpcClient(string connectionString, string nodeName, string deviceId, ILogger logger = null) : this(nodeName, deviceId, logger)
-        {
-            Client = new DataPush.DataPushClient(GrpcChannel.ForAddress(connectionString));
-        }
-
-        private GrpcClient(string nodeName, string deviceId, ILogger logger = null)
+        private GrpcClient(string deviceId, ILogger logger = null)
         {
             _logger = logger;
-
-            NodeName = nodeName;
 
             DeviceId = deviceId;
 
@@ -56,7 +51,7 @@ namespace asagiv.datapush.common.Models
         public Task CreatePullSubscriberAsync()
         {
             var subscriber = PullSubscribers
-                .FirstOrDefault(x => x.DestinationNode == NodeName);
+                .FirstOrDefault(x => x.DestinationNode == _clientConnectionSettings.NodeName);
 
             if (subscriber != null)
             {
@@ -65,7 +60,7 @@ namespace asagiv.datapush.common.Models
                 return Task.CompletedTask;
             }
 
-            subscriber = new DataPullSubscriber(Client, NodeName);
+            subscriber = new DataPullSubscriber(Client, _clientConnectionSettings.NodeName);
 
             _logger?.Information($"Creating Pull Subscriber for {subscriber.DestinationNode}.");
 
@@ -82,11 +77,11 @@ namespace asagiv.datapush.common.Models
             {
                 RequestId = Guid.NewGuid().ToString(),
                 DeviceId = DeviceId,
-                NodeName = NodeName,
+                NodeName = _clientConnectionSettings.NodeName,
                 IsPullNode = isPullNode,
             };
 
-            _logger?.Information($"Creating Register Node Request for {DeviceId}. (Name: {NodeName}, IsPullNode: {isPullNode})");
+            _logger?.Information($"Creating Register Node Request for {DeviceId}. (Name: {_clientConnectionSettings.NodeName}, IsPullNode: {isPullNode})");
 
             try
             {
@@ -131,7 +126,7 @@ namespace asagiv.datapush.common.Models
 
         public IDataPushContext CreatePushDataContext(string destinationNode, string name, byte[] data)
         {
-            return new DataPushContextBase(Client, NodeName, destinationNode, name, data);
+            return new DataPushContextBase(Client, _clientConnectionSettings.NodeName, destinationNode, name, data);
         }
 
         public void Dispose()

@@ -48,7 +48,7 @@ namespace asagiv.datapush.ui.Models
 
             try
             {
-                _client = new GrpcClient(ConnectionSettings.ConnectionString, NodeName, GrpcClientFactory.GetDeviceId());
+                _client = new GrpcClient(ConnectionSettings, GrpcClientFactory.GetDeviceId());
 
                 var pullNodesToAdd = await _client.RegisterNodeAsync(false);
 

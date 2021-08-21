@@ -40,7 +40,7 @@ namespace asagiv.datapush.ui.ViewModels
 
             SelectFileToUploadCommand = ReactiveCommand.Create(async () => await UploadFilesAsync());
 
-            var a = this.WhenAnyValue(x => x.ClientModel.ConnectionSettings)
+            this.WhenAnyValue(x => x.ClientModel.ConnectionSettings)
                 .Where(x => x is not null)
                 .Subscribe(async x => await ConnectClientAsync());
         }

@@ -24,9 +24,15 @@ namespace asagiv.datapush.common.Utilities
             var nodeName = configuration?.GetSection("ClientName")?.Value;
             var connectionString = configuration?.GetSection("GrpcServerAddress")?.Value;
 
+            var clientConnectionSettings = new ClientConnectionSettings
+            {
+                ConnectionString = connectionString,
+                NodeName = nodeName,
+            };
+
             logger?.Information($"Creating GRPC Client. (Node Name: {nodeName}, Connection String: {connectionString})");
 
-            return new GrpcClient(connectionString, nodeName, GetDeviceId(), logger);
+            return new GrpcClient(clientConnectionSettings, GetDeviceId(), logger);
         }
 
         public static string GetDeviceId()

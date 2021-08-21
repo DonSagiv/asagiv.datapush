@@ -15,7 +15,6 @@ namespace asagiv.datapush.common.Interfaces
         #region Properties
         DataPush.DataPushClient Client { get; }
         IList<IDataPullSubscriber> PullSubscribers { get; }
-        string NodeName { get; set; }
         string DeviceId { get; set; }
         bool IsDisposed { get; }
         #endregion
