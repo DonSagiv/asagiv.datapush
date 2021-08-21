@@ -73,7 +73,7 @@
 						<GroupBox Header="{Binding Description}"
 										  Margin="10">
 
-							<ProgressBar Value="{Binding DataPushProgress}" 
+							<ProgressBar Value="{Binding DataPushProgress, Mode=OneWay}" 
 												 Maximum="1"
 												 Margin="10"/>
 
