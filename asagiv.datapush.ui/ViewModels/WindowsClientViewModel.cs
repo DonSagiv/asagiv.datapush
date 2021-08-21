@@ -49,13 +49,19 @@ namespace asagiv.datapush.ui.ViewModels
         #region Methods
         public async Task RefreshConnectionSettingsAsync()
         {
+            var selectedConnnectionSetting = ClientModel.ConnectionSettings?.Id;
+            var selectedDestinationNode = ClientModel.DestinationNode;
+
             ConnectionSettingsList.Clear();
 
-            var connectionSettingsToAdd = await WinUiDataPushDbContext.Instance.ConnectionSettingsSet
+            var retrievedConnectionSettings = await WinUiDataPushDbContext.Instance.ConnectionSettingsSet
                 .OrderBy(x => x.ConnectionName)
                 .ToListAsync();
 
-            ConnectionSettingsList.AddRange(connectionSettingsToAdd);
+            ConnectionSettingsList.AddRange(retrievedConnectionSettings);
+
+            ClientModel.ConnectionSettings = retrievedConnectionSettings.FirstOrDefault(x => x.Id == selectedConnnectionSetting);
+            ClientModel.DestinationNode = selectedDestinationNode;
         }
 
         private async Task<bool> ConnectClientAsync()

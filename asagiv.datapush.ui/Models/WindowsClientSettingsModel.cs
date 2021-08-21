@@ -13,8 +13,7 @@ namespace asagiv.datapush.ui.Models
     {
         #region Fields
         private IGrpcClient _client;
-        private string _pullNode;
-        private string _nodeName;
+        private string _destinationNode;
         private IClientConnectionSettings _connectionSettings;
         #endregion
 
@@ -24,15 +23,10 @@ namespace asagiv.datapush.ui.Models
             get { return _connectionSettings; }
             set { this.RaiseAndSetIfChanged(ref _connectionSettings, value); }
         }
-        public string NodeName
+        public string DestinationNode
         {
-            get { return _nodeName; }
-            set { this.RaiseAndSetIfChanged(ref _nodeName, value); }
-        }
-        public string PullNode
-        {
-            get { return _pullNode; }
-            set { this.RaiseAndSetIfChanged(ref _pullNode, value); }
+            get { return _destinationNode; }
+            set { this.RaiseAndSetIfChanged(ref _destinationNode, value); }
         }
         #endregion
 
@@ -71,7 +65,7 @@ namespace asagiv.datapush.ui.Models
 
             try
             {
-                var contextToAdd = await _client.CreatePushFileContextAsync(PullNode, filePath);
+                var contextToAdd = await _client.CreatePushFileContextAsync(DestinationNode, filePath);
 
                 return contextToAdd;
             }
@@ -85,7 +79,7 @@ namespace asagiv.datapush.ui.Models
 
         private bool IsPullNodeSelected()
         {
-            if (string.IsNullOrWhiteSpace(PullNode))
+            if (string.IsNullOrWhiteSpace(DestinationNode))
             {
                 MessageBox.Show("Please select a destination.",
                     "No destination selected.",
