@@ -20,6 +20,13 @@ namespace asagiv.datapush.ui.mobile.Views
             BindingContext = ViewModel;
 
             DataPushView.BindingContext = ViewModel.DataPushViewModel;
+
+            Appearing += (s, e) => OnPageAppearingAsync(s, e);
+        }
+
+        private void OnPageAppearingAsync(object sender, System.EventArgs e)
+        {
+            ViewModel?.GetConnectionSettingsAsync();
         }
         #endregion
     }
