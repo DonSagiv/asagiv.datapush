@@ -1,4 +1,4 @@
-﻿<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+﻿<ContentView xmlns="http://xamarin.com/schemas/2014/forms"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 			 xmlns:vm="clr-namespace:asagiv.datapush.ui.mobile.ViewModels"
 			 xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
@@ -6,7 +6,7 @@
 			 x:Class="asagiv.datapush.ui.mobile.Views.DataPushView">
 
 	<d:ContentView.BindingContext>
-		<vm:DataPushViewModel/>
+		<vm:DataPushViewModel />
 	</d:ContentView.BindingContext>
 
 	<ScrollView>
@@ -17,33 +17,26 @@
 
 				<StackLayout>
 
-					<Label Text="Connection Settings"/>
+					<Label Text="Connection Settings" />
 
-					<Editor Placeholder="Connection String"
-							Text="{Binding ConnectionString, Mode=TwoWay}"/>
-
-					<Editor Placeholder="Device Name"
-							Text="{Binding NodeName, Mode=TwoWay}"/>
-
-					<Button Text="Connect to Server"
-							Command="{Binding ConnectToServerCommand}"/>
+					<Picker ItemsSource="{Binding ConnectionSettingsList}"
+							SelectedItem="{Binding ConnectionSettings, Mode=TwoWay}" />
 
 				</StackLayout>
 
 			</Frame>
 
-			<Frame xct:DockLayout.Dock="Top"
-			       IsVisible="{Binding IsConnected}">
+			<Frame xct:DockLayout.Dock="Top">
 
 				<StackLayout>
 
-					<Label Text="Send File To"/>
+					<Label Text="Send File To" />
 
 					<Picker ItemsSource="{Binding DestinationNodeList}"
-							SelectedItem="{Binding SelectedDestinationNode, Mode=TwoWay}"/>
+							SelectedItem="{Binding SelectedDestinationNode, Mode=TwoWay}" />
 
 					<Button Text="Send File"
-							Command="{Binding PushFilesCommand}"/>
+							Command="{Binding PushFilesCommand}" />
 
 				</StackLayout>
 
@@ -58,9 +51,9 @@
 
 							<StackLayout>
 
-								<Label Text="{Binding Description}"/>
+								<Label Text="{Binding Description}" />
 
-								<ProgressBar Progress="{Binding DataPushProgress}"/>
+								<ProgressBar Progress="{Binding DataPushProgress}" />
 
 							</StackLayout>
 

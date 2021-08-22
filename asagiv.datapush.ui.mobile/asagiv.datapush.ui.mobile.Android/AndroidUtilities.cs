@@ -25,7 +25,7 @@ namespace asagiv.datapush.ui.mobile.Droid
             {
                 LoggerInstance.Instance.Log.Information("Connecting to Server.");
 
-                await viewModel.ConnectToServerAsync();
+                await viewModel.ConnectClientAsync();
             }
 
             var shareStreamContexts = GetClipData(intent, context).ToList();
@@ -61,7 +61,7 @@ namespace asagiv.datapush.ui.mobile.Droid
                 fileName = Path.GetFileNameWithoutExtension(filePath);
             }
 
-                        // Get Data Type.
+            // Get Data Type.
             var mimeType = context.ContentResolver.GetType(x);
 
             // Get Extension from Mime Type.
@@ -76,12 +76,7 @@ namespace asagiv.datapush.ui.mobile.Droid
         {
             var service = App.ServiceProvider.GetService(typeof(DataPushViewModel));
 
-            if (!(service is DataPushViewModel viewModel))
-            {
-                return null;
-            }
-
-            return viewModel;
+            return service is DataPushViewModel viewModel ? viewModel : null;
         }
     }
 }

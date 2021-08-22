@@ -1,17 +1,19 @@
-﻿using asagiv.datapush.common.Models;
+﻿using asagiv.datapush.common.Interfaces;
+using asagiv.datapush.common.Models;
+using asagiv.datapush.ui.mobile.Utilities;
 using Grpc.Core;
+using Microsoft.EntityFrameworkCore;
+using ReactiveUI;
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Essentials;
-using System.Collections.Generic;
-using asagiv.datapush.ui.mobile.Utilities;
-using System.IO;
 using Xamarin.Forms;
-using asagiv.datapush.common.Interfaces;
-using ReactiveUI;
 
 namespace asagiv.datapush.ui.mobile.ViewModels
 {
@@ -41,7 +43,6 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         #endregion
 
         #region Commands
-        public ICommand ConnectToServerCommand { get; }
         public ICommand PushFilesCommand { get; }
         #endregion
 
@@ -55,11 +56,29 @@ namespace asagiv.datapush.ui.mobile.ViewModels
             DestinationNodeList = new ObservableCollection<string>();
 
             PushDataContextList = new ObservableCollection<IDataPushContext>();
+
+            this.WhenAnyValue(x => x.SelectedDestinationNode)
+                .Where(x => x != null)
+                .Subscribe(async x => await ConnectClientAsync());
         }
         #endregion
 
         #region Methods
-        public async Task ConnectToServerAsync()
+        public async Task RefreshConnectionSettingsAsync()
+        {
+            ConnectionSettingsList.Clear();
+
+            var connectionSettingsToAdd = await XFormsDataPusDbContext.Instance.ConnectionSettingsSet
+                .OrderBy(x => x.ConnectionName)
+                .ToListAsync();
+
+            foreach(var item in connectionSettingsToAdd)
+            {
+                ConnectionSettingsList.Add(item);
+            }
+        }
+
+        public async Task ConnectClientAsync()
         {
             LoggerInstance.Instance.Log.Information($"Connecting to PushRocket server: connection string {_connectionSettings.ConnectionName}.");
 

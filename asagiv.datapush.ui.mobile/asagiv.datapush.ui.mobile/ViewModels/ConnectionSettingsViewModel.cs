@@ -1,8 +1,5 @@
 ﻿using asagiv.datapush.common.Interfaces;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 
 namespace asagiv.datapush.ui.mobile.ViewModels
 {

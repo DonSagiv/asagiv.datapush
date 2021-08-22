@@ -1,9 +1,4 @@
-﻿using asagiv.datapush.ui.mobile.Utilities;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using System;
-using ReactiveUI;
+﻿using ReactiveUI;
 
 namespace asagiv.datapush.ui.mobile.ViewModels
 {
