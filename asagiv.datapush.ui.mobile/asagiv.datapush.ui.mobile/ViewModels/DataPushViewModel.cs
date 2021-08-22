@@ -1,7 +1,5 @@
 ﻿using asagiv.datapush.common.Models;
 using Grpc.Core;
-using Prism.Commands;
-using Prism.Mvvm;
 using System;
 using System.Linq;
 using System.Collections.ObjectModel;
@@ -13,56 +11,32 @@ using asagiv.datapush.ui.mobile.Utilities;
 using System.IO;
 using Xamarin.Forms;
 using asagiv.datapush.common.Interfaces;
+using ReactiveUI;
 
 namespace asagiv.datapush.ui.mobile.ViewModels
 {
-    public class DataPushViewModel : BindableBase
+    public class DataPushViewModel : ReactiveObject
     {
         #region Fields
         private IGrpcClient _client;
-        private string _connectionString;
-        private string _nodeName;
-        private bool _isConnected;
+        private IClientConnectionSettings _connectionSettings;
         private string _selectedDestinationNode;
         #endregion
 
         #region Properties
-        public string ConnectionString
+        public ObservableCollection<IClientConnectionSettings> ConnectionSettingsList { get; }
+        public bool IsConnected { get; private set; }
+        public IClientConnectionSettings ConnectionSettings
         {
-            get { return _connectionString; }
-            set 
-            {
-                _connectionString = value;
-                RaisePropertyChanged(nameof(ConnectionString));
-                Preferences.Set(nameof(_connectionString), _connectionString);
-            }
-        }
-        public string NodeName
-        {
-            get { return _nodeName; }
-            set 
-            {
-                _nodeName = value;
-                RaisePropertyChanged(nameof(NodeName));
-                Preferences.Set(nameof(_nodeName), _nodeName);
-            }
-        }
-        public bool IsConnected
-        {
-            get { return _isConnected; }
-            set { _isConnected = value; RaisePropertyChanged(nameof(IsConnected)); }
-        }
-        public string SelectedDestinationNode
-        {
-            get { return _selectedDestinationNode; }
-            set 
-            {
-                _selectedDestinationNode = value;
-                RaisePropertyChanged(nameof(SelectedDestinationNode));
-                Preferences.Set(nameof(_selectedDestinationNode), _selectedDestinationNode);
-            }
+            get => _connectionSettings;
+            set => this.RaiseAndSetIfChanged(ref _connectionSettings, value);
         }
         public ObservableCollection<string> DestinationNodeList { get; }
+        public string SelectedDestinationNode
+        {
+            get => _selectedDestinationNode;
+            set => this.RaiseAndSetIfChanged(ref _selectedDestinationNode, value);
+        }
         public ObservableCollection<IDataPushContext> PushDataContextList { get; }
         #endregion
 
@@ -76,14 +50,7 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         {
             LoggerInstance.Instance.Log.Information($"Initializing DataPushViewModel.");
 
-            // Retrieves last-used connection settings.
-            // Todo: create list of saved connection settings.
-            ConnectionString = Preferences.Get(nameof(_connectionString), string.Empty);
-            NodeName = Preferences.Get(nameof(_nodeName), string.Empty);
-
-            ConnectToServerCommand = new DelegateCommand(async () => await ConnectToServerAsync());
-
-            PushFilesCommand = new DelegateCommand(async () => await PushFilesAsync());
+            PushFilesCommand = ReactiveCommand.Create(async () => await PushFilesAsync());
 
             DestinationNodeList = new ObservableCollection<string>();
 
@@ -94,7 +61,7 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         #region Methods
         public async Task ConnectToServerAsync()
         {
-            LoggerInstance.Instance.Log.Information($"Connecting to PushRocket server: connection string {_connectionString}.");
+            LoggerInstance.Instance.Log.Information($"Connecting to PushRocket server: connection string {_connectionSettings.ConnectionName}.");
 
             // Allows app to use HTTP insecure connections.
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
@@ -109,20 +76,14 @@ namespace asagiv.datapush.ui.mobile.ViewModels
                 Preferences.Set("deviceId", deviceId);
             }
 
-            var connectionSetting = new ClientConnectionSettings
-            {
-                ConnectionString = _connectionString,
-                NodeName = _nodeName,
-            };
-
             // Create a new connection channel with HTTP insecure credentials.
             // Todo: consider TLS/SSL
-            var channel = new Channel(_connectionString, ChannelCredentials.Insecure);
+            var channel = new Channel(_connectionSettings.ConnectionString, ChannelCredentials.Insecure);
 
-            LoggerInstance.Instance.Log.Information($"Registering Node: {_nodeName} for device {deviceId}.");
+            LoggerInstance.Instance.Log.Information($"Registering Node: {_connectionSettings.NodeName} for device {deviceId}.");
 
             // Start the GRPC Client.
-            _client = new GrpcClient(connectionSetting, deviceId, LoggerInstance.Instance.Log);
+            _client = new GrpcClient(_connectionSettings, deviceId, LoggerInstance.Instance.Log);
 
             var response = await _client.RegisterNodeAsync(false);
 
