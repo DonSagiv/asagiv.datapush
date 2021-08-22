@@ -14,6 +14,7 @@ namespace asagiv.datapush.ui.mobile
         {
             ServiceProvider = new ServiceCollection()
                 .AddSingleton<DataPushViewModel>()
+                .AddSingleton<ConnectionSettingsView>()
                 .BuildServiceProvider();
 
             InitializeComponent();

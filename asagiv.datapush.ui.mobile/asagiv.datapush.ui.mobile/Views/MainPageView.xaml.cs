@@ -20,6 +20,7 @@ namespace asagiv.datapush.ui.mobile.Views
             BindingContext = ViewModel;
 
             DataPushView.BindingContext = ViewModel.DataPushViewModel;
+            ConnectionSettingsView.BindingContext = ViewModel.ConnectionSettingsViewModel;
         }
         #endregion
     }

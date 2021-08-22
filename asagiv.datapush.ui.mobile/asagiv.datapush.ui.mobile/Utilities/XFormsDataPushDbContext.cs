@@ -5,15 +5,15 @@ using Xamarin.Essentials;
 
 namespace asagiv.datapush.ui.mobile.Utilities
 {
-    public class XFormsDataPusDbContext : DataPushDbContextBase
+    public class XFormsDataPushDbContext : DataPushDbContextBase
     {
         #region Statics
-        private readonly static Lazy<XFormsDataPusDbContext> _lazyInstance = new Lazy<XFormsDataPusDbContext>(() => new XFormsDataPusDbContext());
-        public static XFormsDataPusDbContext Instance => _lazyInstance.Value;
+        private readonly static Lazy<XFormsDataPushDbContext> _lazyInstance = new Lazy<XFormsDataPushDbContext>(() => new XFormsDataPushDbContext());
+        public static XFormsDataPushDbContext Instance => _lazyInstance.Value;
         #endregion
 
         #region Constructor
-        public XFormsDataPusDbContext()
+        public XFormsDataPushDbContext()
         {
             SQLitePCL.Batteries_V2.Init();
 

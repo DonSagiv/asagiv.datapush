@@ -3,10 +3,47 @@
 			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 			 xmlns:vm="clr-namespace:asagiv.datapush.ui.mobile.ViewModels"
 			 xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+			 xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
 			 x:Class="asagiv.datapush.ui.mobile.Views.ConnectionSettingsView">
 
 	<d:ContentView.BindingContext>
 		<vm:ConnectionSettingsViewModel />
 	</d:ContentView.BindingContext>
+
+	<xct:DockLayout>
+
+		<Frame xct:DockLayout.Dock="Top">
+
+			<StackLayout>
+
+				<Label Text="Connection Settings" />
+
+				<Picker ItemsSource="{Binding ConnectionSettingsList}"
+						SelectedItem="{Binding SelectedConnectionSettings, Mode=TwoWay}" />
+
+			</StackLayout>
+
+		</Frame>
+
+		<Frame>
+
+			<StackLayout>
+
+				<Label Text="Connection Settings Properties" />
+
+				<Editor Placeholder="Connection Name"
+						Text="{Binding SelectedConnectionSettings.ConnectionName, Mode=TwoWay}" />
+
+				<Editor Placeholder="Connection String"
+						Text="{Binding SelectedConnectionSettings.NodeName, Mode=TwoWay}" />
+
+				<Editor Placeholder="Node Name"
+						Text="{Binding SelectedConnectionSettings.NodeName, Mode=TwoWay}" />
+
+			</StackLayout>
+
+		</Frame>
+
+	</xct:DockLayout>
 
 </ContentView>

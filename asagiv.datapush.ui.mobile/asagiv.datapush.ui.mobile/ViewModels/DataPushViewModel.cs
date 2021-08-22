@@ -68,7 +68,7 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         {
             ConnectionSettingsList.Clear();
 
-            var connectionSettingsToAdd = await XFormsDataPusDbContext.Instance.ConnectionSettingsSet
+            var connectionSettingsToAdd = await XFormsDataPushDbContext.Instance.ConnectionSettingsSet
                 .OrderBy(x => x.ConnectionName)
                 .ToListAsync();
 

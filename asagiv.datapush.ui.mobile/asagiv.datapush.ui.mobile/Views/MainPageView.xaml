@@ -15,7 +15,9 @@
 	</ContentPage>
 
 	<ContentPage Title="Connections">
-		
+
+		<views:ConnectionSettingsView x:Name="ConnectionSettingsView" />
+
 	</ContentPage>
 
 </TabbedPage>
