@@ -1,10 +1,12 @@
 ﻿using asagiv.datapush.common.Interfaces;
+using asagiv.datapush.common.Models;
 using asagiv.datapush.ui.mobile.Utilities;
 using Microsoft.EntityFrameworkCore;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace asagiv.datapush.ui.mobile.ViewModels
 {
@@ -23,10 +25,20 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         }
         #endregion
 
+        #region Commands
+        public ICommand NewConnectionSettingCommand { get; }
+        public ICommand DeleteConnectionSettingCommand { get; }
+        public ICommand SaveConnectionSettingCommand { get; }
+        #endregion
+
         #region Constructor
         public ConnectionSettingsViewModel()
         {
             ConnectionSettingsList = new ObservableCollection<IClientConnectionSettings>();
+
+            NewConnectionSettingCommand = ReactiveCommand.Create(() => CreateNewConnectionSetting());
+            DeleteConnectionSettingCommand = ReactiveCommand.Create(() => DeleteConnectionSetting());
+            SaveConnectionSettingCommand = ReactiveCommand.Create(async () => await SaveConnectionSettingAsync());
         }
         #endregion
 
@@ -43,6 +55,28 @@ namespace asagiv.datapush.ui.mobile.ViewModels
             {
                 ConnectionSettingsList.Add(item);
             }
+        }
+
+        private void CreateNewConnectionSetting()
+        {
+            var newConnectionSetting = new ClientConnectionSettings
+            {
+                ConnectionName = "New Connection Settings"
+            };
+
+            ConnectionSettingsList.Add(newConnectionSetting);
+
+            SelectedConnectionSettings = newConnectionSetting;
+        }
+
+        public void DeleteConnectionSetting()
+        {
+
+        }
+
+        public Task SaveConnectionSettingAsync()
+        {
+            return Task.CompletedTask;
         }
         #endregion
     }

@@ -1,14 +1,19 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<ContentView xmlns="http://xamarin.com/schemas/2014/forms"
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 			 xmlns:vm="clr-namespace:asagiv.datapush.ui.mobile.ViewModels"
 			 xmlns:d="http://xamarin.com/schemas/2014/forms/design"
 			 xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
+			 xmlns:utilities="clr-namespace:asagiv.datapush.ui.mobile.Utilities"
 			 x:Class="asagiv.datapush.ui.mobile.Views.ConnectionSettingsView">
 
-	<d:ContentView.BindingContext>
+	<d:ContentPage.BindingContext>
 		<vm:ConnectionSettingsViewModel />
-	</d:ContentView.BindingContext>
+	</d:ContentPage.BindingContext>
+
+	<ContentPage.Resources>
+		<utilities:NullToVisibilityConverter x:Key="n2v" />
+	</ContentPage.Resources>
 
 	<xct:DockLayout>
 
@@ -19,13 +24,27 @@
 				<Label Text="Connection Settings" />
 
 				<Picker ItemsSource="{Binding ConnectionSettingsList}"
-						SelectedItem="{Binding SelectedConnectionSettings, Mode=TwoWay}" />
+						SelectedItem="{Binding SelectedConnectionSettings, Mode=TwoWay}"
+						ItemDisplayBinding="{Binding ConnectionName}" />
+
+				<xct:UniformGrid>
+
+					<Button Text="New"
+							Command="{Binding NewConnectionSettingCommand}" />
+					
+					<Button Text="Delete"
+							Command="{Binding DeleteConnectionSettingCommand}" />
+					
+					<Button Text="Save"
+							Command="{Binding SaveConnectionSettingCommand}" />
+
+				</xct:UniformGrid>
 
 			</StackLayout>
 
 		</Frame>
 
-		<Frame>
+		<Frame IsVisible="{Binding SelectedConnectionSettings, Converter={StaticResource n2v}}">
 
 			<StackLayout>
 
@@ -46,4 +65,4 @@
 
 	</xct:DockLayout>
 
-</ContentView>
+</ContentPage>
