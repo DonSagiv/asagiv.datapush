@@ -16,7 +16,7 @@ namespace asagiv.datapush.ui.mobile.ViewModels
     public class ClientSettingsViewModel : ClientSettingsViewModelBase
     {
         #region Constructor
-        private ClientSettingsViewModel() : base(XFormsDataPushDbContext.Instance, new ClientSettingsModel()) { }
+        public ClientSettingsViewModel() : base(XFormsDataPushDbContext.Instance, new ClientSettingsModel()) { }
         public ClientSettingsViewModel(ClientSettingsModel clientModel) : base(XFormsDataPushDbContext.Instance, clientModel) { }
         #endregion
 

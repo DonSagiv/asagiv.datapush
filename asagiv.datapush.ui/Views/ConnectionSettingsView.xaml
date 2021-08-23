@@ -9,9 +9,7 @@
 			 mc:Ignorable="d">
 
 	<UserControl.Resources>
-
 		<utilities:NullToVisibilityConverter x:Key="n2v" />
-
 	</UserControl.Resources>
 
 	<DockPanel>
