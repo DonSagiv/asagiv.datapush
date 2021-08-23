@@ -26,7 +26,7 @@ namespace asagiv.datapush.ui.mobile.Views
         {
             if(ViewModel != null)
             {
-                await ViewModel.RefreshConnectionsAsync();
+                await ViewModel.RefreshConnectionSettingsAsync();
             }
         }
         #endregion

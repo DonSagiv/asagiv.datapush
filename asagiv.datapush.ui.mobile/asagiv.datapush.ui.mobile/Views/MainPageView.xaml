@@ -10,10 +10,10 @@
 		<viewmodels:MainPageViewModel />
 	</d:TabbedPage.BindingContext>
 
-	<views:DataPushView x:Name="DataPushView"
-						Title="Push Data" />
+	<views:ClientSettingsView x:Name="Client Settings View"
+							  Title="Main" />
 
 	<views:ConnectionSettingsView x:Name="ConnectionSettingsView"
-								  Title="Connection Settings" />
+								  Title="Settings" />
 
 </TabbedPage>

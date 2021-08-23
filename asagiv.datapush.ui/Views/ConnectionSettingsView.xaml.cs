@@ -34,7 +34,7 @@ namespace asagiv.datapush.ui.Views
             }
             else
             {
-                await ViewModel.RefreshConnectionStringsAsync();
+                await ViewModel.RefreshConnectionSettingsAsync();
             }
         }
         #endregion

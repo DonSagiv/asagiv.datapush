@@ -3,10 +3,10 @@
 			 xmlns:vm="clr-namespace:asagiv.datapush.ui.mobile.ViewModels"
 			 xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
 			 xmlns:d="http://xamarin.com/schemas/2014/forms/design"
-			 x:Class="asagiv.datapush.ui.mobile.Views.DataPushView">
+			 x:Class="asagiv.datapush.ui.mobile.Views.ClientSettingsView">
 
 	<d:ContentPage.BindingContext>
-		<vm:DataPushViewModel />
+		<vm:ClientSettingsViewModel />
 	</d:ContentPage.BindingContext>
 
 	<ScrollView>
@@ -20,7 +20,7 @@
 					<Label Text="Connection Settings" />
 
 					<Picker ItemsSource="{Binding ConnectionSettingsList}"
-							SelectedItem="{Binding ConnectionSettings, Mode=TwoWay}" />
+							SelectedItem="{Binding ClientSettingsModel.ConnectionSettings, Mode=TwoWay}" />
 
 				</StackLayout>
 
@@ -32,17 +32,17 @@
 
 					<Label Text="Send File To" />
 
-					<Picker ItemsSource="{Binding DestinationNodeList}"
-							SelectedItem="{Binding SelectedDestinationNode, Mode=TwoWay}" />
+					<Picker ItemsSource="{Binding DestinationNodes}"
+							SelectedItem="{Binding ClientSettingsModel.DestinationNode, Mode=TwoWay}" />
 
 					<Button Text="Send File"
-							Command="{Binding PushFilesCommand}" />
+							Command="{Binding SelectFileToUploadCommand}" />
 
 				</StackLayout>
 
 			</Frame>
 
-			<StackLayout BindableLayout.ItemsSource="{Binding PushDataContextList}">
+			<StackLayout BindableLayout.ItemsSource="{Binding PushContextList}">
 
 				<BindableLayout.ItemTemplate>
 					<DataTemplate>

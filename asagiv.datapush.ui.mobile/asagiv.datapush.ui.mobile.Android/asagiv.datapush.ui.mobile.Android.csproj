@@ -93,6 +93,10 @@
     <Folder Include="Resources\drawable\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\asagiv.datapush.ui.common\asagiv.datapush.ui.common.csproj">
+      <Project>{37450182-9529-4940-AC87-67D3E6FC0958}</Project>
+      <Name>asagiv.datapush.ui.common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\asagiv.datapush.ui.mobile\asagiv.datapush.ui.mobile.csproj">
       <Project>{B9171447-0496-425F-B123-CA3CD3A847EB}</Project>
       <Name>asagiv.datapush.ui.mobile</Name>

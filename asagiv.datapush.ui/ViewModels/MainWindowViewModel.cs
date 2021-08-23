@@ -1,5 +1,5 @@
-﻿using ReactiveUI;
-using System.Threading.Tasks;
+﻿using asagiv.datapush.ui.Models;
+using ReactiveUI;
 
 namespace asagiv.datapush.ui.ViewModels
 {
@@ -14,7 +14,7 @@ namespace asagiv.datapush.ui.ViewModels
         #region Constructor
         public MainWindowViewModel()
         {
-            WindowsClientViewModel = new WindowsClientViewModel();
+            WindowsClientViewModel = new WindowsClientViewModel(new WindowsClientSettingsModel());
             ConnectionSettingsViewModel = new ConnectionSettingsViewModel();
             WindowsServiceViewModel = new WindowsServiceViewModel();
         }

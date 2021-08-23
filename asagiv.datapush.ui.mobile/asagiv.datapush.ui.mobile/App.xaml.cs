@@ -1,4 +1,5 @@
-﻿using asagiv.datapush.ui.mobile.ViewModels;
+﻿using asagiv.datapush.ui.mobile.Models;
+using asagiv.datapush.ui.mobile.ViewModels;
 using asagiv.datapush.ui.mobile.Views;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -13,7 +14,8 @@ namespace asagiv.datapush.ui.mobile
         public App()
         {
             ServiceProvider = new ServiceCollection()
-                .AddSingleton<DataPushViewModel>()
+                .AddSingleton<ClientSettingsViewModel>()
+                .AddSingleton<ClientSettingsModel>()
                 .AddSingleton<ConnectionSettingsViewModel>()
                 .BuildServiceProvider();
 

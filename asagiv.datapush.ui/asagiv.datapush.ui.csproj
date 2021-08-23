@@ -28,7 +28,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.9" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="3.1.0" />
-    <PackageReference Include="ReactiveUI" Version="15.1.1" />
+    <PackageReference Include="ReactiveUI" Version="16.1.1" />
     <PackageReference Include="ReactiveUI.WPF" Version="15.1.1" />
     <PackageReference Include="System.Reactive" Version="5.0.0" />
     <PackageReference Include="System.Reactive.Core" Version="5.0.0" />
@@ -37,6 +37,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\asagiv.datapush.common\asagiv.datapush.common.csproj" />
+    <ProjectReference Include="..\asagiv.datapush.ui.common\asagiv.datapush.ui.common.csproj" />
     <ProjectReference Include="..\asagiv.datapush.winservice\asagiv.datapush.winservice.csproj" />
   </ItemGroup>
 

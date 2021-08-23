@@ -1,118 +1,19 @@
-﻿using asagiv.datapush.common.Models;
+﻿using asagiv.datapush.ui.common;
 using asagiv.datapush.ui.Utilities;
-using DynamicData;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using ReactiveUI;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 
 namespace asagiv.datapush.ui.ViewModels
 {
-    public class ConnectionSettingsViewModel : ReactiveObject
+    public class ConnectionSettingsViewModel : ConnectionSettingsViewModelBase
     {
-        #region Fields
-        private ClientConnectionSettings _selectedClientConnection;
-        #endregion
-
-        #region Properties
-        public ObservableCollection<ClientConnectionSettings> ClientConnectionSettingsList { get; }
-        public ClientConnectionSettings SelectedClientConnection
-        {
-            get { return _selectedClientConnection; }
-            set { this.RaiseAndSetIfChanged(ref _selectedClientConnection, value); }
-        }
-        #endregion
-
-        #region Commands
-        public ICommand NewConnectionSettingsCommand { get; }
-        public ICommand SaveConnectionSettingsCommand { get; }
-        public ICommand DeleteConnectionSettingsCommand { get; }
-        #endregion
-
         #region Constructor
-        public ConnectionSettingsViewModel()
-        {
-            ClientConnectionSettingsList = new ObservableCollection<ClientConnectionSettings>();
-
-            NewConnectionSettingsCommand = ReactiveCommand.Create(() => CreateNewConnectionSettings());
-            SaveConnectionSettingsCommand = ReactiveCommand.Create(() => SaveConnectionSettingsAsync());
-            DeleteConnectionSettingsCommand = ReactiveCommand.Create(() => DeleteConnectionSettingsAsync());
-        }
+        public ConnectionSettingsViewModel() : base(WinUiDataPushDbContext.Instance) { }
         #endregion
 
         #region Methods
-        public async Task RefreshConnectionStringsAsync()
+        protected override bool SettingsListHasName()
         {
-            ClientConnectionSettingsList.Clear();
-
-            var clientConnectionSettingsToAdd = await WinUiDataPushDbContext.Instance.ConnectionSettingsSet
-                .OrderBy(x => x.ConnectionName)
-                .ToListAsync();
-
-            ClientConnectionSettingsList.AddRange(clientConnectionSettingsToAdd);
-        }
-
-        private void CreateNewConnectionSettings()
-        {
-            var settingToAdd = new ClientConnectionSettings
-            {
-                ConnectionName = "New Connection Settings"
-            };
-
-            ClientConnectionSettingsList.Add(settingToAdd);
-
-            SelectedClientConnection = settingToAdd;
-        }
-
-        private async void SaveConnectionSettingsAsync()
-        {
-            if (ConnectionStringIsNullOrEmpty(_selectedClientConnection.ConnectionString) || SettingsListHasName())
-            {
-                return;
-            }
-
-            EntityEntry<ClientConnectionSettings> result;
-
-            if (await WinUiDataPushDbContext.Instance.ConnectionSettingsSet.ContainsAsync(_selectedClientConnection))
-            {
-                result = WinUiDataPushDbContext.Instance.ConnectionSettingsSet.Update(_selectedClientConnection);
-            }
-            else
-            {
-                result = await WinUiDataPushDbContext.Instance.ConnectionSettingsSet.AddAsync(_selectedClientConnection);
-            }
-
-            await WinUiDataPushDbContext.Instance.SaveChangesAsync();
-        }
-
-        private async void DeleteConnectionSettingsAsync()
-        {
-            if (_selectedClientConnection == null || !ConfirmUserDelete())
-            {
-                return;
-            }
-
-            if (WinUiDataPushDbContext.Instance.ConnectionSettingsSet.Contains(_selectedClientConnection))
-            {
-                WinUiDataPushDbContext.Instance.ConnectionSettingsSet.Remove(_selectedClientConnection);
-
-                await WinUiDataPushDbContext.Instance.SaveChangesAsync();
-            }
-
-            ClientConnectionSettingsList.Remove(_selectedClientConnection);
-        }
-
-        private bool SettingsListHasName()
-        {
-            var hasSameName = ClientConnectionSettingsList
-                            .Where(x => x != _selectedClientConnection)
-                            .Any(x => x.ConnectionName == _selectedClientConnection.ConnectionName);
-
-            if (hasSameName)
+            if (base.SettingsListHasName())
             {
                 MessageBox.Show($"There is already a setting called {_selectedClientConnection.ConnectionName}",
                     "Existing Setting",
@@ -125,9 +26,9 @@ namespace asagiv.datapush.ui.ViewModels
             return false;
         }
 
-        private static bool ConnectionStringIsNullOrEmpty(string connectionString)
+        protected override bool ConnectionStringIsNullOrEmpty(string connectionString)
         {
-            if (string.IsNullOrWhiteSpace(connectionString))
+            if (base.ConnectionStringIsNullOrEmpty(connectionString))
             {
                 MessageBox.Show($"Please enter a value for the Connection String.",
                     "Connection String Empty",
@@ -140,7 +41,7 @@ namespace asagiv.datapush.ui.ViewModels
             return false;
         }
 
-        private static bool ConfirmUserDelete()
+        protected override bool ConfirmUserDelete()
         {
             var result = MessageBox.Show("Are you sure you want to delete this connection setting?",
                 "Confirm Delete",

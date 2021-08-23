@@ -72,11 +72,11 @@ namespace asagiv.datapush.ui.mobile.Droid
             return new ShareStreamContext(context.ContentResolver.OpenInputStream(x), extension, fileName);
         }
 
-        private static DataPushViewModel GetViewModel()
+        private static ClientSettingsViewModel GetViewModel()
         {
-            var service = App.ServiceProvider.GetService(typeof(DataPushViewModel));
+            var service = App.ServiceProvider.GetService(typeof(ClientSettingsViewModel));
 
-            return service is DataPushViewModel viewModel ? viewModel : null;
+            return service is ClientSettingsViewModel viewModel ? viewModel : null;
         }
     }
 }

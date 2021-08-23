@@ -4,9 +4,9 @@ using Xamarin.Forms.Xaml;
 namespace asagiv.datapush.ui.mobile.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class DataPushView : ContentPage
+    public partial class ClientSettingsView : ContentPage
     {
-        public DataPushView()
+        public ClientSettingsView()
         {
             InitializeComponent();
         }
