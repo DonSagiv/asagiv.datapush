@@ -10,7 +10,7 @@
 		<viewmodels:MainPageViewModel />
 	</d:TabbedPage.BindingContext>
 
-	<views:ClientSettingsView x:Name="Client Settings View"
+	<views:ClientSettingsView x:Name="ClientSettingsView"
 							  Title="Main" />
 
 	<views:ConnectionSettingsView x:Name="ConnectionSettingsView"
