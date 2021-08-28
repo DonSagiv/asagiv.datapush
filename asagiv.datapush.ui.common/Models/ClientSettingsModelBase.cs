@@ -26,7 +26,7 @@ namespace asagiv.datapush.ui.common.Models
             get { return _destinationNode; }
             set { this.RaiseAndSetIfChanged(ref _destinationNode, value); }
         }
-        protected IGrpcClient Client { get; private set; }
+        protected IGrpcClient Client { get; set; }
         #endregion
 
         #region Methods

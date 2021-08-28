@@ -37,6 +37,13 @@ namespace asagiv.datapush.common.Models
             Client = new DataPush.DataPushClient(GrpcChannel.ForAddress(clientConnectionSettings.ConnectionString));
         }
 
+        public GrpcClient(IClientConnectionSettings clientConnectionSettings, Channel channel, string deviceId, ILogger logger = null) : this(deviceId, logger)
+        {
+            _clientConnectionSettings = clientConnectionSettings;
+
+            Client = new DataPush.DataPushClient(channel);
+        }
+
         private GrpcClient(string deviceId, ILogger logger = null)
         {
             _logger = logger;
