@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ReactiveUI;
@@ -23,6 +24,7 @@ namespace asagiv.datapush.ui.Models
         private string _nodeName;
         private string _connectionString;
         private string _downloadLocation;
+        private WinServiceStatus _status;
         #endregion
 
         #region Properties
@@ -40,6 +42,11 @@ namespace asagiv.datapush.ui.Models
         {
             get { return _downloadLocation; }
             set { this.RaiseAndSetIfChanged(ref _downloadLocation, value); }
+        }
+        public WinServiceStatus Status
+        {
+            get { return _status; }
+            set { this.RaiseAndSetIfChanged(ref _status, value); }
         }
         #endregion
 
@@ -71,18 +78,19 @@ namespace asagiv.datapush.ui.Models
             await File.WriteAllTextAsync(_serviceAppSettingsPath, appSettingsString);
         }
 
-        public async static Task InitializeClientAsync()
+        public void InitializeService()
         {
-            StartDataPushService(await GetServiceStatus());
+            StartDataPushService(_status);
         }
 
-        public async static Task StopClientAsync()
+        public void StopService()
         {
-            StopDataPushService(await GetServiceStatus());
+            StopDataPushService(_status);
         }
 
-        public async static Task<WinServiceStatus> GetServiceStatus()
+        public async Task GetServiceStatus()
         {
+            // Launch the Command Prompt
             var processStartInfo = new ProcessStartInfo
             {
                 FileName = @"cmd.exe",
@@ -90,19 +98,23 @@ namespace asagiv.datapush.ui.Models
                 CreateNoWindow = true
             };
 
+            // Query the Service Status
             processStartInfo.ArgumentList.Add(@$"/C sc query {serviceName}");
 
+            // Start the Process
             var process = Process.Start(processStartInfo);
 
             var reader = process.StandardOutput;
 
             process.EnableRaisingEvents = true;
 
+            // Get results of command prompt
             var result = await reader.ReadToEndAsync();
 
             await process.WaitForExitAsync();
 
-            return ParseServiceStatus(result);
+            // Status needs to be updated on the UI thread.
+            await Application.Current?.Dispatcher.BeginInvoke(new Action(() => Status = ParseServiceStatus(result)), System.Windows.Threading.DispatcherPriority.Render);
         }
 
         private static WinServiceStatus ParseServiceStatus(string serviceQueryResult)
@@ -183,6 +195,8 @@ namespace asagiv.datapush.ui.Models
             }
 
             Process.Start(processStartInfo);
+
+            var a = 1;
         }
         #endregion
     }

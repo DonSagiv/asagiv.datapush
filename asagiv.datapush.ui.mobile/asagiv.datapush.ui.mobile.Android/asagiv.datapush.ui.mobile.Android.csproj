@@ -66,7 +66,7 @@
       <Version>2.39.1</Version>
     </PackageReference>
     <PackageReference Include="ReactiveUI">
-      <Version>16.1.1</Version>
+      <Version>16.2.1</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.Forms" Version="5.0.0.2083" />
     <PackageReference Include="Xamarin.Essentials" Version="1.7.0" />

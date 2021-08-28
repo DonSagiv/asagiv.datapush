@@ -50,7 +50,7 @@
 						 Stroke="Black"
 						 StrokeThickness="2"
 						 DockPanel.Dock="Right"
-						 Fill="{Binding Status, Converter={StaticResource ssc}}"
+						 Fill="{Binding ServiceModel.Status, Converter={StaticResource ssc}}"
 						 VerticalAlignment="Center"/>
 
 				<TextBox Margin="10"

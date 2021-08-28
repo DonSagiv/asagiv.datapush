@@ -20,7 +20,8 @@
 					<Label Text="Connection Settings" />
 
 					<Picker ItemsSource="{Binding ConnectionSettingsList}"
-							SelectedItem="{Binding ClientSettingsModel.ConnectionSettings, Mode=TwoWay}" />
+							SelectedItem="{Binding ClientSettingsModel.ConnectionSettings, Mode=TwoWay}"
+							ItemDisplayBinding="{Binding ConnectionName}" />
 
 				</StackLayout>
 
