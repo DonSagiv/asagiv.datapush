@@ -1,5 +1,4 @@
 ﻿using asagiv.datapush.ui.mobile.ViewModels;
-using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -12,16 +11,11 @@ namespace asagiv.datapush.ui.mobile.Views
         public ClientSettingsViewModel ViewModel => BindingContext as ClientSettingsViewModel;
         #endregion
 
+        #region Constructor
         public ClientSettingsView()
         {
             InitializeComponent();
-
-            Appearing += async(s,e) => await OnPageAppearingAsync(s, e);
         }
-
-        private async Task OnPageAppearingAsync(object sender, System.EventArgs e)
-        {
-            await ViewModel?.RefreshConnectionSettingsAsync();
-        }
+        #endregion
     }
 }

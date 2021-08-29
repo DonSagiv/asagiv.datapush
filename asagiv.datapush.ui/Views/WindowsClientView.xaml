@@ -29,7 +29,7 @@
 
 					<ComboBox Margin="10"
 							  ItemsSource="{Binding ConnectionSettingsList}"
-							  SelectedItem="{Binding ClientModel.ConnectionSettings, Mode=TwoWay}"
+							  SelectedItem="{Binding ClientSettingsModel.ConnectionSettings, Mode=TwoWay}"
 							  IsTextSearchEnabled="False"
 							  VerticalAlignment="Center"
 							  DisplayMemberPath="ConnectionName"/>
@@ -45,9 +45,9 @@
                                VerticalAlignment="Center"/>
 
 					<ComboBox Margin="10"
-							  ItemsSource="{Binding PullNodes}"
+							  ItemsSource="{Binding DestinationNodes}"
 							  IsTextSearchEnabled="False"
-                              SelectedItem="{Binding ClientModel.DestinationNode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                              SelectedItem="{Binding ClientSettingsModel.DestinationNode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                               VerticalAlignment="Center"/>
 
 				</DockPanel>

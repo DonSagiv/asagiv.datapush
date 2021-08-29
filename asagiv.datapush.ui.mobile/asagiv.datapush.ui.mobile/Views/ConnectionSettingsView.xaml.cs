@@ -1,5 +1,4 @@
 ﻿using asagiv.datapush.ui.mobile.ViewModels;
-using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -16,18 +15,6 @@ namespace asagiv.datapush.ui.mobile.Views
         public ConnectionSettingsView()
         {
             InitializeComponent();
-
-            Appearing += async(s,e) => await OnPageLoading();
-        }
-        #endregion
-
-        #region Methods
-        private async ValueTask OnPageLoading()
-        {
-            if(ViewModel != null)
-            {
-                await ViewModel.RefreshConnectionSettingsAsync();
-            }
         }
         #endregion
     }

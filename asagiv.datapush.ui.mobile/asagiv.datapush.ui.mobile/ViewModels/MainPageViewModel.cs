@@ -4,8 +4,10 @@ namespace asagiv.datapush.ui.mobile.ViewModels
 {
     public class MainPageViewModel : ReactiveObject
     {
+        #region ViewModels
         public ClientSettingsViewModel DataPushViewModel { get; }
         public ConnectionSettingsViewModel ConnectionSettingsViewModel { get; }
+        #endregion
 
         public MainPageViewModel()
         {

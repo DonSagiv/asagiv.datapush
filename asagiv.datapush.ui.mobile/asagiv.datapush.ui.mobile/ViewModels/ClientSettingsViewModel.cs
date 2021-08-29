@@ -2,6 +2,7 @@
 using asagiv.datapush.ui.common.ViewModels;
 using asagiv.datapush.ui.mobile.Models;
 using asagiv.datapush.ui.mobile.Utilities;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,12 +17,44 @@ namespace asagiv.datapush.ui.mobile.ViewModels
     public class ClientSettingsViewModel : ClientSettingsViewModelBase
     {
         #region Constructor
-        public ClientSettingsViewModel() : base(XFormsDataPushDbContext.Instance, new ClientSettingsModel()) { }
-        public ClientSettingsViewModel(ClientSettingsModel clientModel) : base(XFormsDataPushDbContext.Instance, clientModel) { }
+        public ClientSettingsViewModel() : base(XFormsDataPushDbContext.Instance, new ClientSettingsModel()) 
+        {
+            // Save the selected connection setting when selected.
+            this.WhenAnyValue(x => x.ClientSettingsModel.ConnectionSettings)
+                .Where(x => x != null)
+                .Subscribe(x => Preferences.Set("Connection Setting", x.ConnectionName));
+
+            // Save the selected destination node when selected.
+            this.WhenAnyValue(x => x.ClientSettingsModel.DestinationNode)
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Subscribe(x => Preferences.Set("Destination Node", x));
+        }
         #endregion
 
         #region Methods
-        protected override async ValueTask UploadFilesAsync()
+        public override async Task RefreshConnectionSettingsAsync()
+        {
+            await base.RefreshConnectionSettingsAsync();
+
+            // Load the previously loaded settings.
+            ClientSettingsModel.ConnectionSettings = ConnectionSettingsList
+                .FirstOrDefault(x => x.ConnectionName == Preferences.Get("Connection Setting", null));
+        }
+
+        public async override Task<bool> ConnectClientAsync()
+        {
+            var isConnected = await base.ConnectClientAsync();
+
+            if (isConnected)
+            {
+                ClientSettingsModel.DestinationNode = DestinationNodes
+                    .FirstOrDefault(x => x == Preferences.Get("Destination Node", null));
+            }
+
+            return isConnected;
+        }
+
+        protected async override ValueTask UploadFilesAsync()
         {
             var files = await FilePicker.PickMultipleAsync();
 

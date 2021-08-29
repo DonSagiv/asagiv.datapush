@@ -47,14 +47,14 @@ namespace asagiv.datapush.ui.common.ViewModels
 
             SelectFileToUploadCommand = ReactiveCommand.Create(async () => await UploadFilesAsync());
 
-            this.WhenAnyValue(x => x.ClientSettingsModel.ConnectionSettings)
+            var task = this.WhenAnyValue(x => x.ClientSettingsModel.ConnectionSettings)
                 .Where(x => x != null)
-                .Subscribe(async x => await ConnectClientAsync());
+                .ForEachAsync(async x => await ConnectClientAsync());
         }
         #endregion
 
         #region Methods
-        public async Task RefreshConnectionSettingsAsync()
+        public virtual async Task RefreshConnectionSettingsAsync()
         {
             var selectedConnnectionSetting = ClientSettingsModel.ConnectionSettings?.Id;
             var selectedDestinationNode = ClientSettingsModel.DestinationNode;

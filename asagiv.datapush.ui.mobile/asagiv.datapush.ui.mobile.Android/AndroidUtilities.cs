@@ -24,11 +24,19 @@ namespace asagiv.datapush.ui.mobile.Droid
             if (!viewModel.IsConnected)
             {
                 LoggerInstance.Instance.Log.Information("Connecting to Server.");
-
-                await viewModel.ConnectClientAsync();
             }
 
             var shareStreamContexts = GetClipData(intent, context).ToList();
+
+            for(var i = 0; i < 5; i++)
+            {
+                if(viewModel.ClientSettingsModel.DestinationNode != null)
+                {
+                    break;
+                }
+
+                await Task.Delay(100);
+            }
 
             await viewModel.PushShareStreamContexts(shareStreamContexts);
         }
