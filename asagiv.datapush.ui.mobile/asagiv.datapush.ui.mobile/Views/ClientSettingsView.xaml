@@ -3,12 +3,18 @@
 			 xmlns:vm="clr-namespace:asagiv.datapush.ui.mobile.ViewModels"
 			 xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
 			 xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+			 xmlns:utilities="clr-namespace:asagiv.datapush.ui.mobile.Utilities"
 			 x:Class="asagiv.datapush.ui.mobile.Views.ClientSettingsView">
 
 	<d:ContentPage.BindingContext>
 		<vm:ClientSettingsViewModel />
 	</d:ContentPage.BindingContext>
 
+	<ContentPage.Resources>
+		<utilities:SendFileLabelConverter x:Key="sflc" />
+		<utilities:SendFileButtonConverter x:Key="sfbc" />
+	</ContentPage.Resources>
+	
 	<ScrollView>
 
 		<xct:DockLayout>
@@ -31,13 +37,17 @@
 
 				<StackLayout>
 
-					<Label Text="Send File To" />
+					<Label Text="{Binding HasShareStreamContexts, Converter={StaticResource sflc}}" />
 
 					<Picker ItemsSource="{Binding DestinationNodes}"
 							SelectedItem="{Binding ClientSettingsModel.DestinationNode, Mode=TwoWay}" />
 
-					<Button Text="Send File"
+					<Button Text="{Binding HasShareStreamContexts, Converter={StaticResource sfbc}}"
 							Command="{Binding SelectFileToUploadCommand}" />
+
+					<Button Text="Cancel Share"
+							IsVisible="{Binding HasShareStreamContexts}"
+							Command="{Binding CancelShareCommand}" />
 
 				</StackLayout>
 

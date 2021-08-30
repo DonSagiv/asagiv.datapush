@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 
@@ -16,9 +17,27 @@ namespace asagiv.datapush.ui.mobile.ViewModels
 {
     public class ClientSettingsViewModel : ClientSettingsViewModelBase
     {
+        #region Fields
+        private IList<ShareStreamContext> _shareStreamContexts;
+        #endregion
+
+        #region Delegates
+        public event EventHandler DestinatioNodeSelected;
+        #endregion
+
+        #region Properties
+        public bool HasShareStreamContexts => _shareStreamContexts?.Any() ?? false;
+        #endregion
+
+        #region Commands
+        public ICommand CancelShareCommand { get; }
+        #endregion
+
         #region Constructor
         public ClientSettingsViewModel() : base(XFormsDataPushDbContext.Instance, new ClientSettingsModel()) 
         {
+            CancelShareCommand = ReactiveCommand.Create(ClearShareData);
+
             // Save the selected connection setting when selected.
             this.WhenAnyValue(x => x.ClientSettingsModel.ConnectionSettings)
                 .Where(x => x != null)
@@ -29,6 +48,8 @@ namespace asagiv.datapush.ui.mobile.ViewModels
                 .Where(x => !string.IsNullOrWhiteSpace(x))
                 .Subscribe(x => Preferences.Set("Destination Node", x));
         }
+
+
         #endregion
 
         #region Methods
@@ -51,11 +72,20 @@ namespace asagiv.datapush.ui.mobile.ViewModels
                     .FirstOrDefault(x => x == Preferences.Get("Destination Node", null));
             }
 
+            DestinatioNodeSelected?.Invoke(this, EventArgs.Empty);
+
             return isConnected;
         }
 
         protected async override ValueTask UploadFilesAsync()
         {
+            if (HasShareStreamContexts)
+            {
+                await PushShareStreamContextsAsync();
+
+                return;
+            }
+
             var files = await FilePicker.PickMultipleAsync();
 
             if (files == null || !files.Any())
@@ -68,9 +98,23 @@ namespace asagiv.datapush.ui.mobile.ViewModels
             await UploadFilesAsync(fileNames);
         }
 
-        public async Task PushShareStreamContexts(IEnumerable<ShareStreamContext> shareStreamContexts)
+        public void PrepareShareStreamContexts(IEnumerable<ShareStreamContext> shareStreamContexts)
         {
-            foreach(var streamContext in shareStreamContexts)
+            _shareStreamContexts = shareStreamContexts.ToList();
+
+            this.RaisePropertyChanged(nameof(HasShareStreamContexts));
+        }
+
+        private void ClearShareData()
+        {
+            _shareStreamContexts = null;
+
+            this.RaisePropertyChanged(nameof(HasShareStreamContexts));
+        }
+
+        private async Task PushShareStreamContextsAsync()
+        {
+            foreach(var streamContext in _shareStreamContexts)
             {
                 var shareName = $"{streamContext.ShareFileName ?? Guid.NewGuid().ToString()}.{streamContext.Extension}";
 
@@ -90,6 +134,8 @@ namespace asagiv.datapush.ui.mobile.ViewModels
                     await PushContextAsync(pushContext);
                 }
             }
+
+            ClearShareData();
         }
 
         protected override async Task PushContextAsync(IDataPushContext context)

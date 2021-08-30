@@ -6,39 +6,18 @@ using asagiv.datapush.ui.mobile.ViewModels;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace asagiv.datapush.ui.mobile.Droid
 {
     public static class AndroidUtilities
     {
-        public async static Task SendDataAsync(Intent intent, Context context)
+        public static void PrepareDataToSend(Intent intent, Context context)
         {
             var viewModel = GetViewModel();
 
-            if (viewModel == null)
-            {
-                return;
-            }
-
-            if (!viewModel.IsConnected)
-            {
-                LoggerInstance.Instance.Log.Information("Connecting to Server.");
-            }
-
             var shareStreamContexts = GetClipData(intent, context).ToList();
 
-            for(var i = 0; i < 5; i++)
-            {
-                if(viewModel.ClientSettingsModel.DestinationNode != null)
-                {
-                    break;
-                }
-
-                await Task.Delay(100);
-            }
-
-            await viewModel.PushShareStreamContexts(shareStreamContexts);
+            viewModel.PrepareShareStreamContexts(shareStreamContexts);
         }
 
         private static IEnumerable<ShareStreamContext> GetClipData(Intent intent, Context context)
@@ -80,7 +59,7 @@ namespace asagiv.datapush.ui.mobile.Droid
             return new ShareStreamContext(context.ContentResolver.OpenInputStream(x), extension, fileName);
         }
 
-        private static ClientSettingsViewModel GetViewModel()
+        public static ClientSettingsViewModel GetViewModel()
         {
             var service = App.ServiceProvider.GetService(typeof(ClientSettingsViewModel));
 

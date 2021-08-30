@@ -8,9 +8,11 @@ using asagiv.datapush.ui.mobile.Utilities;
 
 namespace asagiv.datapush.ui.mobile.Droid
 {
-    [Activity(Label = "PushRocket", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, LaunchMode = LaunchMode.SingleTop, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize )]
+    [Activity(Label = "PushRocket", Icon = "@mipmap/icon", Theme = "@style/MainTheme", MainLauncher = true, LaunchMode = LaunchMode.SingleTop, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize)]
     [IntentFilter(new[] { Intent.ActionSend }, Categories = new[] { Intent.CategoryDefault }, DataMimeType = @"image/*")]
     [IntentFilter(new[] { Intent.ActionSendMultiple }, Categories = new[] { Intent.CategoryDefault }, DataMimeType = @"image/*")]
+    [IntentFilter(new[] { Intent.ActionSend }, Categories = new[] { Intent.CategoryDefault }, DataMimeType = @"video/*")]
+    [IntentFilter(new[] { Intent.ActionSendMultiple }, Categories = new[] { Intent.CategoryDefault }, DataMimeType = @"video/*")]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
         protected override void OnCreate(Bundle savedInstanceState)
@@ -30,7 +32,7 @@ namespace asagiv.datapush.ui.mobile.Droid
             {
                 LoggerInstance.Instance.Log.Information("Intents Found.");
 
-                Task.Run(async () => await AndroidUtilities.SendDataAsync(Intent, ApplicationContext));
+                AndroidUtilities.PrepareDataToSend(Intent, ApplicationContext);
             }
         }
 
@@ -40,7 +42,7 @@ namespace asagiv.datapush.ui.mobile.Droid
             {
                 LoggerInstance.Instance.Log.Information("Intents Found.");
 
-                Task.Run(async () => await AndroidUtilities.SendDataAsync(intent, ApplicationContext));
+                AndroidUtilities.PrepareDataToSend(Intent, ApplicationContext);
             }
         }
 
