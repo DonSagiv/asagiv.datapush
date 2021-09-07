@@ -34,7 +34,7 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         #endregion
 
         #region Constructor
-        public ClientSettingsViewModel() : base(XFormsDataPushDbContext.Instance, new ClientSettingsModel()) 
+        public ClientSettingsViewModel() : base(XFormsDataPushDbContext.Instance, new ClientSettingsModel())
         {
             CancelShareCommand = ReactiveCommand.Create(ClearShareData);
 
@@ -48,8 +48,6 @@ namespace asagiv.datapush.ui.mobile.ViewModels
                 .Where(x => !string.IsNullOrWhiteSpace(x))
                 .Subscribe(x => Preferences.Set("Destination Node", x));
         }
-
-
         #endregion
 
         #region Methods
@@ -62,19 +60,14 @@ namespace asagiv.datapush.ui.mobile.ViewModels
                 .FirstOrDefault(x => x.ConnectionName == Preferences.Get("Connection Setting", null));
         }
 
-        public async override Task<bool> ConnectClientAsync()
+        public async override Task ConnectClientAsync()
         {
-            var isConnected = await base.ConnectClientAsync();
+            await base.ConnectClientAsync();
 
-            if (isConnected)
-            {
-                ClientSettingsModel.DestinationNode = DestinationNodes
-                    .FirstOrDefault(x => x == Preferences.Get("Destination Node", null));
-            }
+            ClientSettingsModel.DestinationNode = DestinationNodes
+                .FirstOrDefault(x => x == Preferences.Get("Destination Node", null));
 
             DestinatioNodeSelected?.Invoke(this, EventArgs.Empty);
-
-            return isConnected;
         }
 
         protected async override ValueTask UploadFilesAsync()
@@ -114,7 +107,7 @@ namespace asagiv.datapush.ui.mobile.ViewModels
 
         private async Task PushShareStreamContextsAsync()
         {
-            foreach(var streamContext in _shareStreamContexts)
+            foreach (var streamContext in _shareStreamContexts)
             {
                 var shareName = $"{streamContext.ShareFileName ?? Guid.NewGuid().ToString()}.{streamContext.Extension}";
 
@@ -144,13 +137,12 @@ namespace asagiv.datapush.ui.mobile.ViewModels
 
             try
             {
-                Device.BeginInvokeOnMainThread(() => 
-                {
+                Device.BeginInvokeOnMainThread(() => {
                     PushContextList.Insert(0, context);
                 });
-                
+
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 LoggerInstance.Instance.Log.Error(e, e.Message);
             }

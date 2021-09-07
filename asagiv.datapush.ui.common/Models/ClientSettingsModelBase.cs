@@ -39,18 +39,11 @@ namespace asagiv.datapush.ui.common.Models
                 return pullNodes;
             }
 
-            try
-            {
-                Client = new GrpcClient(ConnectionSettings, GrpcClientFactory.GetDeviceId());
+            Client = new GrpcClient(ConnectionSettings, GrpcClientFactory.GetDeviceId());
 
-                var pullNodesToAdd = await Client.RegisterNodeAsync(false);
+            var pullNodesToAdd = await Client.RegisterNodeAsync(false);
 
-                pullNodes.AddRange(pullNodesToAdd);
-            }
-            catch (Exception ex)
-            {
-                // TODO: Log Error.
-            }
+            pullNodes.AddRange(pullNodesToAdd);
 
             return pullNodes;
         }
@@ -62,18 +55,9 @@ namespace asagiv.datapush.ui.common.Models
                 return null;
             }
 
-            try
-            {
-                var contextToAdd = await Client.CreatePushFileContextAsync(DestinationNode, filePath);
+            var contextToAdd = await Client.CreatePushFileContextAsync(DestinationNode, filePath);
 
-                return contextToAdd;
-            }
-            catch (Exception ex)
-            {
-                // TODO: Log Error.
-            }
-
-            return null;
+            return contextToAdd;
         }
 
         /// <summary></summary>

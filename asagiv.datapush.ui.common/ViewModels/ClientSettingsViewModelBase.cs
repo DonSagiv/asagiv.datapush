@@ -20,6 +20,10 @@ namespace asagiv.datapush.ui.common.ViewModels
         private DataPushDbContextBase _dataPushDbContext;
         #endregion
 
+        #region Delegates
+        public event EventHandler<string> ErrorOccurred;
+        #endregion
+
         #region Properties
         public ObservableCollection<IClientConnectionSettings> ConnectionSettingsList { get; }
         public ObservableCollection<IDataPushContext> PushContextList { get; }
@@ -71,15 +75,25 @@ namespace asagiv.datapush.ui.common.ViewModels
             ClientSettingsModel.DestinationNode = selectedDestinationNode;
         }
 
-        public virtual async Task<bool> ConnectClientAsync()
+        public virtual async Task ConnectClientAsync()
         {
-            DestinationNodes.Clear();
+            try
+            {
+                DestinationNodes.Clear();
 
-            var pullNodesToAdd = await ClientSettingsModel.ConnectClientAsync();
+                var pullNodesToAdd = await ClientSettingsModel.ConnectClientAsync();
 
-            DestinationNodes.AddRange(pullNodesToAdd);
+                DestinationNodes.AddRange(pullNodesToAdd);
+            }
+            catch(Exception e)
+            {
+                RaiseConnectionTimeoutException();
+            }
+        }
 
-            return true;
+        protected void RaiseConnectionTimeoutException()
+        {
+            ErrorOccurred?.Invoke(this, $"Unable to establish connection to {}.");
         }
 
         protected abstract ValueTask UploadFilesAsync();
