@@ -6,9 +6,9 @@
 			 xmlns:utilities="clr-namespace:asagiv.datapush.ui.mobile.Utilities"
 			 x:Class="asagiv.datapush.ui.mobile.Views.ClientSettingsView">
 
-	<d:ContentPage.BindingContext>
+	<!-- d:ContentPage.BindingContext>
 		<vm:ClientSettingsViewModel />
-	</d:ContentPage.BindingContext>
+	</d:ContentPage.BindingContext -->
 
 	<ContentPage.Resources>
 		<utilities:AnyToBoolConverter x:Key="a2b" />

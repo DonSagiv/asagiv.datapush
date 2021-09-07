@@ -3,6 +3,7 @@ using Android.Net;
 using Android.Webkit;
 using asagiv.datapush.ui.mobile.Utilities;
 using asagiv.datapush.ui.mobile.ViewModels;
+using Serilog;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,31 +12,31 @@ namespace asagiv.datapush.ui.mobile.Droid
 {
     public static class AndroidUtilities
     {
-        public static void PrepareDataToSend(Intent intent, Context context)
+        public static void PrepareDataToSend(Intent intent, Context context, ILogger logger = null)
         {
             var viewModel = GetViewModel();
 
-            var shareStreamContexts = GetClipData(intent, context).ToList();
+            var shareStreamContexts = GetClipData(intent, context, logger).ToList();
 
             viewModel.PrepareShareStreamContexts(shareStreamContexts);
         }
 
-        private static IEnumerable<ShareStreamContext> GetClipData(Intent intent, Context context)
+        private static IEnumerable<ShareStreamContext> GetClipData(Intent intent, Context context, ILogger logger = null)
         {
             // Get Clip Data URIs.
             var clipData = Enumerable.Range(0, intent.ClipData.ItemCount)
                 .Select(x => intent.ClipData.GetItemAt(x).Uri)
                 .ToList();
 
-            LoggerInstance.Instance.Log.Information($"Found {clipData} clips.");
+            logger?.Information($"Found {clipData} clips.");
 
             // Create Streams
-            var shareStreamContextEnumerable = clipData.Select(x => GetShareStreamContext(context, x));
+            var shareStreamContextEnumerable = clipData.Select(x => GetShareStreamContext(context, x, logger));
 
             return shareStreamContextEnumerable;
         }
 
-        private static ShareStreamContext GetShareStreamContext(Context context, Uri x)
+        private static ShareStreamContext GetShareStreamContext(Context context, Uri x, ILogger logger = null)
         {
             string filePath, fileName = null;
 
@@ -43,7 +44,7 @@ namespace asagiv.datapush.ui.mobile.Droid
 
             if (filePath != null)
             {
-                LoggerInstance.Instance.Log.Information($"File Name Found: {filePath}.");
+                logger.Information($"File Name Found: {filePath}.");
 
                 fileName = Path.GetFileNameWithoutExtension(filePath);
             }
@@ -54,7 +55,7 @@ namespace asagiv.datapush.ui.mobile.Droid
             // Get Extension from Mime Type.
             var extension = MimeTypeMap.Singleton.GetExtensionFromMimeType(mimeType);
 
-            LoggerInstance.Instance.Log.Information($"File Found of Type: {extension}.");
+            logger.Information($"File Found of Type: {extension}.");
 
             return new ShareStreamContext(context.ContentResolver.OpenInputStream(x), extension, fileName);
         }

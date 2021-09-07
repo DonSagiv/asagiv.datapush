@@ -24,6 +24,11 @@ namespace asagiv.datapush.ui.mobile.Views
 
         private void ClientSettingsView_BindingContextChanged(object sender, System.EventArgs e)
         {
+            if(ViewModel == null)
+            {
+                return;
+            }
+
             ViewModel.ErrorOccurred += async (s, e) => await OnErrorOccurred(s,e);
             ViewModel.DestinationNodes.CollectionChanged += OnConnectionSettingsListChanged;
         }

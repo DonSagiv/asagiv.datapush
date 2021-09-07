@@ -3,8 +3,7 @@ using Android.Content.PM;
 using Android.Runtime;
 using Android.OS;
 using Android.Content;
-using System.Threading.Tasks;
-using asagiv.datapush.ui.mobile.Utilities;
+using Serilog;
 
 namespace asagiv.datapush.ui.mobile.Droid
 {
@@ -15,6 +14,10 @@ namespace asagiv.datapush.ui.mobile.Droid
     [IntentFilter(new[] { Intent.ActionSendMultiple }, Categories = new[] { Intent.CategoryDefault }, DataMimeType = @"video/*")]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
+        #region Fields
+        private ILogger _logger;
+        #endregion
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -23,6 +26,9 @@ namespace asagiv.datapush.ui.mobile.Droid
             global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
             LoadApplication(new App());
 
+            _logger = App.ServiceProvider.GetService(typeof(ILogger)) as ILogger;
+
+            // Do nothing if no intents found.
             if (Intent == null)
             {
                 return;
@@ -30,9 +36,10 @@ namespace asagiv.datapush.ui.mobile.Droid
 
             if (Intent.Action == Intent.ActionSend || Intent.Action == Intent.ActionSendMultiple)
             {
-                LoggerInstance.Instance.Log.Information("Intents Found.");
+                _logger?.Information("Intents Found.");
 
-                AndroidUtilities.PrepareDataToSend(Intent, ApplicationContext);
+                // Send data from intents (if app launched from "Share" menu).
+                AndroidUtilities.PrepareDataToSend(Intent, ApplicationContext, _logger);
             }
         }
 
@@ -40,9 +47,10 @@ namespace asagiv.datapush.ui.mobile.Droid
         {
             if (intent.Action == Intent.ActionSend || intent.Action == Intent.ActionSendMultiple)
             {
-                LoggerInstance.Instance.Log.Information("Intents Found.");
+                _logger.Information("Intents Found.");
 
-                AndroidUtilities.PrepareDataToSend(Intent, ApplicationContext);
+                // Send data from intents (if app launched from "Share" menu).
+                AndroidUtilities.PrepareDataToSend(Intent, ApplicationContext, _logger);
             }
         }
 

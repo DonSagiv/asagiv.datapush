@@ -24,20 +24,6 @@ namespace asagiv.datapush.common.Utilities
             return logger;
         }
 
-        public static ILogger CreateLoggerXamarin(IServiceProvider serviceProvider)
-        {
-            var logEventSink = serviceProvider.GetService(typeof(RaiseEventLogSink)) as RaiseEventLogSink;
-
-            var config = InitializeConfig()
-                .WriteTo.Sink(logEventSink);
-
-            var logger = config.CreateLogger();
-
-            logger.Information($"Logger Initialized. ({DateTime.Now.ToLongDateString()})");
-
-            return logger;
-        }
-
         public static ILogger CreateLoggerWindows(IServiceProvider serviceProvider)
         {
             string logPath = null;

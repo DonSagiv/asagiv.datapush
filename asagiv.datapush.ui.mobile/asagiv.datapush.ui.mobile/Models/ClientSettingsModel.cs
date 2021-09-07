@@ -1,8 +1,8 @@
 ﻿using asagiv.datapush.common.Interfaces;
 using asagiv.datapush.common.Models;
 using asagiv.datapush.ui.common.Models;
-using asagiv.datapush.ui.mobile.Utilities;
 using Grpc.Core;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -12,9 +12,21 @@ namespace asagiv.datapush.ui.mobile.Models
 {
     public class ClientSettingsModel : ClientSettingsModelBase
     {
+        #region Fields
+        private readonly ILogger _logger;
+        #endregion
+
+        #region Constructor
+        public ClientSettingsModel(ILogger logger)
+        {
+            _logger = logger;
+        }
+        #endregion
+
+        #region Methods
         public override async Task<IList<string>> ConnectClientAsync()
         {
-            LoggerInstance.Instance.Log.Information($"Connecting to PushRocket server: connection string {ConnectionSettings.ConnectionName}.");
+            _logger.Information($"Connecting to PushRocket server: connection string {ConnectionSettings.ConnectionName}.");
 
             // Allows app to use HTTP insecure connections.
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
@@ -31,20 +43,24 @@ namespace asagiv.datapush.ui.mobile.Models
 
             var destinationNodes = new List<string>();
 
+            // Retruns and empty list if no connection setting is selected.
             if (!IsConnectionSettingSelected())
             {
                 return destinationNodes;
             }
 
+            // Creates a new channel.
             var channel = new Channel(ConnectionSettings.ConnectionString, ChannelCredentials.Insecure);
 
-            Client = new GrpcClient(ConnectionSettings, channel, deviceId, LoggerInstance.Instance.Log);
+            // Creates a new GRPC client w/ the channel.
+            Client = new GrpcClient(ConnectionSettings, channel, deviceId, _logger);
 
+            // Gets the destination nodes from the GRPC server.
             var destinationNodesToAdd = await Client.RegisterNodeAsync(false);
 
             destinationNodes.AddRange(destinationNodesToAdd);
 
-            LoggerInstance.Instance.Log.Information($"Node Registration and Connection Successful.");
+            _logger.Information($"Node Registration and Connection Successful.");
 
             return destinationNodes;
         }
@@ -53,5 +69,6 @@ namespace asagiv.datapush.ui.mobile.Models
         {
             return Client.CreatePushDataContext(DestinationNode, shareName, data);
         }
+        #endregion
     }
 }

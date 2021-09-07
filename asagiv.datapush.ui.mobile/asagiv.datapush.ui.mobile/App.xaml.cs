@@ -1,8 +1,10 @@
-﻿using asagiv.datapush.ui.mobile.Models;
+﻿using asagiv.datapush.common.Utilities;
+using asagiv.datapush.ui.mobile.Models;
 using asagiv.datapush.ui.mobile.ViewModels;
 using asagiv.datapush.ui.mobile.Views;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace asagiv.datapush.ui.mobile
@@ -14,6 +16,7 @@ namespace asagiv.datapush.ui.mobile
         public App()
         {
             ServiceProvider = new ServiceCollection()
+                .AddSingleton(x => LoggerFactory.CreateLogger(FileSystem.AppDataDirectory))
                 .AddSingleton<ClientSettingsViewModel>()
                 .AddSingleton<ClientSettingsModel>()
                 .AddSingleton<ConnectionSettingsViewModel>()
