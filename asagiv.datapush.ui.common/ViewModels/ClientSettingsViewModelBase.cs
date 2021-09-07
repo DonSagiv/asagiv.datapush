@@ -93,7 +93,7 @@ namespace asagiv.datapush.ui.common.ViewModels
 
         protected void RaiseConnectionTimeoutException()
         {
-            ErrorOccurred?.Invoke(this, $"Unable to establish connection to {}.");
+            ErrorOccurred?.Invoke(this, $"Unable to establish connection to {ClientSettingsModel.ConnectionSettings.ConnectionName}.");
         }
 
         protected abstract ValueTask UploadFilesAsync();

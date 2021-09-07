@@ -64,6 +64,7 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         {
             await base.ConnectClientAsync();
 
+            // Remember the selected destination node from the last session.
             ClientSettingsModel.DestinationNode = DestinationNodes
                 .FirstOrDefault(x => x == Preferences.Get("Destination Node", null));
 

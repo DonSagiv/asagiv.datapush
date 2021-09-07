@@ -1,4 +1,6 @@
 ﻿using asagiv.datapush.ui.mobile.ViewModels;
+using System;
+using System.Collections.Specialized;
 using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -23,6 +25,12 @@ namespace asagiv.datapush.ui.mobile.Views
         private void ClientSettingsView_BindingContextChanged(object sender, System.EventArgs e)
         {
             ViewModel.ErrorOccurred += async (s, e) => await OnErrorOccurred(s,e);
+            ViewModel.DestinationNodes.CollectionChanged += OnConnectionSettingsListChanged;
+        }
+
+        private void OnConnectionSettingsListChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            DestinationNodeSelector.IsVisible = ViewModel.DestinationNodes.Count > 0;
         }
 
         private async Task OnErrorOccurred(object sender, string e)

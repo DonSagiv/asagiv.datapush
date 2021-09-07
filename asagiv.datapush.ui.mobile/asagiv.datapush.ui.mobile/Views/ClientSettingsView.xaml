@@ -11,10 +11,11 @@
 	</d:ContentPage.BindingContext>
 
 	<ContentPage.Resources>
+		<utilities:AnyToBoolConverter x:Key="a2b" />
 		<utilities:SendFileLabelConverter x:Key="sflc" />
 		<utilities:SendFileButtonConverter x:Key="sfbc" />
 	</ContentPage.Resources>
-	
+
 	<ScrollView>
 
 		<xct:DockLayout>
@@ -33,7 +34,8 @@
 
 			</Frame>
 
-			<Frame xct:DockLayout.Dock="Top">
+			<Frame xct:DockLayout.Dock="Top"
+				   x:Name="DestinationNodeSelector">
 
 				<StackLayout>
 
