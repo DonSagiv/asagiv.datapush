@@ -6,7 +6,7 @@ namespace asagiv.datapush.ui.mobile.ViewModels
     public class ConnectionSettingsViewModel : ConnectionSettingsViewModelBase
     {
         #region Constructor
-        public ConnectionSettingsViewModel() : base(XFormsDataPushDbContext.Instance) { }
+        public ConnectionSettingsViewModel(XFormsDataPushDbContext dbContext) : base(dbContext) { }
         #endregion
     }
 }

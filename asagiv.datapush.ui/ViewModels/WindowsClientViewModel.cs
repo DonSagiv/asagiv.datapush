@@ -1,7 +1,9 @@
 ﻿using asagiv.datapush.ui.common.Models;
 using asagiv.datapush.ui.common.ViewModels;
+using asagiv.datapush.ui.Models;
 using asagiv.datapush.ui.Utilities;
 using Microsoft.Win32;
+using Serilog;
 using System.Threading.Tasks;
 
 namespace asagiv.datapush.ui.ViewModels
@@ -9,7 +11,7 @@ namespace asagiv.datapush.ui.ViewModels
     public class WindowsClientViewModel : ClientSettingsViewModelBase
     {
         #region Constructor
-        public WindowsClientViewModel(ClientSettingsModelBase clientSettingsModel) : base(WinUiDataPushDbContext.Instance, clientSettingsModel) { }
+        public WindowsClientViewModel(WinUiDataPushDbContext dbContext, WindowsClientSettingsModel clientSettingsModel, ILogger logger) : base(dbContext, clientSettingsModel, logger) { }
         #endregion
 
         #region Methods
@@ -22,10 +24,14 @@ namespace asagiv.datapush.ui.ViewModels
                 Multiselect = true,
             };
 
+            _logger.Information("Showing Upload Files Dialog.");
+
             var result = openFileDialog.ShowDialog();
 
             if (result != true)
             {
+                _logger.Information("File selection cancelled.");
+
                 return;
             }
 

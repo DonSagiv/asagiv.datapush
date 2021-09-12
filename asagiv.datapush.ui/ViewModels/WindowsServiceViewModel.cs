@@ -1,5 +1,6 @@
 ﻿using asagiv.datapush.ui.Models;
 using ReactiveUI;
+using Serilog;
 using System;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace asagiv.datapush.ui.ViewModels
     public class WindowsServiceViewModel : ReactiveObject
     {
         #region Fields
-        
+        private readonly ILogger _logger;
         #endregion
 
         #region Properties
@@ -25,9 +26,11 @@ namespace asagiv.datapush.ui.ViewModels
         #endregion
 
         #region Constructor
-        public WindowsServiceViewModel()
+        public WindowsServiceViewModel(WindowsServiceSettingsModel windowsServiceSettingsModel, ILogger logger)
         {
-            ServiceModel = new WindowsServiceSettingsModel();
+            _logger = logger;
+
+            ServiceModel = windowsServiceSettingsModel;
 
             StartServiceCommand = ReactiveCommand.Create(ServiceModel.InitializeService);
             StopServiceCommand = ReactiveCommand.Create(ServiceModel.StopService);

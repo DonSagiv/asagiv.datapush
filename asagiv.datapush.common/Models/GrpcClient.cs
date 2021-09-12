@@ -12,6 +12,10 @@ namespace asagiv.datapush.common.Models
 {
     public sealed class GrpcClient : IGrpcClient
     {
+        #region Statics
+        public const string timeoutMessage = "Connection to Server Timed Out";
+        #endregion
+
         #region Fields
         private readonly ILogger _logger;
         private IClientConnectionSettings _clientConnectionSettings;
@@ -89,7 +93,7 @@ namespace asagiv.datapush.common.Models
 
             if (!getPullNodeTask.IsCompletedSuccessfully)
             {
-                throw new TimeoutException("Connection to Server Timed Out");
+                throw new TimeoutException(timeoutMessage);
             }
 
             return getPullNodeTask.Result.PullNodeList;

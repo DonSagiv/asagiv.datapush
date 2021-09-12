@@ -1,9 +1,11 @@
 ﻿using asagiv.datapush.common.Interfaces;
+using asagiv.datapush.common.Models;
 using asagiv.datapush.common.Utilities;
 using asagiv.datapush.ui.common.Models;
 using DynamicData;
 using Microsoft.EntityFrameworkCore;
 using ReactiveUI;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -18,6 +20,7 @@ namespace asagiv.datapush.ui.common.ViewModels
     {
         #region Fields
         private DataPushDbContextBase _dataPushDbContext;
+        protected readonly ILogger _logger;
         #endregion
 
         #region Delegates
@@ -37,8 +40,10 @@ namespace asagiv.datapush.ui.common.ViewModels
         #endregion
 
         #region Constructor
-        public ClientSettingsViewModelBase(DataPushDbContextBase dataPushDbContext, ClientSettingsModelBase clientModel)
+        public ClientSettingsViewModelBase(DataPushDbContextBase dataPushDbContext, ClientSettingsModelBase clientModel, ILogger logger)
         {
+            _logger = logger;
+
             _dataPushDbContext = dataPushDbContext;
 
             ClientSettingsModel = clientModel;
@@ -79,21 +84,32 @@ namespace asagiv.datapush.ui.common.ViewModels
         {
             try
             {
+                // Clear all destination nodes.
                 DestinationNodes.Clear();
 
+                // Connect to the client, retrieve pull nodes.
                 var pullNodesToAdd = await ClientSettingsModel.ConnectClientAsync();
 
+                _logger.Information($"Pull nodes found: {string.Join(", ", pullNodesToAdd)}");
+
+                // Add pull nodes to the list.
                 DestinationNodes.AddRange(pullNodesToAdd);
             }
-            catch(Exception e)
+            catch(TimeoutException e) when (e.Message == GrpcClient.timeoutMessage)
             {
+                // Raise exception if connection has timed out.
                 RaiseConnectionTimeoutException();
             }
         }
 
         protected void RaiseConnectionTimeoutException()
         {
-            ErrorOccurred?.Invoke(this, $"Unable to establish connection to {ClientSettingsModel.ConnectionSettings.ConnectionName}.");
+            var message = $"Unable to establish connection to {ClientSettingsModel.ConnectionSettings.ConnectionName}.";
+
+            _logger?.Warning(message);
+
+            // Invoke the event that an error has occurred.
+            ErrorOccurred?.Invoke(this, message);
         }
 
         protected abstract ValueTask UploadFilesAsync();
@@ -108,6 +124,8 @@ namespace asagiv.datapush.ui.common.ViewModels
 
         protected async Task PushFileAsync(string file)
         {
+            _logger?.Information($"Uploading file: {file}");
+
             var context = await ClientSettingsModel.CreatePushContextAsync(file);
 
             await PushContextAsync(context);
@@ -115,8 +133,14 @@ namespace asagiv.datapush.ui.common.ViewModels
 
         protected virtual async Task PushContextAsync(IDataPushContext context)
         {
+            _logger.Information($"Adding {context.Name} to context list.");
+
+            // Insert the push context to the top of the list.
             PushContextList.Insert(0, context);
 
+            _logger.Information($"Pushing {context.Name}.");
+
+            // Push the data in the context to the server.
             await context.PushDataAsync();
         }
         #endregion

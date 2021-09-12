@@ -6,9 +6,9 @@
 			xmlns:views="clr-namespace:asagiv.datapush.ui.mobile.Views"
 			x:Class="asagiv.datapush.ui.mobile.Views.MainPageView">
 
-	<d:TabbedPage.BindingContext>
+	<!-- d:TabbedPage.BindingContext>
 		<viewmodels:MainPageViewModel />
-	</d:TabbedPage.BindingContext>
+	</d:TabbedPage.BindingContext -->
 
 	<views:ClientSettingsView x:Name="ClientSettingsView"
 							  Title="Main" />

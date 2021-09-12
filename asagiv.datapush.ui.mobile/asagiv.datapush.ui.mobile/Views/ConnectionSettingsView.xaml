@@ -7,9 +7,9 @@
 			 xmlns:utilities="clr-namespace:asagiv.datapush.ui.mobile.Utilities"
 			 x:Class="asagiv.datapush.ui.mobile.Views.ConnectionSettingsView">
 
-	<d:ContentPage.BindingContext>
+	<!-- d:ContentPage.BindingContext>
 		<vm:ConnectionSettingsViewModel />
-	</d:ContentPage.BindingContext>
+	</d:ContentPage.BindingContext -->
 
 	<ContentPage.Resources>
 		<utilities:NullToVisibilityConverter x:Key="n2v" />

@@ -6,11 +6,6 @@ namespace asagiv.datapush.ui.Utilities
 {
     public class WinUiDataPushDbContext : DataPushDbContextBase
     {
-        #region Statics
-        private readonly static Lazy<WinUiDataPushDbContext> _lazyInstance = new(() => new WinUiDataPushDbContext());
-        public static WinUiDataPushDbContext Instance => _lazyInstance.Value;
-        #endregion
-
         #region Methods
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

@@ -36,7 +36,7 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         #endregion
 
         #region Constructor
-        public ClientSettingsViewModel(ILogger logger) : base(XFormsDataPushDbContext.Instance, new ClientSettingsModel(logger))
+        public ClientSettingsViewModel(XFormsDataPushDbContext dbContext, ClientSettingsModel model, ILogger logger) : base(dbContext, model, logger)
         {
             _logger = logger;
 

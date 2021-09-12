@@ -1,5 +1,6 @@
 ﻿using asagiv.datapush.common.Utilities;
 using asagiv.datapush.ui.mobile.Models;
+using asagiv.datapush.ui.mobile.Utilities;
 using asagiv.datapush.ui.mobile.ViewModels;
 using asagiv.datapush.ui.mobile.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,14 +18,17 @@ namespace asagiv.datapush.ui.mobile
         {
             ServiceProvider = new ServiceCollection()
                 .AddSingleton(x => LoggerFactory.CreateLogger(FileSystem.AppDataDirectory))
+                .AddSingleton<MainPageView>()
+                .AddSingleton<MainPageViewModel>()
                 .AddSingleton<ClientSettingsViewModel>()
                 .AddSingleton<ClientSettingsModel>()
                 .AddSingleton<ConnectionSettingsViewModel>()
+                .AddDbContext<XFormsDataPushDbContext>()
                 .BuildServiceProvider();
 
             InitializeComponent();
 
-            MainPage = new MainPageView();
+            MainPage = ServiceProvider.GetService(typeof(MainPageView)) as MainPageView;
         }
 
         protected override void OnStart()

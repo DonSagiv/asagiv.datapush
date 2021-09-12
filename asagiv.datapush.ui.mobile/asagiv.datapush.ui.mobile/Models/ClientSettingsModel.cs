@@ -12,15 +12,8 @@ namespace asagiv.datapush.ui.mobile.Models
 {
     public class ClientSettingsModel : ClientSettingsModelBase
     {
-        #region Fields
-        private readonly ILogger _logger;
-        #endregion
-
         #region Constructor
-        public ClientSettingsModel(ILogger logger)
-        {
-            _logger = logger;
-        }
+        public ClientSettingsModel(ILogger logger) : base(logger) { }
         #endregion
 
         #region Methods

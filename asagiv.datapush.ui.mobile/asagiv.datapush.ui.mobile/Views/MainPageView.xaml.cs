@@ -1,7 +1,7 @@
 ﻿using asagiv.datapush.ui.mobile.ViewModels;
+using Serilog;
 using System;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -10,16 +10,22 @@ namespace asagiv.datapush.ui.mobile.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class MainPageView : TabbedPage
     {
+        #region Fields
+        private readonly ILogger _logger;
+        #endregion
+
         #region ViewModels
         public MainPageViewModel ViewModel { get; }
         #endregion
 
         #region Constructor
-        public MainPageView()
+        public MainPageView(MainPageViewModel mainPageViewModel, ILogger logger)
         {
+            _logger = logger;
+
             InitializeComponent();
 
-            ViewModel = new MainPageViewModel();
+            ViewModel = mainPageViewModel;
             BindingContext = ViewModel;
 
             ClientSettingsView.BindingContext = ViewModel.DataPushViewModel;

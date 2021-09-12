@@ -1,21 +1,25 @@
 ﻿using ReactiveUI;
+using Serilog;
 
 namespace asagiv.datapush.ui.mobile.ViewModels
 {
     public class MainPageViewModel : ReactiveObject
     {
+        #region Fields
+        private readonly ILogger _logger;
+        #endregion
+
         #region ViewModels
         public ClientSettingsViewModel DataPushViewModel { get; }
         public ConnectionSettingsViewModel ConnectionSettingsViewModel { get; }
         #endregion
 
-        public MainPageViewModel()
+        public MainPageViewModel(ClientSettingsViewModel clientSettingsViewModel, ConnectionSettingsViewModel connectionSettingsViewModel, ILogger logger)
         {
-            var dataPustViewModelObject = App.ServiceProvider.GetService(typeof(ClientSettingsViewModel));
-            var connectionSettingsViewModelObject = App.ServiceProvider.GetService(typeof(ConnectionSettingsViewModel));
+            _logger = logger;
 
-            DataPushViewModel = dataPustViewModelObject as ClientSettingsViewModel;
-            ConnectionSettingsViewModel = connectionSettingsViewModelObject as ConnectionSettingsViewModel;
+            DataPushViewModel = clientSettingsViewModel;
+            ConnectionSettingsViewModel = connectionSettingsViewModel;
         }
     }
 }

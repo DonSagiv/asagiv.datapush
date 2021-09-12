@@ -7,11 +7,6 @@ namespace asagiv.datapush.ui.mobile.Utilities
 {
     public class XFormsDataPushDbContext : DataPushDbContextBase
     {
-        #region Statics
-        private readonly static Lazy<XFormsDataPushDbContext> _lazyInstance = new Lazy<XFormsDataPushDbContext>(() => new XFormsDataPushDbContext());
-        public static XFormsDataPushDbContext Instance => _lazyInstance.Value;
-        #endregion
-
         #region Constructor
         public XFormsDataPushDbContext()
         {

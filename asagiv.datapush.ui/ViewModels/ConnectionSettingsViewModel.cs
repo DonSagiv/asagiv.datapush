@@ -7,7 +7,7 @@ namespace asagiv.datapush.ui.ViewModels
     public class ConnectionSettingsViewModel : ConnectionSettingsViewModelBase
     {
         #region Constructor
-        public ConnectionSettingsViewModel() : base(WinUiDataPushDbContext.Instance) { }
+        public ConnectionSettingsViewModel(WinUiDataPushDbContext dbContext) : base(dbContext) { }
         #endregion
 
         #region Methods

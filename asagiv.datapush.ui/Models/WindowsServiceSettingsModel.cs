@@ -7,6 +7,7 @@ using System.Windows;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ReactiveUI;
+using Serilog;
 
 namespace asagiv.datapush.ui.Models
 {
@@ -18,6 +19,7 @@ namespace asagiv.datapush.ui.Models
         #endregion
 
         #region Fields
+        private readonly ILogger _logger;
         private readonly string _appDirectory;
         private readonly string _serviceAppSettingsPath;
         private readonly JObject _appSettingsJson;
@@ -51,8 +53,10 @@ namespace asagiv.datapush.ui.Models
         #endregion
 
         #region Constructor
-        public WindowsServiceSettingsModel()
+        public WindowsServiceSettingsModel(ILogger logger)
         {
+            _logger = logger;
+
             _appDirectory = Directory.GetCurrentDirectory();
             _serviceAppSettingsPath = Path.Combine(_appDirectory, "appsettings.json");
 
@@ -90,6 +94,8 @@ namespace asagiv.datapush.ui.Models
 
         public async Task GetServiceStatus()
         {
+            _logger.Verbose("Getting Status of Windows Service");
+
             // Launch the Command Prompt
             var processStartInfo = new ProcessStartInfo
             {
@@ -117,10 +123,12 @@ namespace asagiv.datapush.ui.Models
             await Application.Current?.Dispatcher.BeginInvoke(new Action(() => Status = ParseServiceStatus(result)), System.Windows.Threading.DispatcherPriority.Render);
         }
 
-        private static WinServiceStatus ParseServiceStatus(string serviceQueryResult)
+        private WinServiceStatus ParseServiceStatus(string serviceQueryResult)
         {
             if (serviceQueryResult.Contains("FAILED 1060"))
             {
+                _logger?.Verbose("Windows Service Not Installed.");
+
                 return WinServiceStatus.NotInstalled;
             }
 
@@ -130,18 +138,24 @@ namespace asagiv.datapush.ui.Models
 
             if (stateLine.Contains("RUNNING"))
             {
+                _logger?.Verbose("Windows Service Running.");
+
                 return WinServiceStatus.Running;
             }
             else if (stateLine.Contains("STOPPED"))
             {
+                _logger?.Verbose("Windows Service Stopped.");
+
                 return WinServiceStatus.Stopped;
             }
 
             return WinServiceStatus.Error;
         }
 
-        public static void StopDataPushService(WinServiceStatus status)
+        public void StopDataPushService(WinServiceStatus status)
         {
+            _logger?.Warning("Stopping the Windows Service.");
+
             var processStartInfo = new ProcessStartInfo
             {
                 FileName = @"cmd.exe",
@@ -162,11 +176,13 @@ namespace asagiv.datapush.ui.Models
                     throw new ArgumentException("Invalid Query Status Detected.");
             }
 
-            Process.Start(processStartInfo);
+            _ = Process.Start(processStartInfo);
         }
 
-        public static void StartDataPushService(WinServiceStatus status)
+        public void StartDataPushService(WinServiceStatus status)
         {
+            _logger?.Warning("Starting the Windows Service.");
+
             var processStartInfo = new ProcessStartInfo
             {
                 FileName = @"cmd.exe",
@@ -194,9 +210,7 @@ namespace asagiv.datapush.ui.Models
                     throw new ArgumentException("Invalid Query Status Detected.");
             }
 
-            Process.Start(processStartInfo);
-
-            var a = 1;
+            _ = Process.Start(processStartInfo);
         }
         #endregion
     }

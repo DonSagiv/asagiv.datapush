@@ -2,6 +2,7 @@
 using asagiv.datapush.common.Models;
 using asagiv.datapush.common.Utilities;
 using ReactiveUI;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ namespace asagiv.datapush.ui.common.Models
     public abstract class ClientSettingsModelBase : ReactiveObject, IDisposable
     {
         #region Fields
+        protected readonly ILogger _logger;
         private string _destinationNode;
         private IClientConnectionSettings _connectionSettings;
         #endregion
@@ -29,8 +31,15 @@ namespace asagiv.datapush.ui.common.Models
         protected IGrpcClient Client { get; set; }
         #endregion
 
+        #region Constructor
+        public ClientSettingsModelBase(ILogger logger)
+        {
+            _logger = logger;
+        }
+        #endregion
+
         #region Methods
-        public virtual async Task<IList<string>> ConnectClientAsync()
+        public async virtual Task<IList<string>> ConnectClientAsync()
         {
             var pullNodes = new List<string>();
 
@@ -41,8 +50,10 @@ namespace asagiv.datapush.ui.common.Models
 
             Client = new GrpcClient(ConnectionSettings, GrpcClientFactory.GetDeviceId());
 
+            // Register the current node and get the available pull nodes.
             var pullNodesToAdd = await Client.RegisterNodeAsync(false);
 
+            // Add the pull nodes to the list.
             pullNodes.AddRange(pullNodesToAdd);
 
             return pullNodes;
