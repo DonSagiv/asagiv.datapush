@@ -23,9 +23,9 @@ namespace asagiv.datapush.ui.Views
             ViewModel = mainWindowViewModel;
             DataContext = ViewModel;
 
-            WindowsClientView.SetViewModel(ViewModel.WindowsClientViewModel);
+            WindowsClientView.SetViewModel(ViewModel.ClientSettingsViewModel);
             ConnectionSettingsView.SetViewModel(ViewModel.ConnectionSettingsViewModel);
-            WindowsServiceView.SetViewModel(ViewModel.WindowsServiceViewModel);
+            WindowsServiceView.SetViewModel(ViewModel.PullNodeSettingsViewModel);
         }
     }
 }

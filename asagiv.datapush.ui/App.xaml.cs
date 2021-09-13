@@ -1,4 +1,6 @@
-﻿using asagiv.datapush.common.Utilities;
+﻿using asagiv.datapush.common.Interfaces;
+using asagiv.datapush.common.Utilities;
+using asagiv.datapush.ui.common.Interfaces;
 using asagiv.datapush.ui.Models;
 using asagiv.datapush.ui.Utilities;
 using asagiv.datapush.ui.ViewModels;
@@ -25,12 +27,12 @@ namespace asagiv.datapush.ui
                 .AddSingleton(LoggerFactory.CreateLoggerWindows)
                 .AddSingleton<MainWindow>()
                 .AddSingleton<MainWindowViewModel>()
-                .AddSingleton<WindowsClientViewModel>()
-                .AddSingleton<WindowsClientSettingsModel>()
-                .AddSingleton<ConnectionSettingsViewModel>()
+                .AddSingleton<IClientSettingsViewModel, WindowsClientSettingsViewModel>()
+                .AddSingleton<IClientSettingsModel, WindowsClientSettingsModel>()
+                .AddSingleton<IConnectionSettingsViewModel, ConnectionSettingsViewModel>()
+                .AddSingleton<IPullNodeSettingsViewModel, WindowsServiceViewModel>()
+                .AddSingleton<IPullNodeSettingsModel, WindowsServiceSettingsModel>()
                 .AddDbContext<WinUiDataPushDbContext>()
-                .AddSingleton<WindowsServiceViewModel>()
-                .AddSingleton<WindowsServiceSettingsModel>()
                 .BuildServiceProvider();
 
             base.OnStartup(e);

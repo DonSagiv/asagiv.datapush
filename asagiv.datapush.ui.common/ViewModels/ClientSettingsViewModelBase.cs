@@ -1,7 +1,7 @@
 ﻿using asagiv.datapush.common.Interfaces;
 using asagiv.datapush.common.Models;
 using asagiv.datapush.common.Utilities;
-using asagiv.datapush.ui.common.Models;
+using asagiv.datapush.ui.common.Interfaces;
 using DynamicData;
 using Microsoft.EntityFrameworkCore;
 using ReactiveUI;
@@ -16,7 +16,7 @@ using System.Windows.Input;
 
 namespace asagiv.datapush.ui.common.ViewModels
 {
-    public abstract class ClientSettingsViewModelBase : ReactiveObject
+    public abstract class ClientSettingsViewModelBase : ReactiveObject, IClientSettingsViewModel
     {
         #region Fields
         private DataPushDbContextBase _dataPushDbContext;
@@ -31,7 +31,7 @@ namespace asagiv.datapush.ui.common.ViewModels
         public ObservableCollection<IClientConnectionSettings> ConnectionSettingsList { get; }
         public ObservableCollection<IDataPushContext> PushContextList { get; }
         public ObservableCollection<string> DestinationNodes { get; }
-        public ClientSettingsModelBase ClientSettingsModel { get; }
+        public IClientSettingsModel ClientSettingsModel { get; }
         public bool IsConnected { get; private set; }
         #endregion
 
@@ -40,7 +40,7 @@ namespace asagiv.datapush.ui.common.ViewModels
         #endregion
 
         #region Constructor
-        public ClientSettingsViewModelBase(DataPushDbContextBase dataPushDbContext, ClientSettingsModelBase clientModel, ILogger logger)
+        public ClientSettingsViewModelBase(DataPushDbContextBase dataPushDbContext, IClientSettingsModel clientModel, ILogger logger)
         {
             _logger = logger;
 
@@ -58,13 +58,15 @@ namespace asagiv.datapush.ui.common.ViewModels
 
             var task = this.WhenAnyValue(x => x.ClientSettingsModel.ConnectionSettings)
                 .Where(x => x != null)
-                .ForEachAsync(async x => await ConnectClientAsync());
+                .ForEachAsync(async x => await ConnectToServerAsync());
         }
         #endregion
 
         #region Methods
-        public virtual async Task RefreshConnectionSettingsAsync()
+        public async virtual Task RefreshConnectionSettingsAsync()
         {
+            _logger?.Information("Refreshing Connection Settings.");
+
             var selectedConnnectionSetting = ClientSettingsModel.ConnectionSettings?.Id;
             var selectedDestinationNode = ClientSettingsModel.DestinationNode;
 
@@ -80,15 +82,17 @@ namespace asagiv.datapush.ui.common.ViewModels
             ClientSettingsModel.DestinationNode = selectedDestinationNode;
         }
 
-        public virtual async Task ConnectClientAsync()
+        public async virtual Task ConnectToServerAsync()
         {
+            _logger?.Information("Attempting to Connect to Server.");
+
             try
             {
                 // Clear all destination nodes.
                 DestinationNodes.Clear();
 
                 // Connect to the client, retrieve pull nodes.
-                var pullNodesToAdd = await ClientSettingsModel.ConnectClientAsync();
+                var pullNodesToAdd = await ClientSettingsModel.ConnectToServerAsync();
 
                 _logger.Information($"Pull nodes found: {string.Join(", ", pullNodesToAdd)}");
 
@@ -112,7 +116,7 @@ namespace asagiv.datapush.ui.common.ViewModels
             ErrorOccurred?.Invoke(this, message);
         }
 
-        protected abstract ValueTask UploadFilesAsync();
+        public abstract ValueTask UploadFilesAsync();
 
         protected async Task UploadFilesAsync(IEnumerable<string> fileNames)
         {
@@ -131,7 +135,7 @@ namespace asagiv.datapush.ui.common.ViewModels
             await PushContextAsync(context);
         }
 
-        protected virtual async Task PushContextAsync(IDataPushContext context)
+        protected async virtual Task PushContextAsync(IDataPushContext context)
         {
             _logger.Information($"Adding {context.Name} to context list.");
 

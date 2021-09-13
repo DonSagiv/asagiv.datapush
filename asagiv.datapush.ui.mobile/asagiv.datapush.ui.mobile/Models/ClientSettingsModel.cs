@@ -17,7 +17,7 @@ namespace asagiv.datapush.ui.mobile.Models
         #endregion
 
         #region Methods
-        public override async Task<IList<string>> ConnectClientAsync()
+        public override async Task<IList<string>> ConnectToServerAsync()
         {
             _logger.Information($"Connecting to PushRocket server: connection string {ConnectionSettings.ConnectionName}.");
 

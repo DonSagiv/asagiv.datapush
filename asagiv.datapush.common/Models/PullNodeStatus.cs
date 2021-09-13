@@ -1,6 +1,6 @@
-﻿namespace asagiv.datapush.ui.Models
+﻿namespace asagiv.datapush.common.Models
 {
-    public enum WinServiceStatus
+    public enum PullNodeStatus
     {
         NotInstalled,
         Stopped,

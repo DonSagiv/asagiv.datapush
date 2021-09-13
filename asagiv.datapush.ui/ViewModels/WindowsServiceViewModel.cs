@@ -1,4 +1,5 @@
-﻿using asagiv.datapush.ui.Models;
+﻿using asagiv.datapush.common.Interfaces;
+using asagiv.datapush.ui.common.Interfaces;
 using ReactiveUI;
 using Serilog;
 using System;
@@ -8,14 +9,14 @@ using System.Windows.Input;
 
 namespace asagiv.datapush.ui.ViewModels
 {
-    public class WindowsServiceViewModel : ReactiveObject
+    public class WindowsServiceViewModel : ReactiveObject, IPullNodeSettingsViewModel
     {
         #region Fields
         private readonly ILogger _logger;
         #endregion
 
         #region Properties
-        public WindowsServiceSettingsModel ServiceModel { get; }
+        public IPullNodeSettingsModel ServiceModel { get; }
 
         #endregion
 
@@ -26,11 +27,11 @@ namespace asagiv.datapush.ui.ViewModels
         #endregion
 
         #region Constructor
-        public WindowsServiceViewModel(WindowsServiceSettingsModel windowsServiceSettingsModel, ILogger logger)
+        public WindowsServiceViewModel(IPullNodeSettingsModel pullNodeSettingsModel, ILogger logger)
         {
             _logger = logger;
 
-            ServiceModel = windowsServiceSettingsModel;
+            ServiceModel = pullNodeSettingsModel;
 
             StartServiceCommand = ReactiveCommand.Create(ServiceModel.InitializeService);
             StopServiceCommand = ReactiveCommand.Create(ServiceModel.StopService);
@@ -45,7 +46,7 @@ namespace asagiv.datapush.ui.ViewModels
         #region methods
         private async Task GetServiceStatusAsync()
         {
-            await ServiceModel.GetServiceStatus();
+            await ServiceModel.GetServiceStatusAsync();
         }
         #endregion
     }

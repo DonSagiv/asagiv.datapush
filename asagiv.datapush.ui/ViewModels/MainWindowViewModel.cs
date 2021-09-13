@@ -1,4 +1,4 @@
-﻿using asagiv.datapush.ui.Models;
+﻿using asagiv.datapush.ui.common.Interfaces;
 using ReactiveUI;
 using Serilog;
 
@@ -11,19 +11,19 @@ namespace asagiv.datapush.ui.ViewModels
         #endregion
 
         #region ViewModels
-        public WindowsClientViewModel WindowsClientViewModel { get; }
-        public ConnectionSettingsViewModel ConnectionSettingsViewModel { get; }
-        public WindowsServiceViewModel WindowsServiceViewModel { get; }
+        public IClientSettingsViewModel ClientSettingsViewModel { get; }
+        public IConnectionSettingsViewModel ConnectionSettingsViewModel { get; }
+        public IPullNodeSettingsViewModel PullNodeSettingsViewModel { get; }
         #endregion
 
         #region Constructor
-        public MainWindowViewModel(WindowsClientViewModel windowsClientViewModel, ConnectionSettingsViewModel connectionSettingsViewModel, WindowsServiceViewModel windowsServiceViewModel, ILogger logger)
+        public MainWindowViewModel(IClientSettingsViewModel clientSettingsViewModel, IConnectionSettingsViewModel connectionSettingsViewModel, IPullNodeSettingsViewModel windowsServiceViewModel, ILogger logger)
         {
             _logger = logger;
             
-            WindowsClientViewModel = windowsClientViewModel;
+            ClientSettingsViewModel = clientSettingsViewModel;
             ConnectionSettingsViewModel = connectionSettingsViewModel;
-            WindowsServiceViewModel = windowsServiceViewModel;
+            PullNodeSettingsViewModel = windowsServiceViewModel;
         }
         #endregion
     }

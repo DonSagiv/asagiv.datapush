@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Xamarin.Essentials;
 using Xamarin.Forms;
+using asagiv.datapush.ui.common.Interfaces;
 
 namespace asagiv.datapush.ui.mobile.ViewModels
 {
@@ -20,7 +21,6 @@ namespace asagiv.datapush.ui.mobile.ViewModels
     {
         #region Fields
         private IList<ShareStreamContext> _shareStreamContexts;
-        private readonly ILogger _logger;
         #endregion
 
         #region Delegates
@@ -36,10 +36,8 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         #endregion
 
         #region Constructor
-        public ClientSettingsViewModel(XFormsDataPushDbContext dbContext, ClientSettingsModel model, ILogger logger) : base(dbContext, model, logger)
+        public ClientSettingsViewModel(XFormsDataPushDbContext dbContext, IClientSettingsModel model, ILogger logger) : base(dbContext, model, logger)
         {
-            _logger = logger;
-
             CancelShareCommand = ReactiveCommand.Create(ClearShareData);
 
             // Save the selected connection setting when selected.
@@ -64,9 +62,9 @@ namespace asagiv.datapush.ui.mobile.ViewModels
                 .FirstOrDefault(x => x.ConnectionName == Preferences.Get("Connection Setting", null));
         }
 
-        public async override Task ConnectClientAsync()
+        public async override Task ConnectToServerAsync()
         {
-            await base.ConnectClientAsync();
+            await base.ConnectToServerAsync();
 
             // Remember the selected destination node from the last session.
             ClientSettingsModel.DestinationNode = DestinationNodes
@@ -75,8 +73,10 @@ namespace asagiv.datapush.ui.mobile.ViewModels
             DestinatioNodeSelected?.Invoke(this, EventArgs.Empty);
         }
 
-        protected async override ValueTask UploadFilesAsync()
+        public async override ValueTask UploadFilesAsync()
         {
+            _logger?.Information("Attempting to Upload Files.");
+
             // Uploads the share stream context if there is one.
             if (HasShareStreamContexts)
             {

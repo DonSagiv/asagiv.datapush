@@ -1,4 +1,4 @@
-﻿using asagiv.datapush.ui.ViewModels;
+﻿using asagiv.datapush.ui.common.Interfaces;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
@@ -7,7 +7,7 @@ namespace asagiv.datapush.ui.Views
     public partial class WindowsClientView : UserControl
     {
         #region Properties
-        public WindowsClientViewModel ViewModel { get; private set; }
+        public IClientSettingsViewModel ViewModel { get; private set; }
         #endregion
 
         #region Constructor
@@ -20,7 +20,7 @@ namespace asagiv.datapush.ui.Views
         #endregion
 
         #region Methods
-        public void SetViewModel(WindowsClientViewModel viewModelInput)
+        public void SetViewModel(IClientSettingsViewModel viewModelInput)
         {
             ViewModel = viewModelInput;
             DataContext = ViewModel;

@@ -1,4 +1,5 @@
-﻿using ReactiveUI;
+﻿using asagiv.datapush.ui.common.Interfaces;
+using ReactiveUI;
 using Serilog;
 
 namespace asagiv.datapush.ui.mobile.ViewModels
@@ -10,11 +11,11 @@ namespace asagiv.datapush.ui.mobile.ViewModels
         #endregion
 
         #region ViewModels
-        public ClientSettingsViewModel DataPushViewModel { get; }
-        public ConnectionSettingsViewModel ConnectionSettingsViewModel { get; }
+        public IClientSettingsViewModel DataPushViewModel { get; }
+        public IConnectionSettingsViewModel ConnectionSettingsViewModel { get; }
         #endregion
 
-        public MainPageViewModel(ClientSettingsViewModel clientSettingsViewModel, ConnectionSettingsViewModel connectionSettingsViewModel, ILogger logger)
+        public MainPageViewModel(IClientSettingsViewModel clientSettingsViewModel, IConnectionSettingsViewModel connectionSettingsViewModel, ILogger logger)
         {
             _logger = logger;
 

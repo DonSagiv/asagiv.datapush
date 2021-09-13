@@ -1,15 +1,15 @@
 ﻿using asagiv.datapush.common.Interfaces;
 using asagiv.datapush.common.Models;
 using asagiv.datapush.common.Utilities;
+using asagiv.datapush.ui.common.Interfaces;
 using ReactiveUI;
 using Serilog;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace asagiv.datapush.ui.common.Models
 {
-    public abstract class ClientSettingsModelBase : ReactiveObject, IDisposable
+    public abstract class ClientSettingsModelBase : ReactiveObject, IClientSettingsModel
     {
         #region Fields
         protected readonly ILogger _logger;
@@ -28,7 +28,7 @@ namespace asagiv.datapush.ui.common.Models
             get { return _destinationNode; }
             set { this.RaiseAndSetIfChanged(ref _destinationNode, value); }
         }
-        protected IGrpcClient Client { get; set; }
+        public IGrpcClient Client { get; protected set; }
         #endregion
 
         #region Constructor
@@ -39,7 +39,7 @@ namespace asagiv.datapush.ui.common.Models
         #endregion
 
         #region Methods
-        public async virtual Task<IList<string>> ConnectClientAsync()
+        public async virtual Task<IList<string>> ConnectToServerAsync()
         {
             var pullNodes = new List<string>();
 

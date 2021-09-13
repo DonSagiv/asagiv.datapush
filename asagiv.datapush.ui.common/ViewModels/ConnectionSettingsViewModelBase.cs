@@ -1,6 +1,7 @@
 ﻿using asagiv.datapush.common.Interfaces;
 using asagiv.datapush.common.Models;
 using asagiv.datapush.common.Utilities;
+using asagiv.datapush.ui.common.Interfaces;
 using DynamicData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -12,16 +13,16 @@ using System.Windows.Input;
 
 namespace asagiv.datapush.ui.common
 {
-    public abstract class ConnectionSettingsViewModelBase : ReactiveObject
+    public abstract class ConnectionSettingsViewModelBase : ReactiveObject, IConnectionSettingsViewModel
     {
         #region Fields
-        protected ClientConnectionSettings _selectedClientConnection;
+        protected IClientConnectionSettings _selectedClientConnection;
         protected DataPushDbContextBase _dataPushDbContext;
         #endregion
 
         #region Properties
-        public ObservableCollection<ClientConnectionSettings> ClientConnectionSettingsList { get; }
-        public ClientConnectionSettings SelectedClientConnection
+        public ObservableCollection<IClientConnectionSettings> ClientConnectionSettingsList { get; }
+        public IClientConnectionSettings SelectedClientConnection
         {
             get { return _selectedClientConnection; }
             set { this.RaiseAndSetIfChanged(ref _selectedClientConnection, value); }
@@ -39,7 +40,7 @@ namespace asagiv.datapush.ui.common
         {
             _dataPushDbContext = dataPushDbContext;
 
-            ClientConnectionSettingsList = new ObservableCollection<ClientConnectionSettings>();
+            ClientConnectionSettingsList = new ObservableCollection<IClientConnectionSettings>();
 
             NewConnectionSettingsCommand = ReactiveCommand.Create(() => CreateNewConnectionSettings());
             SaveConnectionSettingsCommand = ReactiveCommand.Create(() => SaveConnectionSettingsAsync());
@@ -59,7 +60,7 @@ namespace asagiv.datapush.ui.common
             ClientConnectionSettingsList.AddRange(clientConnectionSettingsToAdd);
         }
 
-        private void CreateNewConnectionSettings()
+        public void CreateNewConnectionSettings()
         {
             var settingToAdd = new ClientConnectionSettings
             {
@@ -71,7 +72,7 @@ namespace asagiv.datapush.ui.common
             SelectedClientConnection = settingToAdd;
         }
 
-        private async Task SaveConnectionSettingsAsync()
+        public async Task SaveConnectionSettingsAsync()
         {
             if (ConnectionStringIsNullOrEmpty(_selectedClientConnection.ConnectionString) || SettingsListHasName())
             {
@@ -80,28 +81,32 @@ namespace asagiv.datapush.ui.common
 
             EntityEntry<ClientConnectionSettings> result;
 
+            var clientSetting = _selectedClientConnection as ClientConnectionSettings;
+
             if (await _dataPushDbContext.ConnectionSettingsSet.ContainsAsync(_selectedClientConnection))
             {
-                result = _dataPushDbContext.ConnectionSettingsSet.Update(_selectedClientConnection);
+                result = _dataPushDbContext.ConnectionSettingsSet.Update(clientSetting);
             }
             else
             {
-                result = await _dataPushDbContext.ConnectionSettingsSet.AddAsync(_selectedClientConnection);
+                result = await _dataPushDbContext.ConnectionSettingsSet.AddAsync(clientSetting);
             }
 
             await _dataPushDbContext.SaveChangesAsync();
         }
 
-        private async Task DeleteConnectionSettingsAsync()
+        public async Task DeleteConnectionSettingsAsync()
         {
             if (_selectedClientConnection == null || !ConfirmUserDelete())
             {
                 return;
             }
 
+            var clientSetting = _selectedClientConnection as ClientConnectionSettings;
+
             if (_dataPushDbContext.ConnectionSettingsSet.Contains(_selectedClientConnection))
             {
-                _dataPushDbContext.ConnectionSettingsSet.Remove(_selectedClientConnection);
+                _dataPushDbContext.ConnectionSettingsSet.Remove(clientSetting);
 
                 await _dataPushDbContext.SaveChangesAsync();
             }

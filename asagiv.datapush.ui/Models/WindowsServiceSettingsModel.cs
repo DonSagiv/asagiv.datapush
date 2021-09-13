@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using asagiv.datapush.common.Interfaces;
+using asagiv.datapush.common.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ReactiveUI;
@@ -11,9 +13,9 @@ using Serilog;
 
 namespace asagiv.datapush.ui.Models
 {
-    public class WindowsServiceSettingsModel : ReactiveObject
+    public class WindowsServiceSettingsModel : ReactiveObject, IPullNodeSettingsModel
     {
-        #region Statocs
+        #region Statics
         public const string serviceName = "Data-Push";
         public const string serviceExecName = "asagiv.datapush.winservice.exe";
         #endregion
@@ -26,7 +28,7 @@ namespace asagiv.datapush.ui.Models
         private string _nodeName;
         private string _connectionString;
         private string _downloadLocation;
-        private WinServiceStatus _status;
+        private PullNodeStatus _status;
         #endregion
 
         #region Properties
@@ -45,7 +47,7 @@ namespace asagiv.datapush.ui.Models
             get { return _downloadLocation; }
             set { this.RaiseAndSetIfChanged(ref _downloadLocation, value); }
         }
-        public WinServiceStatus Status
+        public PullNodeStatus Status
         {
             get { return _status; }
             set { this.RaiseAndSetIfChanged(ref _status, value); }
@@ -92,7 +94,7 @@ namespace asagiv.datapush.ui.Models
             StopDataPushService(_status);
         }
 
-        public async Task GetServiceStatus()
+        public async Task GetServiceStatusAsync()
         {
             _logger.Verbose("Getting Status of Windows Service");
 
@@ -123,13 +125,13 @@ namespace asagiv.datapush.ui.Models
             await Application.Current?.Dispatcher.BeginInvoke(new Action(() => Status = ParseServiceStatus(result)), System.Windows.Threading.DispatcherPriority.Render);
         }
 
-        private WinServiceStatus ParseServiceStatus(string serviceQueryResult)
+        private PullNodeStatus ParseServiceStatus(string serviceQueryResult)
         {
             if (serviceQueryResult.Contains("FAILED 1060"))
             {
                 _logger?.Verbose("Windows Service Not Installed.");
 
-                return WinServiceStatus.NotInstalled;
+                return PullNodeStatus.NotInstalled;
             }
 
             var stateLine = serviceQueryResult
@@ -140,19 +142,19 @@ namespace asagiv.datapush.ui.Models
             {
                 _logger?.Verbose("Windows Service Running.");
 
-                return WinServiceStatus.Running;
+                return PullNodeStatus.Running;
             }
             else if (stateLine.Contains("STOPPED"))
             {
                 _logger?.Verbose("Windows Service Stopped.");
 
-                return WinServiceStatus.Stopped;
+                return PullNodeStatus.Stopped;
             }
 
-            return WinServiceStatus.Error;
+            return PullNodeStatus.Error;
         }
 
-        public void StopDataPushService(WinServiceStatus status)
+        public void StopDataPushService(PullNodeStatus status)
         {
             _logger?.Warning("Stopping the Windows Service.");
 
@@ -166,20 +168,20 @@ namespace asagiv.datapush.ui.Models
 
             switch (status)
             {
-                case WinServiceStatus.NotInstalled:
-                case WinServiceStatus.Stopped:
+                case PullNodeStatus.NotInstalled:
+                case PullNodeStatus.Stopped:
                     return;
-                case WinServiceStatus.Running:
+                case PullNodeStatus.Running:
                     processStartInfo.ArgumentList.Add($"/C sc stop {serviceName}");
                     break;
-                case WinServiceStatus.Error:
+                case PullNodeStatus.Error:
                     throw new ArgumentException("Invalid Query Status Detected.");
             }
 
             _ = Process.Start(processStartInfo);
         }
 
-        public void StartDataPushService(WinServiceStatus status)
+        public void StartDataPushService(PullNodeStatus status)
         {
             _logger?.Warning("Starting the Windows Service.");
 
@@ -195,18 +197,18 @@ namespace asagiv.datapush.ui.Models
 
             switch (status)
             {
-                case WinServiceStatus.NotInstalled:
+                case PullNodeStatus.NotInstalled:
                     processStartInfo.ArgumentList.Add($"/C sc create {serviceName} binpath={serviceBinPath} start=auto " +
                         $"& sc failure {serviceName} reset= 120 actions= restart/120000/restart/120000//" +
                         $"& sc start {serviceName}");
                     break;
-                case WinServiceStatus.Stopped:
+                case PullNodeStatus.Stopped:
                     processStartInfo.ArgumentList.Add($"/C sc start {serviceName}");
                     break;
-                case WinServiceStatus.Running:
+                case PullNodeStatus.Running:
                     processStartInfo.ArgumentList.Add($"/C sc stop {serviceName} & sc start {serviceName}");
                     break;
-                case WinServiceStatus.Error:
+                case PullNodeStatus.Error:
                     throw new ArgumentException("Invalid Query Status Detected.");
             }
 

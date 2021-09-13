@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:vm="clr-namespace:asagiv.datapush.ui.ViewModels"
 			 xmlns:commonInterfaces="clr-namespace:asagiv.datapush.common.Interfaces;assembly=asagiv.datapush.common"
-			 d:DataContext="{d:DesignInstance vm:WindowsClientViewModel, IsDesignTimeCreatable=False}"
+			 d:DataContext="{d:DesignInstance vm:WindowsClientSettingsViewModel, IsDesignTimeCreatable=False}"
              mc:Ignorable="d" >
 
 	<DockPanel>

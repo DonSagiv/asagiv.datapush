@@ -1,4 +1,5 @@
 ﻿using asagiv.datapush.common.Utilities;
+using asagiv.datapush.ui.common.Interfaces;
 using asagiv.datapush.ui.mobile.Models;
 using asagiv.datapush.ui.mobile.Utilities;
 using asagiv.datapush.ui.mobile.ViewModels;
@@ -20,9 +21,9 @@ namespace asagiv.datapush.ui.mobile
                 .AddSingleton(x => LoggerFactory.CreateLogger(FileSystem.AppDataDirectory))
                 .AddSingleton<MainPageView>()
                 .AddSingleton<MainPageViewModel>()
-                .AddSingleton<ClientSettingsViewModel>()
-                .AddSingleton<ClientSettingsModel>()
-                .AddSingleton<ConnectionSettingsViewModel>()
+                .AddSingleton<IClientSettingsViewModel, ClientSettingsViewModel>()
+                .AddSingleton<IClientSettingsModel, ClientSettingsModel>()
+                .AddSingleton<IConnectionSettingsViewModel, ConnectionSettingsViewModel>()
                 .AddDbContext<XFormsDataPushDbContext>()
                 .BuildServiceProvider();
 
