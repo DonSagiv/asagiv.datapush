@@ -1,16 +1,26 @@
-﻿using Prism.Mvvm;
+﻿using asagiv.datapush.ui.common.Interfaces;
+using ReactiveUI;
+using Serilog;
 
 namespace asagiv.datapush.ui.mobile.ViewModels
 {
-    public class MainPageViewModel : BindableBase
+    public class MainPageViewModel : ReactiveObject
     {
-        public DataPushViewModel DataPushViewModel { get; }
+        #region Fields
+        private readonly ILogger _logger;
+        #endregion
 
-        public MainPageViewModel()
+        #region ViewModels
+        public IClientSettingsViewModel DataPushViewModel { get; }
+        public IConnectionSettingsViewModel ConnectionSettingsViewModel { get; }
+        #endregion
+
+        public MainPageViewModel(IClientSettingsViewModel clientSettingsViewModel, IConnectionSettingsViewModel connectionSettingsViewModel, ILogger logger)
         {
-            var viewModelObject = App.ServiceProvider.GetService(typeof(DataPushViewModel));
+            _logger = logger;
 
-            DataPushViewModel = viewModelObject as DataPushViewModel;
+            DataPushViewModel = clientSettingsViewModel;
+            ConnectionSettingsViewModel = connectionSettingsViewModel;
         }
     }
 }

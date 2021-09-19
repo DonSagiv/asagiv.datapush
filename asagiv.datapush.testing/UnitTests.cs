@@ -5,7 +5,7 @@ namespace asagiv.datapush.testing
 {
     public class UnitTests
     {
-        private IHost _host;
+        private readonly IHost _host;
 
         [SetUp]
         public void Setup() { }

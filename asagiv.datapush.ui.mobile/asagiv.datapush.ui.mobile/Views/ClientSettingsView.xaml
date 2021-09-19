@@ -1,0 +1,84 @@
+﻿<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+			 xmlns:vm="clr-namespace:asagiv.datapush.ui.mobile.ViewModels"
+			 xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
+			 xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+			 xmlns:utilities="clr-namespace:asagiv.datapush.ui.mobile.Utilities"
+			 x:Class="asagiv.datapush.ui.mobile.Views.ClientSettingsView">
+
+	<!-- d:ContentPage.BindingContext>
+		<vm:ClientSettingsViewModel />
+	</d:ContentPage.BindingContext -->
+
+	<ContentPage.Resources>
+		<utilities:AnyToBoolConverter x:Key="a2b" />
+		<utilities:SendFileLabelConverter x:Key="sflc" />
+		<utilities:SendFileButtonConverter x:Key="sfbc" />
+	</ContentPage.Resources>
+
+	<ScrollView>
+
+		<xct:DockLayout>
+
+			<Frame xct:DockLayout.Dock="Top">
+
+				<StackLayout>
+
+					<Label Text="Connection Settings" />
+
+					<Picker ItemsSource="{Binding ConnectionSettingsList}"
+							SelectedItem="{Binding ClientSettingsModel.ConnectionSettings, Mode=TwoWay}"
+							ItemDisplayBinding="{Binding ConnectionName}" />
+
+				</StackLayout>
+
+			</Frame>
+
+			<Frame xct:DockLayout.Dock="Top"
+				   x:Name="DestinationNodeSelector">
+
+				<StackLayout>
+
+					<Label Text="{Binding HasShareStreamContexts, Converter={StaticResource sflc}}" />
+
+					<Picker ItemsSource="{Binding DestinationNodes}"
+							SelectedItem="{Binding ClientSettingsModel.DestinationNode, Mode=TwoWay}" />
+
+					<Button Text="{Binding HasShareStreamContexts, Converter={StaticResource sfbc}}"
+							Command="{Binding SelectFileToUploadCommand}" />
+
+					<Button Text="Cancel Share"
+							IsVisible="{Binding HasShareStreamContexts}"
+							Command="{Binding CancelShareCommand}" />
+
+				</StackLayout>
+
+			</Frame>
+
+			<StackLayout BindableLayout.ItemsSource="{Binding PushContextList}">
+
+				<BindableLayout.ItemTemplate>
+					<DataTemplate>
+
+						<Frame>
+
+							<StackLayout>
+
+								<Label Text="{Binding Description}" />
+
+								<ProgressBar Progress="{Binding DataPushProgress}" />
+
+							</StackLayout>
+
+						</Frame>
+
+					</DataTemplate>
+				</BindableLayout.ItemTemplate>
+
+			</StackLayout>
+
+		</xct:DockLayout>
+
+	</ScrollView>
+
+</ContentPage>

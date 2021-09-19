@@ -64,6 +64,7 @@ namespace asagiv.datapush.common.Models
         public void Dispose()
         {
             _pullSubscribe.Dispose();
+
             GC.SuppressFinalize(this);
 
             IsDisposed = true;

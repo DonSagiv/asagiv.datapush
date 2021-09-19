@@ -1,4 +1,7 @@
 ﻿using asagiv.datapush.ui.mobile.ViewModels;
+using Serilog;
+using System;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -7,19 +10,48 @@ namespace asagiv.datapush.ui.mobile.Views
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class MainPageView : TabbedPage
     {
+        #region Fields
+        private readonly ILogger _logger;
+        #endregion
+
         #region ViewModels
         public MainPageViewModel ViewModel { get; }
         #endregion
 
         #region Constructor
-        public MainPageView()
+        public MainPageView(MainPageViewModel mainPageViewModel, ILogger logger)
         {
+            _logger = logger;
+
             InitializeComponent();
 
-            ViewModel = new MainPageViewModel();
+            ViewModel = mainPageViewModel;
             BindingContext = ViewModel;
 
-            DataPushView.BindingContext = ViewModel.DataPushViewModel;
+            ClientSettingsView.BindingContext = ViewModel.DataPushViewModel;
+            ConnectionSettingsView.BindingContext = ViewModel.ConnectionSettingsViewModel;
+
+            Appearing += async (s, e) => await OnLoadedAsync(s, e);
+            CurrentPageChanged += async(s,e) => await OnTabChangedAsync(s,e);
+        }
+
+        private Task OnLoadedAsync(object s, EventArgs e)
+        {
+            return ClientSettingsView.ViewModel.RefreshConnectionSettingsAsync();
+        }
+
+        private Task OnTabChangedAsync(object sender, EventArgs e)
+        {
+            if (CurrentPage == ClientSettingsView)
+            {
+                return ClientSettingsView.ViewModel.RefreshConnectionSettingsAsync();
+            }
+            else if (CurrentPage == ConnectionSettingsView)
+            {
+                return ConnectionSettingsView.ViewModel.RefreshConnectionSettingsAsync();
+            }
+
+            else return Task.CompletedTask;
         }
         #endregion
     }

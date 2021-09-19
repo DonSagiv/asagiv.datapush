@@ -1,5 +1,4 @@
 ﻿using asagiv.datapush.common.Interfaces;
-using asagiv.datapush.common.Models;
 using Grpc.Core;
 using Microsoft.Extensions.Configuration;
 using Serilog;
@@ -9,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace asagiv.datapush.common.Utilities
 {
-    public class GrpcDataDownloader
+    public class GrpcDataDownloader : IGrpcDataDownloader
     {
         #region Fields
         private readonly ILogger _logger;

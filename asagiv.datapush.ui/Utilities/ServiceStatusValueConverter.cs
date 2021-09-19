@@ -1,4 +1,4 @@
-﻿using asagiv.datapush.ui.Models;
+﻿using asagiv.datapush.common.Models;
 using System;
 using System.Globalization;
 using System.Windows.Data;
@@ -10,14 +10,14 @@ namespace asagiv.datapush.ui.Utilities
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if(value is WinServiceStatus statusValue)
+            if(value is PullNodeStatus statusValue)
             {
                 return statusValue switch
                 {
-                    WinServiceStatus.NotInstalled => Brushes.DarkRed,
-                    WinServiceStatus.Stopped => Brushes.Orange,
-                    WinServiceStatus.Running => Brushes.LimeGreen,
-                    WinServiceStatus.Error => Brushes.Red,
+                    PullNodeStatus.NotInstalled => Brushes.DarkRed,
+                    PullNodeStatus.Stopped => Brushes.Orange,
+                    PullNodeStatus.Running => Brushes.LimeGreen,
+                    PullNodeStatus.Error => Brushes.Red,
                     _ => Brushes.Transparent,
                 };
             }

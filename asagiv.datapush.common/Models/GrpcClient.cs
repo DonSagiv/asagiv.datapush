@@ -12,8 +12,13 @@ namespace asagiv.datapush.common.Models
 {
     public sealed class GrpcClient : IGrpcClient
     {
+        #region Statics
+        public const string timeoutMessage = "Connection to Server Timed Out";
+        #endregion
+
         #region Fields
         private readonly ILogger _logger;
+        private IClientConnectionSettings _clientConnectionSettings;
         #endregion
 
         #region Delegates
@@ -24,27 +29,28 @@ namespace asagiv.datapush.common.Models
         #region Properties
         public DataPush.DataPushClient Client { get; }
         public IList<IDataPullSubscriber> PullSubscribers { get; }
-        public string NodeName { get; set; }
         public string DeviceId { get; set; }
         public bool IsDisposed { get; private set; }
         #endregion
 
         #region Constructor
-        public GrpcClient(ChannelBase channel, string nodeName, string deviceId, ILogger logger = null) : this(nodeName, deviceId, logger)
+        public GrpcClient(IClientConnectionSettings clientConnectionSettings, string deviceId, ILogger logger = null) : this(deviceId, logger)
         {
+            _clientConnectionSettings = clientConnectionSettings;
+
+            Client = new DataPush.DataPushClient(GrpcChannel.ForAddress(clientConnectionSettings.ConnectionString));
+        }
+
+        public GrpcClient(IClientConnectionSettings clientConnectionSettings, Channel channel, string deviceId, ILogger logger = null) : this(deviceId, logger)
+        {
+            _clientConnectionSettings = clientConnectionSettings;
+
             Client = new DataPush.DataPushClient(channel);
         }
 
-        public GrpcClient(string connectionString, string nodeName, string deviceId, ILogger logger = null) : this(nodeName, deviceId, logger)
-        {
-            Client = new DataPush.DataPushClient(GrpcChannel.ForAddress(connectionString));
-        }
-
-        private GrpcClient(string nodeName, string deviceId, ILogger logger = null)
+        private GrpcClient(string deviceId, ILogger logger = null)
         {
             _logger = logger;
-
-            NodeName = nodeName;
 
             DeviceId = deviceId;
 
@@ -56,7 +62,7 @@ namespace asagiv.datapush.common.Models
         public Task CreatePullSubscriberAsync()
         {
             var subscriber = PullSubscribers
-                .FirstOrDefault(x => x.DestinationNode == NodeName);
+                .FirstOrDefault(x => x.DestinationNode == _clientConnectionSettings.NodeName);
 
             if (subscriber != null)
             {
@@ -65,7 +71,7 @@ namespace asagiv.datapush.common.Models
                 return Task.CompletedTask;
             }
 
-            subscriber = new DataPullSubscriber(Client, NodeName);
+            subscriber = new DataPullSubscriber(Client, _clientConnectionSettings.NodeName);
 
             _logger?.Information($"Creating Pull Subscriber for {subscriber.DestinationNode}.");
 
@@ -78,36 +84,32 @@ namespace asagiv.datapush.common.Models
 
         public async Task<IEnumerable<string>> RegisterNodeAsync(bool isPullNode)
         {
+            _logger?.Information($"Creating Register Node Request for {DeviceId}. (Name: {_clientConnectionSettings.NodeName}, IsPullNode: {isPullNode})");
+
+            var getPullNodeTask = GetPullNodeListAsync(isPullNode);
+            var timeoutTask = Task.Delay(1000);
+
+            await Task.WhenAny(getPullNodeTask, timeoutTask);
+
+            if (!getPullNodeTask.IsCompletedSuccessfully)
+            {
+                throw new TimeoutException(timeoutMessage);
+            }
+
+            return getPullNodeTask.Result.PullNodeList;
+        }
+
+        public async Task<RegisterNodeResponse> GetPullNodeListAsync(bool isPullNode)
+        {
             var nodeRequest = new RegisterNodeRequest
             {
                 RequestId = Guid.NewGuid().ToString(),
                 DeviceId = DeviceId,
-                NodeName = NodeName,
+                NodeName = _clientConnectionSettings.NodeName,
                 IsPullNode = isPullNode,
             };
 
-            _logger?.Information($"Creating Register Node Request for {DeviceId}. (Name: {NodeName}, IsPullNode: {isPullNode})");
-
-            try
-            {
-                var response = await Client.RegisterNodeAsync(nodeRequest);
-
-                if (response.Successful)
-                {
-                    _logger?.Information($"Register Node Request Successful.");
-                }
-                else
-                {
-                    _logger?.Error($"Register Node Request Not Successful.");
-                }
-
-                return response.PullNodeList;
-            }
-            catch(Exception ex)
-            {
-                Log.Error(ex, ex.Message);
-                throw;
-            }
+            return await Client.RegisterNodeAsync(nodeRequest);
         }
 
         private void OnPullDataRetrieved(object sender, IResponseStreamContext<DataPullResponse> e)
@@ -131,7 +133,7 @@ namespace asagiv.datapush.common.Models
 
         public IDataPushContext CreatePushDataContext(string destinationNode, string name, byte[] data)
         {
-            return new DataPushContext(Client, NodeName, destinationNode, name, data);
+            return new DataPushContextBase(Client, _clientConnectionSettings.NodeName, destinationNode, name, data);
         }
 
         public void Dispose()
