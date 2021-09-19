@@ -5,10 +5,27 @@ namespace asagiv.datapush.server.Interfaces
 {
     public interface IDataRouteRepository
     {
+        /// <summary>
+        /// The route request repository.
+        /// </summary>
         IEnumerable<IRouteRequest> Repository { get; }
 
+        /// <summary>
+        /// Add a new route request to the data repository.
+        /// </summary>
+        /// <param name="dataPushRequest">The data push request</param>
+        /// <returns>The reated route request.</returns>
         IRouteRequest AddRouteRequest(DataPushRequest dataPushRequest);
+        /// <summary>
+        /// Get a route request belonging to a destination node.
+        /// </summary>
+        /// <param name="destinationNode">The destination node of the route request.</param>
+        /// <returns>The route request with the selected destination node.</returns>
         IRouteRequest GetRouteRequest(string destinationNode);
+        /// <summary>
+        /// Closes the input route request.
+        /// </summary>
+        /// <param name="routeRequest">The route request to close.</param>
         void CloseRouteRequest(IRouteRequest routeRequest);
     }
 }
