@@ -1,0 +1,10 @@
+﻿version: "3.9"
+
+services:
+  data_push:
+    image: donsagiv/personal_projects:data_push
+    restart: always
+    ports: 
+        - '<insert port here>:80'
+    name:
+        - 'data_push'
