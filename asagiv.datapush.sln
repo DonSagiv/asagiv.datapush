@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "asagiv.datapush.testing", "asagiv.datapush.testing\asagiv.datapush.testing.csproj", "{FC648077-1B6E-4288-996C-5AEBAD672A03}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "asagiv.datapush.ui", "asagiv.datapush.ui\asagiv.datapush.ui.csproj", "{DF4B6108-5CA4-4B08-BD2B-B6390D0FB5F9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "asagiv.datapush.common", "asagiv.datapush.common\asagiv.datapush.common.csproj", "{318A770C-8675-48C0-997C-4E0B67E2B6BD}"
@@ -19,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asagiv.datapush.ui.mobile.A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "asagiv.datapush.ui.mobile", "asagiv.datapush.ui.mobile\asagiv.datapush.ui.mobile\asagiv.datapush.ui.mobile.csproj", "{528D7156-BDD3-4A4C-9FF4-50FD38953414}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asagiv.datapush.ui.common", "asagiv.datapush.ui.common\asagiv.datapush.ui.common.csproj", "{37450182-9529-4940-AC87-67D3E6FC0958}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "asagiv.datapush.ui.common", "asagiv.datapush.ui.common\asagiv.datapush.ui.common.csproj", "{37450182-9529-4940-AC87-67D3E6FC0958}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,34 +37,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{FC648077-1B6E-4288-996C-5AEBAD672A03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FC648077-1B6E-4288-996C-5AEBAD672A03}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FC648077-1B6E-4288-996C-5AEBAD672A03}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{FC648077-1B6E-4288-996C-5AEBAD672A03}.Debug|ARM.Build.0 = Debug|Any CPU
-		{FC648077-1B6E-4288-996C-5AEBAD672A03}.Debug|arm64.ActiveCfg = Debug|Any CPU
-		{FC648077-1B6E-4288-996C-5AEBAD672A03}.Debug|arm64.Build.0 = Debug|Any CPU
-		{FC648077-1B6E-4288-996C-5AEBAD672A03}.Debug|iPhone.ActiveCfg = Debug|Any CPU
-		{FC648077-1B6E-4288-996C-5AEBAD672A03}.Debug|iPhone.Build.0 = Debug|Any CPU
-		{FC648077-1B6E-4288-996C-5AEBAD672A03}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
-		{FC648077-1B6E-4288-996C-5AEBAD672A03}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
-		{FC648077-1B6E-4288-996C-5AEBAD672A03}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{FC648077-1B6E-4288-996C-5AEBAD672A03}.Debug|x64.Build.0 = Debug|Any CPU
-		{FC648077-1B6E-4288-996C-5AEBAD672A03}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{FC648077-1B6E-4288-996C-5AEBAD672A03}.Debug|x86.Build.0 = Debug|Any CPU
-		{FC648077-1B6E-4288-996C-5AEBAD672A03}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FC648077-1B6E-4288-996C-5AEBAD672A03}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FC648077-1B6E-4288-996C-5AEBAD672A03}.Release|ARM.ActiveCfg = Release|Any CPU
-		{FC648077-1B6E-4288-996C-5AEBAD672A03}.Release|ARM.Build.0 = Release|Any CPU
-		{FC648077-1B6E-4288-996C-5AEBAD672A03}.Release|arm64.ActiveCfg = Release|Any CPU
-		{FC648077-1B6E-4288-996C-5AEBAD672A03}.Release|arm64.Build.0 = Release|Any CPU
-		{FC648077-1B6E-4288-996C-5AEBAD672A03}.Release|iPhone.ActiveCfg = Release|Any CPU
-		{FC648077-1B6E-4288-996C-5AEBAD672A03}.Release|iPhone.Build.0 = Release|Any CPU
-		{FC648077-1B6E-4288-996C-5AEBAD672A03}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
-		{FC648077-1B6E-4288-996C-5AEBAD672A03}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
-		{FC648077-1B6E-4288-996C-5AEBAD672A03}.Release|x64.ActiveCfg = Release|Any CPU
-		{FC648077-1B6E-4288-996C-5AEBAD672A03}.Release|x64.Build.0 = Release|Any CPU
-		{FC648077-1B6E-4288-996C-5AEBAD672A03}.Release|x86.ActiveCfg = Release|Any CPU
-		{FC648077-1B6E-4288-996C-5AEBAD672A03}.Release|x86.Build.0 = Release|Any CPU
 		{DF4B6108-5CA4-4B08-BD2B-B6390D0FB5F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DF4B6108-5CA4-4B08-BD2B-B6390D0FB5F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF4B6108-5CA4-4B08-BD2B-B6390D0FB5F9}.Debug|ARM.ActiveCfg = Debug|Any CPU
