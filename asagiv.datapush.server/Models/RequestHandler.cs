@@ -37,8 +37,10 @@ namespace asagiv.datapush.server.Models
                 $"Device ID: {request.DeviceId}, " +
                 $"Is Pull Node: {request.IsPullNode}).");
 
+            // Create or Get Node for Device ID.
             var node = _nodeRepository.GetNode(request.NodeName, request.DeviceId, request.IsPullNode);
 
+            // Create registger node response object.
             var response = new RegisterNodeResponse
             {
                 RequestId = request.RequestId,
@@ -46,16 +48,19 @@ namespace asagiv.datapush.server.Models
                 Successful = true
             };
 
+            // Get list of pull nodes.
             var pullNodes = _nodeRepository
                 .PullNodes
                 .Select(x => x.NodeName)
                 .ToList();
 
+            // Add pull nodes to response pul node list.
             response.PullNodeList.AddRange(pullNodes);
 
             _logger?.Information($"Sending Response to {response.NodeName} " +
                 $"(Is Successful = {response.Successful}).");
 
+            // Return register node request with available pull nodes.
             return Task.FromResult(response);
         }
 
@@ -70,6 +75,7 @@ namespace asagiv.datapush.server.Models
                 {
                     request = requestStream.Current;
 
+                    // Add route request to repository if none available.
                     if (routeRequest == null)
                     {
                         routeRequest = _routeRepository.AddRouteRequest(request);
@@ -82,9 +88,11 @@ namespace asagiv.datapush.server.Models
                         $"Name: {request.Name}, " +
                         $"Size: {request.Payload.Length} bytes).");
 
+                    // Add payload to route request.
                     routeRequest.AddPayload(request.BlockNumber, request.Payload);
                 }
 
+                // Return 1 if route request successful
                 return await Task.FromResult(new DataPushResponse
                 {
                     Confirmation = 1
@@ -94,6 +102,7 @@ namespace asagiv.datapush.server.Models
             {
                 _logger?.Error(ex, ex.Message);
 
+                // Return -1 if route request has failed.
                 return await Task.FromResult(new DataPushResponse
                 {
                     Confirmation = -1
@@ -103,10 +112,12 @@ namespace asagiv.datapush.server.Models
 
         public async Task HandlePullDataAsync(DataPullRequest request, IServerStreamWriter<DataPullResponse> responseStream)
         {
+            // Get route request for selected destination node.
             var routeRequest = _routeRepository.GetRouteRequest(request.DestinationNode);
 
             if (routeRequest == null)
             {
+                // If no route request with destination node found, return empty response.
                 await responseStream.WriteAsync(new DataPullResponse
                 {
                     RequestId = request.RequestId,
@@ -140,6 +151,7 @@ namespace asagiv.datapush.server.Models
                 // Sends the payload data.
                 while (!routeRequest.PayloadQueue.IsEmpty)
                 {
+                    // Get payload to push to destination node.
                     var payload = routeRequest.GetFromPayload();
 
                     _logger?.Information($"Pushing Data from {routeRequest.SourceNode} to {routeRequest.DestinationNode} " +
@@ -147,6 +159,7 @@ namespace asagiv.datapush.server.Models
                         $"Name: {routeRequest.Name}, " +
                         $"Size: {payload.Payload.Length} bytes).");
 
+                    // Push payload to destination node.
                     await responseStream.WriteAsync(new DataPullResponse
                     {
                         SourceNode = routeRequest.SourceNode,
@@ -159,6 +172,7 @@ namespace asagiv.datapush.server.Models
                     });
                 }
 
+                // Close the route request.
                 _routeRepository.CloseRouteRequest(routeRequest);
             }
         }

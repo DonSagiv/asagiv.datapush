@@ -5,6 +5,6 @@ services:
     image: donsagiv/personal_projects:data_push
     restart: always
     ports: 
-        - '<insert port here>:80'
+        - '<insert server here>:80'
     name:
         - 'data_push'
