@@ -2,9 +2,10 @@
 			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 			 xmlns:vm="clr-namespace:asagiv.datapush.ui.mobile.ViewModels"
 			 xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
-			 x:DataType="{x:Type vm:ClientSettingsViewModel}"
 			 xmlns:utilities="clr-namespace:asagiv.datapush.ui.mobile.Utilities"
 			 x:Class="asagiv.datapush.ui.mobile.Views.ClientSettingsView">
+
+    <!-- x:DataType="{x:Type vm:ClientSettingsViewModel}" -->
 
 	<ContentPage.Resources>
 		<utilities:AnyToBoolConverter x:Key="a2b" />
