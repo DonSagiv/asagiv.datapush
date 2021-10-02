@@ -64,10 +64,10 @@ namespace asagiv.datapush.server.Models
             return Task.FromResult(response);
         }
 
-        public async Task<DataPushResponse> HandlePushDataAsync(IAsyncStreamReader<DataPushRequest> requestStream)
+        public async Task HandlePushDataAsync(IAsyncStreamReader<DataPushRequest> requestStream, IServerStreamWriter<DataPushResponse> responseStream)
         {
             IRouteRequest routeRequest = null;
-            DataPushRequest request;
+            DataPushRequest request = null;
 
             try
             {
@@ -90,23 +90,32 @@ namespace asagiv.datapush.server.Models
 
                     // Add payload to route request.
                     routeRequest.AddPayload(request.BlockNumber, request.Payload);
-                }
 
-                // Return 1 if route request successful
-                return await Task.FromResult(new DataPushResponse
-                {
-                    Confirmation = 1
-                });
+                    var response = new DataPushResponse
+                    {
+                        RequestId = request.RequestId,
+                        DestinationNode = request.DestinationNode,
+                        Confirmation = 1,
+                        BlockNumbner = request.BlockNumber,
+                    };
+
+                    await responseStream.WriteAsync(response);
+                }
             }
             catch (Exception ex)
             {
                 _logger?.Error(ex, ex.Message);
 
-                // Return -1 if route request has failed.
-                return await Task.FromResult(new DataPushResponse
+                var response = new DataPushResponse
                 {
-                    Confirmation = -1
-                });
+                    RequestId = request.RequestId,
+                    DestinationNode = request.DestinationNode,
+                    Confirmation = 1,
+                    BlockNumbner = -1,
+                    ErrorMessage = ex.Message
+                };
+
+                await responseStream.WriteAsync(response);
             }
         }
 

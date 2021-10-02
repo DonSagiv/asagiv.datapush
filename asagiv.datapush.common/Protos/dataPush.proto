@@ -6,7 +6,7 @@ package dataPush;
 
 service DataPush {
   rpc RegisterNode (RegisterNodeRequest) returns (RegisterNodeResponse);
-  rpc PushData (stream DataPushRequest) returns (DataPushResponse);
+  rpc PushData (stream DataPushRequest) returns (stream DataPushResponse);
   rpc PullData (DataPullRequest) returns (stream DataPullResponse);
 }
 
@@ -38,7 +38,10 @@ message DataPushRequest {
 
 message DataPushResponse {
   string requestId = 1;
-  int32 confirmation = 2;
+  string destinationNode = 2;
+  int32 confirmation = 3;
+  int32 blockNumbner = 4;
+  string errorMessage = 5;
 }
 
 message DataPullRequest {

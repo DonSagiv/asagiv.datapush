@@ -17,7 +17,7 @@ namespace asagiv.datapush.server.Interfaces
         /// </summary>
         /// <param name="requestStream">The push data stream.</param>
         /// <returns>The push data response.</returns>
-        Task<DataPushResponse> HandlePushDataAsync(IAsyncStreamReader<DataPushRequest> requestStream);
+        Task HandlePushDataAsync(IAsyncStreamReader<DataPushRequest> requestStream, IServerStreamWriter<DataPushResponse> responseStream);
         /// <summary>
         /// Handles a data pull request.
         /// </summary>

@@ -4,6 +4,7 @@ using Serilog;
 using System;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace asagiv.datapush.common.Models
@@ -109,7 +110,13 @@ namespace asagiv.datapush.common.Models
                 Payload = ByteString.CopyFrom(dataBlock)
             };
 
-            await _client.PushData().RequestStream.WriteAsync(request);
+            var streamDuplex = _client.PushData();
+
+            await streamDuplex.RequestStream.WriteAsync(request);
+
+            await streamDuplex.ResponseStream.MoveNext(CancellationToken.None);
+
+            var response = streamDuplex.ResponseStream.Current;
 
             DataPushProgress = Convert.ToDouble(iteration + 1) / _numberOfBlocks;
         }
