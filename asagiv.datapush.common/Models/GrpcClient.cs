@@ -151,6 +151,11 @@ namespace asagiv.datapush.common.Models
 
             GC.SuppressFinalize(this);
         }
+
+        public async Task AcknowledgeDataPull(AcknowledgeDataPullRequest acknowledgeDataPullRequest) 
+        {
+            await Client.AcknowledgeDataPullAsync(acknowledgeDataPullRequest);
+        }
         #endregion
     }
 }

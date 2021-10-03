@@ -8,6 +8,7 @@ service DataPush {
   rpc RegisterNode (RegisterNodeRequest) returns (RegisterNodeResponse);
   rpc PushData (stream DataPushRequest) returns (stream DataPushResponse);
   rpc PullData (DataPullRequest) returns (stream DataPullResponse);
+  rpc AcknowledgeDataPull (AcknowledgeDataPullRequest) returns (AcknowledgeDataPullResponse);
 }
 
 message RegisterNodeRequest
@@ -58,4 +59,19 @@ message DataPullResponse {
   int32 blockNumber = 6;
   int32 totalBlocks = 7;
   bytes payload = 8;
+}
+
+message AcknowledgeDataPullRequest
+{
+  string requestId = 1;
+  string destinationNode = 2;
+  string name = 3;
+  int32 blockNumber = 4;
+  bool isPullSuccessful = 5;
+  string errorMessage = 6;
+}
+
+message AcknowledgeDataPullResponse
+{
+  string requestId = 1;
 }

@@ -36,6 +36,16 @@ namespace asagiv.datapush.server
         {
             return _requestHandler.HandleRegisterNodeRequest(request);
         }
+
+        public override Task<AcknowledgeDataPullResponse> AcknowledgeDataPull(AcknowledgeDataPullRequest request, ServerCallContext context)
+        {
+            // Do nothing for now.
+
+            return Task.FromResult(new AcknowledgeDataPullResponse
+            {
+                RequestId = request.RequestId
+            });
+        }
         #endregion
     }
 }

@@ -1,6 +1,8 @@
 ﻿using asagiv.datapush.server.common.Interfaces;
 using Serilog;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 
 namespace asagiv.datapush.server.common.Models
@@ -9,7 +11,7 @@ namespace asagiv.datapush.server.common.Models
     {
         #region Fields
         private readonly ILogger _logger;
-        private readonly IList<IDeviceNode> _nodeList;
+        private readonly ObservableCollection<IDeviceNode> _nodeList;
         #endregion
 
         #region Properties
@@ -20,12 +22,16 @@ namespace asagiv.datapush.server.common.Models
         #region Constructor
         public NodeRepository(ILogger logger = null)
         {
-            _nodeList = new List<IDeviceNode>();
+            _nodeList = new ObservableCollection<IDeviceNode>();
             _logger = logger;
 
             _logger?.Debug("Node Repository Instantiated.");
-        }
 
+            _nodeList.CollectionChanged += OnNodeListCollectionChanged;
+        }
+        #endregion
+
+        #region Methods
         /// <summary>
         /// Get a node from the repository
         /// </summary>
@@ -36,7 +42,9 @@ namespace asagiv.datapush.server.common.Models
         public IDeviceNode GetNode(string nodeName, string deviceId, bool isPullNode)
         {
             // Find if the node with the device ID already existrs.
-            var node = _nodeList.FirstOrDefault(x => x.DeviceId == deviceId);
+            var node = _nodeList
+                .Where(x => x.IsPullNode == isPullNode)
+                .FirstOrDefault(x => x.DeviceId == deviceId);
 
             if (node == null)
             {
@@ -45,8 +53,6 @@ namespace asagiv.datapush.server.common.Models
 
                 // Add that node to the list.
                 _nodeList.Add(node);
-
-                _logger?.Information($"Added New Node to Repository. (Node Name: {nodeName}, Device ID: {deviceId}, Is Pull Node: {isPullNode})");
             }
             else
             {
@@ -59,6 +65,27 @@ namespace asagiv.datapush.server.common.Models
             }
             
             return node;
+        }
+
+        private void OnNodeListCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if(e.NewItems is not null)
+            {
+                foreach (var newItem in e.NewItems?.OfType<IDeviceNode>())
+                {
+                    _logger?.Information($"Added new node: {newItem.NodeName} (Is Pull Node: {newItem.IsPullNode})");
+                }
+            }
+
+            if(e.OldItems is not null)
+            {
+                foreach (var oldItem in e.OldItems?.OfType<IDeviceNode>())
+                {
+                    _logger?.Information($"Removed node: {oldItem.NodeName} (Is Pull Node: {oldItem.IsPullNode})");
+                }
+            }
+
+            _logger.Information($"Number of Nodes: {_nodeList.Count}");
         }
         #endregion
     }

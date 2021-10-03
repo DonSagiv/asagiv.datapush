@@ -24,6 +24,7 @@ namespace asagiv.datapush.common.Interfaces
         Task<IEnumerable<string>> RegisterNodeAsync(bool isPullNode);
         Task<IDataPushContext> CreatePushFileContextAsync(string destinationNode, string filePath);
         IDataPushContext CreatePushDataContext(string destinationNode, string name, byte[] data);
+        Task AcknowledgeDataPull(AcknowledgeDataPullRequest acknowledgeDataPullRequest);
         #endregion
     }
 }

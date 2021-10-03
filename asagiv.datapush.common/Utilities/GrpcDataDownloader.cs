@@ -15,6 +15,10 @@ namespace asagiv.datapush.common.Utilities
         private readonly string _saveDirectory;
         #endregion
 
+        #region Delegates
+        public event EventHandler<AcknowledgeDataPullRequest> AcknowledgeDataPush;
+        #endregion
+
         #region Constructor
         public GrpcDataDownloader(ILogger logger, IConfiguration configuration)
         {
@@ -50,6 +54,18 @@ namespace asagiv.datapush.common.Utilities
             {
                 _logger?.Error(ex, $"File Pull Error: {ex.Message}");
 
+                var acknowledgePullDataRequest = new AcknowledgeDataPullRequest
+                {
+                    RequestId = responseStreamContext.ResponseData.RequestId,
+                    Name = responseStreamContext.ResponseData.Name,
+                    DestinationNode = responseStreamContext.ResponseData.DestinationNode,
+                    BlockNumber = responseStreamContext.ResponseData.BlockNumber,
+                    IsPullSuccessful = false,
+                    ErrorMessage = ex.Message
+                };
+
+                AcknowledgeDataPush?.Invoke(this, acknowledgePullDataRequest);
+
                 File.Delete(tempFilePath);
             }
         }
@@ -80,6 +96,17 @@ namespace asagiv.datapush.common.Utilities
             _logger?.Information($"Writing {byteArray.Length} Bytes to {tempFilePath} (Block {response.BlockNumber} of {response.TotalBlocks})");
 
             await fs.WriteAsync(byteArray);
+
+            var acknowledgePullDataRequest = new AcknowledgeDataPullRequest
+            {
+                RequestId = response.RequestId,
+                Name = response.Name,
+                DestinationNode = response.DestinationNode,
+                IsPullSuccessful = true,
+                BlockNumber = response.BlockNumber,
+            };
+
+            AcknowledgeDataPush?.Invoke(this, acknowledgePullDataRequest);
 
             return response.BlockNumber == response.TotalBlocks;
         }
