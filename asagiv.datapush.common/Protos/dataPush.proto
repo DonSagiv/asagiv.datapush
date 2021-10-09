@@ -41,7 +41,7 @@ message DataPushResponse {
   string requestId = 1;
   string destinationNode = 2;
   int32 confirmation = 3;
-  int32 blockNumbner = 4;
+  int32 blockNumber = 4;
   string errorMessage = 5;
 }
 

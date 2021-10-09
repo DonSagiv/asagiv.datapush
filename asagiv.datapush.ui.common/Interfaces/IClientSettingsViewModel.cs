@@ -1,4 +1,5 @@
 ﻿using asagiv.datapush.common.Interfaces;
+using asagiv.datapush.common.Models;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ namespace asagiv.datapush.ui.common.Interfaces
 
         #region Properties
         ObservableCollection<IClientConnectionSettings> ConnectionSettingsList { get; }
-        ObservableCollection<IDataPushContext> PushContextList { get; }
+        ObservableCollection<IDataPushContextViewModel> PushContextList { get; }
         ObservableCollection<string> DestinationNodes { get; }
         #endregion
 

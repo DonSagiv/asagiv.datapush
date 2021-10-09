@@ -58,7 +58,7 @@ namespace asagiv.datapush.ui.mobile.Models
             return destinationNodes;
         }
 
-        public IDataPushContext CreatePushDataContext(string shareName, byte[] data)
+        public DataPushContext CreatePushDataContext(string shareName, byte[] data)
         {
             return Client.CreatePushDataContext(DestinationNode, shareName, data);
         }

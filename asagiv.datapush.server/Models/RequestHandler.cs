@@ -96,7 +96,7 @@ namespace asagiv.datapush.server.Models
                         RequestId = request.RequestId,
                         DestinationNode = request.DestinationNode,
                         Confirmation = 1,
-                        BlockNumbner = request.BlockNumber,
+                        BlockNumber = request.BlockNumber,
                     };
 
                     await responseStream.WriteAsync(response);
@@ -111,7 +111,7 @@ namespace asagiv.datapush.server.Models
                     RequestId = request.RequestId,
                     DestinationNode = request.DestinationNode,
                     Confirmation = 1,
-                    BlockNumbner = -1,
+                    BlockNumber = -1,
                     ErrorMessage = ex.Message
                 };
 
@@ -158,10 +158,16 @@ namespace asagiv.datapush.server.Models
                 });
 
                 // Sends the payload data.
-                while (!routeRequest.PayloadQueue.IsEmpty)
+                while (!routeRequest.IsRouteCompleted)
                 {
                     // Get payload to push to destination node.
                     var payload = routeRequest.GetFromPayload();
+
+                    if(payload == null)
+                    {
+                        // Sometimes dequeue is faster than enqueue
+                        continue;
+                    }
 
                     _logger?.Information($"Pushing Data from {routeRequest.SourceNode} to {routeRequest.DestinationNode} " +
                         $"(Block {payload.BlockNumber} of {routeRequest.TotalBlocks}, " +

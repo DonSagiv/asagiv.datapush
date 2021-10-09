@@ -29,7 +29,7 @@ namespace asagiv.datapush.ui.common.ViewModels
 
         #region Properties
         public ObservableCollection<IClientConnectionSettings> ConnectionSettingsList { get; }
-        public ObservableCollection<IDataPushContext> PushContextList { get; }
+        public ObservableCollection<IDataPushContextViewModel> PushContextList { get; }
         public ObservableCollection<string> DestinationNodes { get; }
         public IClientSettingsModel ClientSettingsModel { get; }
         public bool IsConnected { get; private set; }
@@ -52,7 +52,7 @@ namespace asagiv.datapush.ui.common.ViewModels
 
             DestinationNodes = new ObservableCollection<string>();
 
-            PushContextList = new ObservableCollection<IDataPushContext>();
+            PushContextList = new ObservableCollection<IDataPushContextViewModel>();
 
             SelectFileToUploadCommand = ReactiveCommand.Create(async () => await UploadFilesAsync());
 
@@ -135,18 +135,22 @@ namespace asagiv.datapush.ui.common.ViewModels
             await PushContextAsync(context);
         }
 
-        protected async virtual Task PushContextAsync(IDataPushContext context)
+        protected async virtual Task PushContextAsync(DataPushContext context)
         {
             _logger.Information($"Adding {context.Name} to context list.");
 
             // Insert the push context to the top of the list.
-            PushContextList.Insert(0, context);
+            var contextViewModel = getDataContextViewModel(context);
+
+            PushContextList.Insert(0, contextViewModel);
 
             _logger.Information($"Pushing {context.Name}.");
 
             // Push the data in the context to the server.
             await context.PushDataAsync();
         }
+
+        public abstract IDataPushContextViewModel getDataContextViewModel(DataPushContext dataPushContext);
         #endregion
     }
 }

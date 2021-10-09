@@ -14,6 +14,7 @@ using System.Windows.Input;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using asagiv.datapush.ui.common.Interfaces;
+using asagiv.datapush.common.Models;
 
 namespace asagiv.datapush.ui.mobile.ViewModels
 {
@@ -142,7 +143,7 @@ namespace asagiv.datapush.ui.mobile.ViewModels
             ClearShareData();
         }
 
-        protected async override Task PushContextAsync(IDataPushContext context)
+        protected async override Task PushContextAsync(DataPushContext context)
         {
             _logger.Information($"Pushing Data for Context: {context.Name}.");
 
@@ -151,7 +152,7 @@ namespace asagiv.datapush.ui.mobile.ViewModels
                 // Insert the context at the beginning of the list.
                 Device.BeginInvokeOnMainThread(() => 
                 {
-                    PushContextList.Insert(0, context);
+                    PushContextList.Insert(0, getDataContextViewModel(context));
                 });
 
                 // Push the data in the context to the server.
@@ -163,6 +164,11 @@ namespace asagiv.datapush.ui.mobile.ViewModels
             }
 
             _logger.Information($"Data Push Successful.");
+        }
+
+        public override IDataPushContextViewModel getDataContextViewModel(DataPushContext dataPushContext)
+        {
+            return new DataPushContextViewModel(dataPushContext);
         }
         #endregion
     }

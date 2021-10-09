@@ -1,4 +1,6 @@
-﻿using asagiv.datapush.ui.common.Interfaces;
+﻿using asagiv.datapush.common.Interfaces;
+using asagiv.datapush.common.Models;
+using asagiv.datapush.ui.common.Interfaces;
 using asagiv.datapush.ui.common.ViewModels;
 using asagiv.datapush.ui.Utilities;
 using Microsoft.Win32;
@@ -36,6 +38,12 @@ namespace asagiv.datapush.ui.ViewModels
 
             await UploadFilesAsync(openFileDialog.FileNames);
         }
+
+        public override IDataPushContextViewModel getDataContextViewModel(DataPushContext dataPushContext)
+        {
+            return new DataPushContextViewModel(dataPushContext);
+        }
+
         #endregion
     }
 }

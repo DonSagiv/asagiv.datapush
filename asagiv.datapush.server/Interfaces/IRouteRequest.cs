@@ -24,6 +24,10 @@ namespace asagiv.datapush.server.Interfaces
         /// </summary>
         string Name { get; }
         /// <summary>
+        /// Number of payload blocks retrieved.
+        /// </summary>
+        int BlocksRetrieved { get; }
+        /// <summary>
         /// The total number of blocks of data.
         /// </summary>
         int TotalBlocks { get; }
@@ -36,9 +40,13 @@ namespace asagiv.datapush.server.Interfaces
         /// </summary>
         ConcurrentQueue<PayloadItem> PayloadQueue { get; }
         /// <summary>
+        /// true if the route has been connected to its destination node.
+        /// </summary>
+        bool IsRouteConnected { get; set; }
+        /// <summary>
         /// True if all data has been successfully pushed.
         /// </summary>
-        bool IsRouteCompleted { get; set; }
+        bool IsRouteCompleted { get; }
 
         /// <summary>
         /// Adds a new payload item to the payload queue.

@@ -22,8 +22,8 @@ namespace asagiv.datapush.common.Interfaces
         #region Methods
         public Task CreatePullSubscriberAsync();
         Task<IEnumerable<string>> RegisterNodeAsync(bool isPullNode);
-        Task<IDataPushContext> CreatePushFileContextAsync(string destinationNode, string filePath);
-        IDataPushContext CreatePushDataContext(string destinationNode, string name, byte[] data);
+        Task<DataPushContext> CreatePushFileContextAsync(string destinationNode, string filePath);
+        DataPushContext CreatePushDataContext(string destinationNode, string name, byte[] data);
         Task AcknowledgeDataPull(AcknowledgeDataPullRequest acknowledgeDataPullRequest);
         #endregion
     }

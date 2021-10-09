@@ -14,10 +14,12 @@ namespace asagiv.datapush.server.Models
         public string SourceNode { get; }
         public string DestinationNode { get; }
         public string Name { get; }
-        public int TotalBlocks { get; set; }
+        public int BlocksRetrieved { get; private set; }
+        public int TotalBlocks { get; private set; }
         public DateTime PushDateTime { get; }
         public ConcurrentQueue<PayloadItem> PayloadQueue { get; }
-        public bool IsRouteCompleted { get; set; }
+        public bool IsRouteConnected { get; set; }
+        public bool IsRouteCompleted => BlocksRetrieved >= TotalBlocks;
         #endregion
 
         #region Constructor
@@ -35,7 +37,7 @@ namespace asagiv.datapush.server.Models
 
             PayloadQueue = new ConcurrentQueue<PayloadItem>();
 
-            IsRouteCompleted = false;
+            BlocksRetrieved = 0;
         }
         #endregion
 
@@ -47,9 +49,16 @@ namespace asagiv.datapush.server.Models
 
         public PayloadItem GetFromPayload()
         {
-            return PayloadQueue.TryDequeue(out var payloadToReturn)
+            var payload = PayloadQueue.TryDequeue(out var payloadToReturn)
                 ? payloadToReturn
                 : null;
+
+            if(payload != null)
+            {
+                BlocksRetrieved++;
+            }
+
+            return payload;
         }
         #endregion
     }

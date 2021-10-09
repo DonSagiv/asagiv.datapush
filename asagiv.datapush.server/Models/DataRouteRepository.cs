@@ -63,12 +63,12 @@ namespace asagiv.datapush.server.Models
         public IRouteRequest GetRouteRequest(string destinationNode)
         {
             var routeRequest = _repository
-                .Where(x => !x.IsRouteCompleted)
+                .Where(x => !x.IsRouteConnected)
                 .FirstOrDefault(x => x.DestinationNode == destinationNode);
 
-            if (routeRequest != null)
+            if(routeRequest != null)
             {
-                routeRequest.IsRouteCompleted = true;
+                routeRequest.IsRouteConnected = true;
             }
 
             return routeRequest;

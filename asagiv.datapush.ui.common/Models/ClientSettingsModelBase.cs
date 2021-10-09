@@ -48,7 +48,7 @@ namespace asagiv.datapush.ui.common.Models
                 return pullNodes;
             }
 
-            Client = new GrpcClient(ConnectionSettings, GrpcClientFactory.GetDeviceId());
+            Client = new GrpcClient(ConnectionSettings, GrpcClientFactory.GetDeviceId(), _logger);
 
             // Register the current node and get the available pull nodes.
             var pullNodesToAdd = await Client.RegisterNodeAsync(false);
@@ -59,7 +59,7 @@ namespace asagiv.datapush.ui.common.Models
             return pullNodes;
         }
 
-        public async Task<IDataPushContext> CreatePushContextAsync(string filePath)
+        public async Task<DataPushContext> CreatePushContextAsync(string filePath)
         {
             if (!IsPullNodeSelected())
             {
