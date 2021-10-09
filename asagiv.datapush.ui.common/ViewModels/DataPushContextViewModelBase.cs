@@ -1,9 +1,6 @@
 ﻿using asagiv.datapush.common.Interfaces;
-using asagiv.datapush.common.Models;
+using asagiv.datapush.ui.common.Interfaces;
 using ReactiveUI;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace asagiv.datapush.ui.common.ViewModels
 {

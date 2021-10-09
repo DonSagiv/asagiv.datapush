@@ -1,5 +1,4 @@
 ﻿using asagiv.datapush.ui.mobile.ViewModels;
-using System;
 using System.Collections.Specialized;
 using System.Threading.Tasks;
 using Xamarin.Forms;

@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:vm="clr-namespace:asagiv.datapush.ui.ViewModels"
-             xmlns:interfaces="clr-namespace:asagiv.datapush.common.Interfaces;assembly=asagiv.datapush.common"
+             xmlns:interfaces="clr-namespace:asagiv.datapush.ui.common.Interfaces;assembly=asagiv.datapush.ui.common"
 			 d:DataContext="{d:DesignInstance vm:WindowsClientSettingsViewModel, IsDesignTimeCreatable=False}"
              mc:Ignorable="d" >
 

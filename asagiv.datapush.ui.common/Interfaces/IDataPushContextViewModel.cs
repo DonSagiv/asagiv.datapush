@@ -1,6 +1,6 @@
-﻿using asagiv.datapush.common.Models;
+﻿using asagiv.datapush.common.Interfaces;
 
-namespace asagiv.datapush.common.Interfaces
+namespace asagiv.datapush.ui.common.Interfaces
 {
     public interface IDataPushContextViewModel
     {
