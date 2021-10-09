@@ -111,7 +111,7 @@ namespace asagiv.datapush.common.Utilities
             return response.BlockNumber == response.TotalBlocks;
         }
 
-        private static void UpdateFileName(string fileName, string tempFilePath)
+        private void UpdateFileName(string fileName, string tempFilePath)
         {
             var tempFileDirectory = Path.GetDirectoryName(tempFilePath);
             var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
@@ -129,6 +129,8 @@ namespace asagiv.datapush.common.Utilities
             }
 
             File.Move(tempFilePath, currentDownloadFilePath);
+
+            _logger?.Information($"Renamed {tempFilePath} Bytes to {currentDownloadFilePath}.");
         }
     }
 }
