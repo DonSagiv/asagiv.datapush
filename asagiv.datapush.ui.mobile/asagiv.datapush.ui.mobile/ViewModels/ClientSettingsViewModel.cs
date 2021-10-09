@@ -143,7 +143,7 @@ namespace asagiv.datapush.ui.mobile.ViewModels
             ClearShareData();
         }
 
-        protected async override Task PushContextAsync(DataPushContext context)
+        protected async override Task PushContextAsync(IDataPushContext context)
         {
             _logger.Information($"Pushing Data for Context: {context.Name}.");
 
@@ -166,7 +166,7 @@ namespace asagiv.datapush.ui.mobile.ViewModels
             _logger.Information($"Data Push Successful.");
         }
 
-        public override IDataPushContextViewModel getDataContextViewModel(DataPushContext dataPushContext)
+        public override IDataPushContextViewModel getDataContextViewModel(IDataPushContext dataPushContext)
         {
             return new DataPushContextViewModel(dataPushContext);
         }

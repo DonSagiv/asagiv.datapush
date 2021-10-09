@@ -1,5 +1,4 @@
 ﻿using asagiv.datapush.common.Interfaces;
-using asagiv.datapush.common.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -16,7 +15,7 @@ namespace asagiv.datapush.ui.common.Interfaces
 
         #region Methods
         Task<IList<string>> ConnectToServerAsync();
-        Task<DataPushContext> CreatePushContextAsync(string filePath);
+        Task<IDataPushContext> CreatePushContextAsync(string filePath);
         #endregion
     }
 }

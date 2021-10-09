@@ -39,7 +39,7 @@ namespace asagiv.datapush.ui.ViewModels
             await UploadFilesAsync(openFileDialog.FileNames);
         }
 
-        public override IDataPushContextViewModel getDataContextViewModel(DataPushContext dataPushContext)
+        public override IDataPushContextViewModel getDataContextViewModel(IDataPushContext dataPushContext)
         {
             return new DataPushContextViewModel(dataPushContext);
         }

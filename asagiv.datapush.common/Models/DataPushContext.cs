@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace asagiv.datapush.common.Models
 {
-    public class DataPushContext : INotifyPropertyChanged
+    public class DataPushContext : IDataPushContext, INotifyPropertyChanged
     {
         #region Statics
         public const int blockSize = 2500000;

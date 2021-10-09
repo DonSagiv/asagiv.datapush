@@ -135,7 +135,7 @@ namespace asagiv.datapush.ui.common.ViewModels
             await PushContextAsync(context);
         }
 
-        protected async virtual Task PushContextAsync(DataPushContext context)
+        protected async virtual Task PushContextAsync(IDataPushContext context)
         {
             _logger.Information($"Adding {context.Name} to context list.");
 
@@ -150,7 +150,7 @@ namespace asagiv.datapush.ui.common.ViewModels
             await context.PushDataAsync();
         }
 
-        public abstract IDataPushContextViewModel getDataContextViewModel(DataPushContext dataPushContext);
+        public abstract IDataPushContextViewModel getDataContextViewModel(IDataPushContext dataPushContext);
         #endregion
     }
 }

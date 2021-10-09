@@ -117,7 +117,7 @@ namespace asagiv.datapush.common.Models
             DataRetrieved?.Invoke(sender, e);
         }
 
-        public async Task<DataPushContext> CreatePushFileContextAsync(string destinationNode, string filePath)
+        public async Task<IDataPushContext> CreatePushFileContextAsync(string destinationNode, string filePath)
         {
             if (string.IsNullOrWhiteSpace(filePath))
             {
@@ -131,7 +131,7 @@ namespace asagiv.datapush.common.Models
             return CreatePushDataContext(destinationNode, name, data);
         }
 
-        public DataPushContext CreatePushDataContext(string destinationNode, string name, byte[] data)
+        public IDataPushContext CreatePushDataContext(string destinationNode, string name, byte[] data)
         {
             return new DataPushContext(Client, _clientConnectionSettings.NodeName, destinationNode, name, data, _logger);
         }

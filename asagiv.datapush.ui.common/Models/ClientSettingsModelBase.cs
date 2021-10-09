@@ -59,7 +59,7 @@ namespace asagiv.datapush.ui.common.Models
             return pullNodes;
         }
 
-        public async Task<DataPushContext> CreatePushContextAsync(string filePath)
+        public async Task<IDataPushContext> CreatePushContextAsync(string filePath)
         {
             if (!IsPullNodeSelected())
             {
