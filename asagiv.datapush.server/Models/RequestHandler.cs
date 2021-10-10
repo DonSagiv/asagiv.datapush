@@ -29,7 +29,9 @@ namespace asagiv.datapush.server.Models
             _routeRepository = routeRepository;
             _logger = logger;
 
-            _dataPushRequestReceived.Subscribe(x => OnPushRequestReceived(x));
+            _dataPushRequestReceived
+                .SelectMany(x => OnPushRequestReceivedAsync(x))
+                .Subscribe();
 
             _logger?.Debug("Request Handler Instantiated.");
         }
@@ -113,7 +115,7 @@ namespace asagiv.datapush.server.Models
             }
         }
 
-        private Unit OnPushRequestReceived(RouteRequestContext routeRequestContext)
+        private async Task<Unit> OnPushRequestReceivedAsync(RouteRequestContext routeRequestContext)
         {
             var dataPushRequest = routeRequestContext.DataPushRequest;
             var routeRequest = routeRequestContext.RouteRequest;
@@ -129,15 +131,6 @@ namespace asagiv.datapush.server.Models
             // Add payload to route request.
             var payload = routeRequest.AddPayload(dataPushRequest.BlockNumber, dataPushRequest.Payload);
 
-            payload.PayloadConsumed += async (s,e) => await OnPayloadConsumed(dataPushRequest, responseStream);
-
-            return Unit.Default;
-        }
-
-        private async Task OnPayloadConsumed(DataPushRequest dataPushRequest, IServerStreamWriter<DataPushResponse> responseStream)
-        {
-            _logger?.Information($"Sending Affirmative Response (RequestID: {dataPushRequest.RequestId}, Block {dataPushRequest.BlockNumber})");
-
             var response = new DataPushResponse
             {
                 RequestId = dataPushRequest.RequestId,
@@ -148,6 +141,8 @@ namespace asagiv.datapush.server.Models
             };
 
             await responseStream.WriteAsync(response);
+
+            return Unit.Default;
         }
 
         public async Task HandlePullDataAsync(DataPullRequest request, IServerStreamWriter<DataPullResponse> responseStream)
@@ -204,6 +199,8 @@ namespace asagiv.datapush.server.Models
             {
                 await PushPayloadToDestination(responseStream, routeRequest);
             }
+
+            _logger?.Information($"Route Completed: (Destination Node: {routeRequest.DestinationNode})");
 
             // Close the route request.
             _routeRepository.CloseRouteRequest(routeRequest);

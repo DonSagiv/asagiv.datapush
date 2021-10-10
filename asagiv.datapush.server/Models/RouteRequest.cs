@@ -69,7 +69,7 @@ namespace asagiv.datapush.server.Models
 
         public void SetRouteError(string errorMessage)
         {
-
+            ErrorMessage = errorMessage;
         }
         #endregion
     }
