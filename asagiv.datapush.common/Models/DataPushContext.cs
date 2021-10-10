@@ -24,6 +24,7 @@ namespace asagiv.datapush.common.Models
         private readonly DataPush.DataPushClient _client;
         private Subject<Unit> _onDataPushSubject = new Subject<Unit>();
         private Subject<int> _onPushResponseReceived = new Subject<int>();
+        private IDisposable _pushDataDisposable;
         #endregion
 
         #region Delegates
@@ -69,7 +70,7 @@ namespace asagiv.datapush.common.Models
 
                 var streamDuplex = _client.PushData();
 
-                _onDataPushSubject
+                _pushDataDisposable = _onDataPushSubject
                     .SelectMany(x => HandleDataPushResponse(streamDuplex))
                     .Subscribe();
 
@@ -146,8 +147,20 @@ namespace asagiv.datapush.common.Models
 
             var response = streamDuplex.ResponseStream.Current;
 
+            // Check if response has an error.
+            if(response.Confirmation < 0)
+            {
+                _logger?.Information($"Retrieved Error: {response.ErrorMessage})");
+
+                // Stop streaming the data.
+                _pushDataDisposable.Dispose();
+
+                return Unit.Default;
+            }
+
             _logger?.Information($"Retrieved Confirmation for Block: {response.BlockNumber})");
 
+            // Notify that a block has successfully been pushed.
             _onPushResponseReceived?.OnNext(++NumberOfBlocksPushed);
 
             // Update the data push progress.

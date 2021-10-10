@@ -87,6 +87,11 @@ namespace asagiv.datapush.server.Models
                         routeRequest = _routeRepository.AddRouteRequest(request);
                     }
 
+                    if (routeRequest.IsRouteErrorRaised)
+                    {
+                        throw new Exception(routeRequest.ErrorMessage);
+                    }
+
                     // Push Route Request Context.
                     _dataPushRequestReceived.OnNext(new RouteRequestContext(request, routeRequest, responseStream));
                 }
@@ -99,7 +104,7 @@ namespace asagiv.datapush.server.Models
                 {
                     RequestId = request.RequestId,
                     DestinationNode = request.DestinationNode,
-                    Confirmation = 1,
+                    Confirmation = -1,
                     BlockNumber = -1,
                     ErrorMessage = ex.Message
                 };
