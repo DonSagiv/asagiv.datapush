@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading;
 
 namespace asagiv.datapush.server.Models
 {
@@ -130,6 +131,11 @@ namespace asagiv.datapush.server.Models
 
             // Add payload to route request.
             var payload = routeRequest.AddPayload(dataPushRequest.BlockNumber, dataPushRequest.Payload);
+
+            while (!payload.IsConsumed)
+            {
+                await Task.Delay(500);
+            }
 
             var response = new DataPushResponse
             {
