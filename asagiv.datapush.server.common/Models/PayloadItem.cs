@@ -12,7 +12,7 @@ namespace asagiv.datapush.server.common.Models
         #endregion
 
         #region Delegates
-        public event EventHandler PayloadConsumed;
+        public event EventHandler<string> PayloadConsumed;
         #endregion
 
         #region Constructor
@@ -28,7 +28,12 @@ namespace asagiv.datapush.server.common.Models
         {
             IsConsumed = true;
 
-            PayloadConsumed?.Invoke(this, EventArgs.Empty);
+            PayloadConsumed?.Invoke(this, string.Empty);
+        }
+
+        public void SetPayloadPushError(string errorMessage)
+        {
+            PayloadConsumed?.Invoke(this, errorMessage);
         }
         #endregion
     }

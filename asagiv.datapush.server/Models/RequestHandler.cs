@@ -152,71 +152,92 @@ namespace asagiv.datapush.server.Models
 
             if (routeRequest == null)
             {
-                // If no route request with destination node found, return empty response.
-                await responseStream.WriteAsync(new DataPullResponse
-                {
-                    RequestId = request.RequestId,
-                    SourceRequestId = string.Empty,
-                    SourceNode = string.Empty,
-                    DestinationNode = request.DestinationNode,
-                    BlockNumber = 0,
-                    TotalBlocks = 0,
-                    Name = string.Empty,
-                    Payload = ByteString.Empty,
-                });
+                await SendEmptyResponse(request, responseStream);
             }
             else
             {
-                _logger?.Information($"Route Request Found for {request.DestinationNode} from {routeRequest.SourceNode} " +
-                    $"(Name: {routeRequest.Name}).");
+                await PushRouteRequestToDestination(request, responseStream, routeRequest);
+            }
+        }
 
-                // Alert the user that a stream is avaiable.
+        private async static Task SendEmptyResponse(DataPullRequest request, IServerStreamWriter<DataPullResponse> responseStream)
+        {
+            // If no route request with destination node found, return empty response.
+            await responseStream.WriteAsync(new DataPullResponse
+            {
+                RequestId = request.RequestId,
+                SourceRequestId = string.Empty,
+                SourceNode = string.Empty,
+                DestinationNode = request.DestinationNode,
+                BlockNumber = 0,
+                TotalBlocks = 0,
+                Name = string.Empty,
+                Payload = ByteString.Empty,
+            });
+        }
+        private async Task PushRouteRequestToDestination(DataPullRequest request, IServerStreamWriter<DataPullResponse> responseStream, IRouteRequest routeRequest)
+        {
+            _logger?.Information($"Route Request Found for {request.DestinationNode} from {routeRequest.SourceNode} " +
+                $"(Name: {routeRequest.Name}).");
+
+            // Alert the client that a stream is avaiable.
+            await responseStream.WriteAsync(new DataPullResponse
+            {
+                RequestId = request.RequestId,
+                SourceRequestId = routeRequest.RequestId.ToString(),
+                SourceNode = routeRequest.SourceNode,
+                DestinationNode = request.DestinationNode,
+                BlockNumber = 0,
+                TotalBlocks = routeRequest.TotalBlocks,
+                Name = routeRequest.Name,
+                Payload = ByteString.Empty,
+            });
+
+            // Sends the payload data.
+            while (!routeRequest.IsRouteCompleted)
+            {
+                await PushPayloadToDestination(responseStream, routeRequest);
+            }
+
+            // Close the route request.
+            _routeRepository.CloseRouteRequest(routeRequest);
+        }
+
+        private async Task PushPayloadToDestination(IServerStreamWriter<DataPullResponse> responseStream, IRouteRequest routeRequest)
+        {
+            // Get payload to push to destination node.
+            var payload = routeRequest.GetFromPayload();
+
+            if (payload == null)
+            {
+                // Sometimes dequeue is faster than enqueue
+                return;
+            }
+
+            _logger?.Information($"Pushing Data from {routeRequest.SourceNode} to {routeRequest.DestinationNode} " +
+                $"(Block {payload.BlockNumber} of {routeRequest.TotalBlocks}, " +
+                $"Name: {routeRequest.Name}, " +
+                $"Size: {payload.Payload.Length} bytes).");
+
+            try
+            {
+                // Push payload to destination node.
                 await responseStream.WriteAsync(new DataPullResponse
                 {
-                    RequestId = request.RequestId,
-                    SourceRequestId = routeRequest.RequestId.ToString(),
                     SourceNode = routeRequest.SourceNode,
-                    DestinationNode = request.DestinationNode,
-                    BlockNumber = 0,
-                    TotalBlocks = routeRequest.TotalBlocks,
+                    SourceRequestId = routeRequest.RequestId.ToString(),
+                    DestinationNode = routeRequest.DestinationNode,
                     Name = routeRequest.Name,
-                    Payload = ByteString.Empty,
+                    BlockNumber = payload.BlockNumber,
+                    TotalBlocks = routeRequest.TotalBlocks,
+                    Payload = payload.Payload,
                 });
 
-                // Sends the payload data.
-                while (!routeRequest.IsRouteCompleted)
-                {
-                    // Get payload to push to destination node.
-                    var payload = routeRequest.GetFromPayload();
-
-                    if (payload == null)
-                    {
-                        // Sometimes dequeue is faster than enqueue
-                        continue;
-                    }
-
-                    _logger?.Information($"Pushing Data from {routeRequest.SourceNode} to {routeRequest.DestinationNode} " +
-                        $"(Block {payload.BlockNumber} of {routeRequest.TotalBlocks}, " +
-                        $"Name: {routeRequest.Name}, " +
-                        $"Size: {payload.Payload.Length} bytes).");
-
-                    // Push payload to destination node.
-                    await responseStream.WriteAsync(new DataPullResponse
-                    {
-                        SourceNode = routeRequest.SourceNode,
-                        SourceRequestId = routeRequest.RequestId.ToString(),
-                        DestinationNode = routeRequest.DestinationNode,
-                        Name = routeRequest.Name,
-                        BlockNumber = payload.BlockNumber,
-                        TotalBlocks = routeRequest.TotalBlocks,
-                        Payload = payload.Payload,
-                    });
-
-                    payload.SetPayloadConsumed();
-                }
-
-                // Close the route request.
-                _routeRepository.CloseRouteRequest(routeRequest);
+                payload.SetPayloadConsumed();
+            }
+            catch(Exception ex)
+            {
+                payload.SetPayloadPushError(ex.Message);
             }
         }
         #endregion
