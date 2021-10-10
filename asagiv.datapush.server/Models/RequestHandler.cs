@@ -7,6 +7,9 @@ using Serilog;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 
 namespace asagiv.datapush.server.Models
 {
@@ -16,6 +19,7 @@ namespace asagiv.datapush.server.Models
         private readonly ILogger _logger;
         private readonly INodeRepository _nodeRepository;
         private readonly IDataRouteRepository _routeRepository;
+        private readonly Subject<RouteRequestContext> _dataPushRequestReceived = new Subject<RouteRequestContext>();
         #endregion
 
         #region Constructor
@@ -24,6 +28,8 @@ namespace asagiv.datapush.server.Models
             _nodeRepository = nodeRepository;
             _routeRepository = routeRepository;
             _logger = logger;
+
+            _dataPushRequestReceived.Subscribe(x => OnPushRequestReceived(x));
 
             _logger?.Debug("Request Handler Instantiated.");
         }
@@ -66,8 +72,8 @@ namespace asagiv.datapush.server.Models
 
         public async Task HandlePushDataAsync(IAsyncStreamReader<DataPushRequest> requestStream, IServerStreamWriter<DataPushResponse> responseStream)
         {
-            IRouteRequest routeRequest = null;
             DataPushRequest request = null;
+            IRouteRequest routeRequest = null;
 
             try
             {
@@ -81,26 +87,8 @@ namespace asagiv.datapush.server.Models
                         routeRequest = _routeRepository.AddRouteRequest(request);
                     }
 
-                    _logger?.Information($"Adding Payload to Route Request " +
-                        $"({request.BlockNumber} of {request.TotalBlocks} " +
-                        $"Source: {request.SourceNode}, " +
-                        $"Destionation: {request.DestinationNode}, " +
-                        $"Name: {request.Name}, " +
-                        $"Size: {request.Payload.Length} bytes).");
-
-                    // Add payload to route request.
-                    routeRequest.AddPayload(request.BlockNumber, request.Payload);
-
-                    var response = new DataPushResponse
-                    {
-                        RequestId = request.RequestId,
-                        DestinationNode = request.DestinationNode,
-                        Confirmation = 1,
-                        BlockNumber = request.BlockNumber,
-                        ErrorMessage = string.Empty
-                    };
-
-                    await responseStream.WriteAsync(response);
+                    // Push Route Request Context.
+                    _dataPushRequestReceived.OnNext(new RouteRequestContext(request, routeRequest, responseStream));
                 }
             }
             catch (Exception ex)
@@ -118,6 +106,43 @@ namespace asagiv.datapush.server.Models
 
                 await responseStream.WriteAsync(response);
             }
+        }
+
+        private Unit OnPushRequestReceived(RouteRequestContext routeRequestContext)
+        {
+            var dataPushRequest = routeRequestContext.DataPushRequest;
+            var routeRequest = routeRequestContext.RouteRequest;
+            var responseStream = routeRequestContext.ResponseStream;
+
+            _logger?.Information($"Adding Payload to Route Request " +
+                $"({dataPushRequest.BlockNumber} of {dataPushRequest.TotalBlocks} " +
+                $"Source: {dataPushRequest.SourceNode}, " +
+                $"Destionation: {dataPushRequest.DestinationNode}, " +
+                $"Name: {dataPushRequest.Name}, " +
+                $"Size: {dataPushRequest.Payload.Length} bytes).");
+
+            // Add payload to route request.
+            var payload = routeRequest.AddPayload(dataPushRequest.BlockNumber, dataPushRequest.Payload);
+
+            payload.PayloadConsumed += async (s,e) => await OnPayloadConsumed(dataPushRequest, responseStream);
+
+            return Unit.Default;
+        }
+
+        private async Task OnPayloadConsumed(DataPushRequest dataPushRequest, IServerStreamWriter<DataPushResponse> responseStream)
+        {
+            _logger?.Information($"Sending Affirmative Response (RequestID: {dataPushRequest.RequestId}, Block {dataPushRequest.BlockNumber})");
+
+            var response = new DataPushResponse
+            {
+                RequestId = dataPushRequest.RequestId,
+                DestinationNode = dataPushRequest.DestinationNode,
+                Confirmation = 1,
+                BlockNumber = dataPushRequest.BlockNumber,
+                ErrorMessage = string.Empty
+            };
+
+            await responseStream.WriteAsync(response);
         }
 
         public async Task HandlePullDataAsync(DataPullRequest request, IServerStreamWriter<DataPullResponse> responseStream)
@@ -164,7 +189,7 @@ namespace asagiv.datapush.server.Models
                     // Get payload to push to destination node.
                     var payload = routeRequest.GetFromPayload();
 
-                    if(payload == null)
+                    if (payload == null)
                     {
                         // Sometimes dequeue is faster than enqueue
                         continue;
@@ -186,6 +211,8 @@ namespace asagiv.datapush.server.Models
                         TotalBlocks = routeRequest.TotalBlocks,
                         Payload = payload.Payload,
                     });
+
+                    payload.SetPayloadConsumed();
                 }
 
                 // Close the route request.
