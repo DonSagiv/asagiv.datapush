@@ -40,6 +40,10 @@ namespace asagiv.datapush.server.Interfaces
         /// </summary>
         ConcurrentQueue<PayloadItem> PayloadQueue { get; }
         /// <summary>
+        /// Error message raised by the route request.
+        /// </summary>
+        string ErrorMessage { get; }
+        /// <summary>
         /// true if the route has been connected to its destination node.
         /// </summary>
         bool IsRouteConnected { get; set; }
@@ -47,6 +51,10 @@ namespace asagiv.datapush.server.Interfaces
         /// True if all data has been successfully pushed.
         /// </summary>
         bool IsRouteCompleted { get; }
+        /// <summary>
+        /// True if an error has occurred during routing.
+        /// </summary>
+        bool IsRouteErrorRaised { get; }
 
         /// <summary>
         /// Adds a new payload item to the payload queue.

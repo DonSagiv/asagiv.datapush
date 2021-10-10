@@ -18,8 +18,10 @@ namespace asagiv.datapush.server.Models
         public int TotalBlocks { get; private set; }
         public DateTime PushDateTime { get; }
         public ConcurrentQueue<PayloadItem> PayloadQueue { get; }
+        public string ErrorMessage { get; private set; }
         public bool IsRouteConnected { get; set; }
         public bool IsRouteCompleted => BlocksRetrieved >= TotalBlocks;
+        public bool IsRouteErrorRaised => !string.IsNullOrWhiteSpace(ErrorMessage);
         #endregion
 
         #region Constructor
@@ -63,6 +65,11 @@ namespace asagiv.datapush.server.Models
             }
 
             return payload;
+        }
+
+        public void SetRouteError(string errorMessage)
+        {
+
         }
         #endregion
     }

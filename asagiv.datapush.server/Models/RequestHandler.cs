@@ -156,7 +156,7 @@ namespace asagiv.datapush.server.Models
             }
             else
             {
-                await PushRouteRequestToDestination(request, responseStream, routeRequest);
+                await HandleRouteRequest(request, responseStream, routeRequest);
             }
         }
 
@@ -175,7 +175,8 @@ namespace asagiv.datapush.server.Models
                 Payload = ByteString.Empty,
             });
         }
-        private async Task PushRouteRequestToDestination(DataPullRequest request, IServerStreamWriter<DataPullResponse> responseStream, IRouteRequest routeRequest)
+
+        private async Task HandleRouteRequest(DataPullRequest request, IServerStreamWriter<DataPullResponse> responseStream, IRouteRequest routeRequest)
         {
             _logger?.Information($"Route Request Found for {request.DestinationNode} from {routeRequest.SourceNode} " +
                 $"(Name: {routeRequest.Name}).");
