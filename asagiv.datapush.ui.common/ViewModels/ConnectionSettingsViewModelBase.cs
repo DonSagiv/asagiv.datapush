@@ -82,7 +82,7 @@ namespace asagiv.datapush.ui.common
             EntityEntry<ClientConnectionSettings> result;
 
             var clientSetting = _selectedClientConnection as ClientConnectionSettings;
-
+            
             if (await _dataPushDbContext.ConnectionSettingsSet.AnyAsync(x => x.Id == _selectedClientConnection.Id))
             {
                 result = _dataPushDbContext.ConnectionSettingsSet.Update(clientSetting);

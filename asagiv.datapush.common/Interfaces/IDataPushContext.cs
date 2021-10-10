@@ -14,7 +14,7 @@ namespace asagiv.datapush.common.Interfaces
         string Description { get; }
         int NumberOfBlocksPushed { get; }
         int TotalNumberOfBlocks { get; }
-        IObservable<double> OnPushResponseReceived { get; }
+        IObservable<int> OnPushResponseReceived { get; }
         #endregion
 
         #region Methods

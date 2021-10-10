@@ -23,7 +23,7 @@ namespace asagiv.datapush.common.Models
         private readonly ILogger _logger;
         private readonly DataPush.DataPushClient _client;
         private Subject<Unit> _onDataPushSubject = new Subject<Unit>();
-        private Subject<double> _onPushResponseReceived = new Subject<double>();
+        private Subject<int> _onPushResponseReceived = new Subject<int>();
         #endregion
 
         #region Delegates
@@ -39,7 +39,7 @@ namespace asagiv.datapush.common.Models
         public string Description => $"{Name} to {DestinationNode}";
         public int NumberOfBlocksPushed { get; private set; }
         public int TotalNumberOfBlocks { get; private set; }
-        public IObservable<double> OnPushResponseReceived => _onPushResponseReceived.AsObservable();
+        public IObservable<int> OnPushResponseReceived => _onPushResponseReceived.AsObservable();
         #endregion
 
         #region Constructor
@@ -148,9 +148,7 @@ namespace asagiv.datapush.common.Models
 
             _logger?.Information($"Retrieved Confirmation for Block: {response.BlockNumber})");
 
-            var progress = ++NumberOfBlocksPushed / Convert.ToDouble(TotalNumberOfBlocks);
-
-            _onPushResponseReceived?.OnNext(progress);
+            _onPushResponseReceived?.OnNext(++NumberOfBlocksPushed);
 
             // Update the data push progress.
             return Unit.Default;

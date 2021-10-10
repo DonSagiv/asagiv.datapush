@@ -4,8 +4,7 @@
 			 xmlns:vm="clr-namespace:asagiv.datapush.ui.mobile.ViewModels"
 			 xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
 			 xmlns:utilities="clr-namespace:asagiv.datapush.ui.mobile.Utilities"
-             x:DataType="{x:Type vm:ConnectionSettingsViewModel}"
-			 x:Class="asagiv.datapush.ui.mobile.Views.ConnectionSettingsView">
+             x:Class="asagiv.datapush.ui.mobile.Views.ConnectionSettingsView">
 
 	<ContentPage.Resources>
 		<utilities:NullToVisibilityConverter x:Key="n2v" />

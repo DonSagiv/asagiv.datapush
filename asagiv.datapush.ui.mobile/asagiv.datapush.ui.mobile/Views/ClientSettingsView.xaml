@@ -61,9 +61,9 @@
 
 							<StackLayout>
 
-								<Label Text="{Binding Description}" />
+								<Label Text="{Binding DataPushContext.Description}" />
 
-								<ProgressBar Progress="{Binding DataPushProgress}" />
+								<ProgressBar Progress="{Binding PushProgress}" />
 
 							</StackLayout>
 

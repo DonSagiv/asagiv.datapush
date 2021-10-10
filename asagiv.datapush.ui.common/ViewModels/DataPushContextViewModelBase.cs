@@ -1,6 +1,7 @@
 ﻿using asagiv.datapush.common.Interfaces;
 using asagiv.datapush.ui.common.Interfaces;
 using ReactiveUI;
+using System;
 
 namespace asagiv.datapush.ui.common.ViewModels
 {
@@ -27,9 +28,9 @@ namespace asagiv.datapush.ui.common.ViewModels
         #endregion
 
         #region Methods
-        public void OnPushResponseReceived(double progress)
+        public void OnPushResponseReceived(int blockNumber)
         {
-            PushProgress = progress;
+            PushProgress = blockNumber / Convert.ToDouble(DataPushContext.TotalNumberOfBlocks);
         }
         #endregion
     }
