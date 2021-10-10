@@ -42,9 +42,13 @@ namespace asagiv.datapush.server.Models
         #endregion
 
         #region Methods
-        public void AddPayload(int blockNumber, ByteString payloadItemToAdd)
+        public PayloadItem AddPayload(int blockNumber, ByteString payloadByteString)
         {
-            PayloadQueue.Enqueue(new PayloadItem(blockNumber, payloadItemToAdd));
+            var payloadItemToAdd = new PayloadItem(blockNumber, payloadByteString);
+
+            PayloadQueue.Enqueue(payloadItemToAdd);
+
+            return payloadItemToAdd;
         }
 
         public PayloadItem GetFromPayload()

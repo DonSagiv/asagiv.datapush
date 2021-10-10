@@ -97,6 +97,7 @@ namespace asagiv.datapush.server.Models
                         DestinationNode = request.DestinationNode,
                         Confirmation = 1,
                         BlockNumber = request.BlockNumber,
+                        ErrorMessage = string.Empty
                     };
 
                     await responseStream.WriteAsync(response);

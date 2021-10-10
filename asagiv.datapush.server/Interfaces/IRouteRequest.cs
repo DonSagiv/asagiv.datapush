@@ -53,7 +53,7 @@ namespace asagiv.datapush.server.Interfaces
         /// </summary>
         /// <param name="blockNumber">The block number of the payload item.</param>
         /// <param name="payloadItemToAdd">The acutal payload data.</param>
-        void AddPayload(int blockNumber, ByteString payloadItemToAdd);
+        PayloadItem AddPayload(int blockNumber, ByteString payloadByteString);
         /// <summary>
         /// Dequeues a payload item from the payload queue.
         /// </summary>
