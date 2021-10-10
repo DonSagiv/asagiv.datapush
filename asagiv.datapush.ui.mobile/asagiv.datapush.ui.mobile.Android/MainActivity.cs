@@ -36,7 +36,7 @@ namespace asagiv.datapush.ui.mobile.Droid
 
             if (Intent.Action == Intent.ActionSend || Intent.Action == Intent.ActionSendMultiple)
             {
-                _logger?.Information("Intents Found.");
+                _logger?.Information("Intents Found (On Create).");
 
                 // Send data from intents (if app launched from "Share" menu).
                 AndroidUtilities.PrepareDataToSend(Intent, ApplicationContext, _logger);
@@ -47,10 +47,10 @@ namespace asagiv.datapush.ui.mobile.Droid
         {
             if (intent.Action == Intent.ActionSend || intent.Action == Intent.ActionSendMultiple)
             {
-                _logger.Information("Intents Found.");
+                _logger.Information("Intents Found (On New Intent).");
 
                 // Send data from intents (if app launched from "Share" menu).
-                AndroidUtilities.PrepareDataToSend(Intent, ApplicationContext, _logger);
+                AndroidUtilities.PrepareDataToSend(intent, ApplicationContext, _logger);
             }
         }
 
