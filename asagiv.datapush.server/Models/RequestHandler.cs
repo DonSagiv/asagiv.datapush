@@ -249,6 +249,14 @@ namespace asagiv.datapush.server.Models
                 payload.SetPayloadPushError(ex.Message);
             }
         }
+
+        public Task<AcknowledgeDataPullResponse> HandleAcknowledgeDataPull(AcknowledgeDataPullRequest request)
+        {
+            return Task.FromResult(new AcknowledgeDataPullResponse
+            {
+                RequestId = request.RequestId
+            });
+        }
         #endregion
     }
 }

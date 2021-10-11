@@ -25,5 +25,6 @@ namespace asagiv.datapush.server.Interfaces
         /// <param name="responseStream">The response stream that pushes the data to the client.</param>
         /// <returns>A System.Threading.Tasks object. Async is suggested.</returns>
         Task HandlePullDataAsync(DataPullRequest request, IServerStreamWriter<DataPullResponse> responseStream);
+        Task<AcknowledgeDataPullResponse> HandleAcknowledgeDataPull(AcknowledgeDataPullRequest request);
     }
 }

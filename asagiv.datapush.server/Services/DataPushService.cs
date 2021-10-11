@@ -39,12 +39,7 @@ namespace asagiv.datapush.server
 
         public override Task<AcknowledgeDataPullResponse> AcknowledgeDataPull(AcknowledgeDataPullRequest request, ServerCallContext context)
         {
-            // Do nothing for now.
-
-            return Task.FromResult(new AcknowledgeDataPullResponse
-            {
-                RequestId = request.RequestId
-            });
+            return _requestHandler.HandleAcknowledgeDataPull(request);
         }
         #endregion
     }
