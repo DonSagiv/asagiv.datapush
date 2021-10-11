@@ -1,5 +1,6 @@
 ﻿using asagiv.datapush.common;
 using asagiv.datapush.server.Interfaces;
+using Grpc.Core;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -38,7 +39,7 @@ namespace asagiv.datapush.server.Models
             _repository = new List<IRouteRequest>();
         }
 
-        public IRouteRequest AddRouteRequest(DataPushRequest dataPushRequest)
+        public IRouteRequest AddRouteRequest(DataPushRequest dataPushRequest, IServerStreamWriter<DataPushResponse> responseStream)
         {
             var routeRequest = _repository
                             .Where(x => x.SourceNode == dataPushRequest.SourceNode)
@@ -47,7 +48,7 @@ namespace asagiv.datapush.server.Models
 
             if (routeRequest == null)
             {
-                routeRequest = new RouteRequest(dataPushRequest);
+                routeRequest = new RouteRequest(dataPushRequest, responseStream);
 
                 _logger?.Information($"New Route Request Added (Source: {routeRequest.SourceNode}, " +
                     $"Destionation: {routeRequest.DestinationNode}, " +

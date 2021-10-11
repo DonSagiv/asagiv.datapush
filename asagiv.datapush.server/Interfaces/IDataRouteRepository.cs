@@ -1,4 +1,5 @@
 ﻿using asagiv.datapush.common;
+using Grpc.Core;
 using System.Collections.Generic;
 
 namespace asagiv.datapush.server.Interfaces
@@ -15,7 +16,7 @@ namespace asagiv.datapush.server.Interfaces
         /// </summary>
         /// <param name="dataPushRequest">The data push request</param>
         /// <returns>The reated route request.</returns>
-        IRouteRequest AddRouteRequest(DataPushRequest dataPushRequest);
+        IRouteRequest AddRouteRequest(DataPushRequest dataPushRequest, IServerStreamWriter<DataPushResponse> responseStream);
         /// <summary>
         /// Get a route request belonging to a destination node.
         /// </summary>

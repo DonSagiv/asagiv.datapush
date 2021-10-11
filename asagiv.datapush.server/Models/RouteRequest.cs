@@ -2,6 +2,7 @@
 using asagiv.datapush.server.common.Models;
 using asagiv.datapush.server.Interfaces;
 using Google.Protobuf;
+using Grpc.Core;
 using System;
 using System.Collections.Concurrent;
 
@@ -22,10 +23,11 @@ namespace asagiv.datapush.server.Models
         public bool IsRouteConnected { get; set; }
         public bool IsRouteCompleted => BlocksRetrieved >= TotalBlocks;
         public bool IsRouteErrorRaised => !string.IsNullOrWhiteSpace(ErrorMessage);
+        public IServerStreamWriter<DataPushResponse> ResponseStream { get; }
         #endregion
 
         #region Constructor
-        public RouteRequest(DataPushRequest dataPushRequest)
+        public RouteRequest(DataPushRequest dataPushRequest, IServerStreamWriter<DataPushResponse> responseStream)
         {
             RequestId = Guid.TryParse(dataPushRequest.RequestId, out var requestId)
                 ? requestId
@@ -37,8 +39,10 @@ namespace asagiv.datapush.server.Models
             TotalBlocks = dataPushRequest.TotalBlocks;
             PushDateTime = DateTime.Now;
 
-            PayloadQueue = new ConcurrentQueue<PayloadItem>();
+            ResponseStream = responseStream;
 
+            PayloadQueue = new ConcurrentQueue<PayloadItem>();
+            
             BlocksRetrieved = 0;
         }
         #endregion

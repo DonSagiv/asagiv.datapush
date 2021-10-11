@@ -1,5 +1,7 @@
-﻿using asagiv.datapush.server.common.Models;
+﻿using asagiv.datapush.common;
+using asagiv.datapush.server.common.Models;
 using Google.Protobuf;
+using Grpc.Core;
 using System;
 using System.Collections.Concurrent;
 
@@ -55,6 +57,10 @@ namespace asagiv.datapush.server.Interfaces
         /// True if an error has occurred during routing.
         /// </summary>
         bool IsRouteErrorRaised { get; }
+        /// <summary>
+        /// Response Stream of the Request
+        /// </summary>
+        IServerStreamWriter<DataPushResponse> ResponseStream { get; }
 
         /// <summary>
         /// Adds a new payload item to the payload queue.

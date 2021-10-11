@@ -87,7 +87,7 @@ namespace asagiv.datapush.server.Models
                     // Add route request to repository if none available.
                     if (routeRequest == null)
                     {
-                        routeRequest = _routeRepository.AddRouteRequest(request);
+                        routeRequest = _routeRepository.AddRouteRequest(request, responseStream);
                     }
 
                     if (routeRequest.IsRouteErrorRaised)
