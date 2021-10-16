@@ -43,31 +43,39 @@ namespace asagiv.datapush.common.Utilities
 
             _logger?.Information($"Streaming Pulled Data to {tempFilePath}");
 
+            var isDeliverySuccessful = false;
+            var errorMessage = string.Empty;
+
             try
             {
                 if(await DownloadStreamToFileAsync(responseStreamContext, tempFilePath))
                 {
                     UpdateFileName(responseStreamContext.ResponseData.Name, tempFilePath);
                 }
+
+                isDeliverySuccessful = true;
             }
             catch (Exception ex)
             {
                 _logger?.Error(ex, $"File Pull Error: {ex.Message}");
 
-                var acknowledgePullDataRequest = new AcknowledgeDeliveryRequest
-                {
-                    RequestId = responseStreamContext.ResponseData.RequestId,
-                    Name = responseStreamContext.ResponseData.Name,
-                    DestinationNode = responseStreamContext.ResponseData.DestinationNode,
-                    BlockNumber = responseStreamContext.ResponseData.BlockNumber,
-                    IsPullSuccessful = false,
-                    ErrorMessage = ex.Message
-                };
-
-                AcknowledgeDelivery?.Invoke(this, acknowledgePullDataRequest);
+                errorMessage = ex.Message;
 
                 File.Delete(tempFilePath);
             }
+
+            _logger.Information($"Sending Delivery Acknowledgement (Name: {responseStreamContext.ResponseData.Name}, Is Successful: {isDeliverySuccessful})");
+
+            var acknowledgePullDataRequest = new AcknowledgeDeliveryRequest
+            {
+                RequestId = responseStreamContext.ResponseData.RequestId,
+                Name = responseStreamContext.ResponseData.Name,
+                DestinationNode = responseStreamContext.ResponseData.DestinationNode,
+                IsPullSuccessful = isDeliverySuccessful,
+                ErrorMessage = errorMessage
+            };
+
+            AcknowledgeDelivery?.Invoke(this, acknowledgePullDataRequest);
         }
 
         private async Task<bool> DownloadStreamToFileAsync(IResponseStreamContext<DataPullResponse> responseStreamContext, string tempFilePath)
@@ -96,17 +104,6 @@ namespace asagiv.datapush.common.Utilities
             _logger?.Information($"Writing {byteArray.Length} Bytes to {tempFilePath} (Block {response.BlockNumber} of {response.TotalBlocks})");
 
             await fs.WriteAsync(byteArray);
-
-            var acknowledgePullDataRequest = new AcknowledgeDeliveryRequest
-            {
-                RequestId = response.RequestId,
-                Name = response.Name,
-                DestinationNode = response.DestinationNode,
-                IsPullSuccessful = true,
-                BlockNumber = response.BlockNumber,
-            };
-
-            AcknowledgeDelivery?.Invoke(this, acknowledgePullDataRequest);
 
             return response.BlockNumber == response.TotalBlocks;
         }

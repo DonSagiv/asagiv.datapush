@@ -66,9 +66,8 @@ message AcknowledgeDeliveryRequest
   string requestId = 1;
   string destinationNode = 2;
   string name = 3;
-  int32 blockNumber = 4;
-  bool isPullSuccessful = 5;
-  string errorMessage = 6;
+  bool isPullSuccessful = 4;
+  string errorMessage = 5;
 }
 
 message AcknowledgeDeliveryResponse
