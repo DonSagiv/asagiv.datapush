@@ -6,7 +6,7 @@ namespace asagiv.datapush.common.Interfaces
     public interface IGrpcDataDownloader
     {
         #region Delegates
-        event EventHandler<AcknowledgeDataPullRequest> AcknowledgeDataPush;
+        event EventHandler<AcknowledgeDeliveryRequest> AcknowledgeDelivery;
         #endregion
 
         #region Methods

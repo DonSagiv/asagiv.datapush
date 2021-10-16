@@ -245,9 +245,9 @@ namespace asagiv.datapush.server.Models
             }
         }
 
-        public Task<AcknowledgeDataPullResponse> HandleAcknowledgeDataPull(AcknowledgeDataPullRequest request)
+        public Task<AcknowledgeDeliveryResponse> HandleAcknowledgeDataPull(AcknowledgeDeliveryRequest request)
         {
-            return Task.FromResult(new AcknowledgeDataPullResponse
+            return Task.FromResult(new AcknowledgeDeliveryResponse
             {
                 RequestId = request.RequestId
             });

@@ -16,7 +16,7 @@ namespace asagiv.datapush.common.Utilities
         #endregion
 
         #region Delegates
-        public event EventHandler<AcknowledgeDataPullRequest> AcknowledgeDataPush;
+        public event EventHandler<AcknowledgeDeliveryRequest> AcknowledgeDelivery;
         #endregion
 
         #region Constructor
@@ -54,7 +54,7 @@ namespace asagiv.datapush.common.Utilities
             {
                 _logger?.Error(ex, $"File Pull Error: {ex.Message}");
 
-                var acknowledgePullDataRequest = new AcknowledgeDataPullRequest
+                var acknowledgePullDataRequest = new AcknowledgeDeliveryRequest
                 {
                     RequestId = responseStreamContext.ResponseData.RequestId,
                     Name = responseStreamContext.ResponseData.Name,
@@ -64,7 +64,7 @@ namespace asagiv.datapush.common.Utilities
                     ErrorMessage = ex.Message
                 };
 
-                AcknowledgeDataPush?.Invoke(this, acknowledgePullDataRequest);
+                AcknowledgeDelivery?.Invoke(this, acknowledgePullDataRequest);
 
                 File.Delete(tempFilePath);
             }
@@ -97,7 +97,7 @@ namespace asagiv.datapush.common.Utilities
 
             await fs.WriteAsync(byteArray);
 
-            var acknowledgePullDataRequest = new AcknowledgeDataPullRequest
+            var acknowledgePullDataRequest = new AcknowledgeDeliveryRequest
             {
                 RequestId = response.RequestId,
                 Name = response.Name,
@@ -106,7 +106,7 @@ namespace asagiv.datapush.common.Utilities
                 BlockNumber = response.BlockNumber,
             };
 
-            AcknowledgeDataPush?.Invoke(this, acknowledgePullDataRequest);
+            AcknowledgeDelivery?.Invoke(this, acknowledgePullDataRequest);
 
             return response.BlockNumber == response.TotalBlocks;
         }
