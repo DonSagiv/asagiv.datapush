@@ -130,23 +130,9 @@ namespace asagiv.datapush.server.Models
                 $"Size: {dataPushRequest.Payload.Length} bytes).");
 
             // Add payload to route request.
-            var payload = routeRequest.AddPayload(dataPushRequest.BlockNumber, dataPushRequest.Payload);
+            routeRequest.AddPayload(dataPushRequest.BlockNumber, dataPushRequest.Payload);
 
-            while (!payload.IsConsumed)
-            {
-                await Task.Delay(500);
-            }
 
-            var response = new DataPushResponse
-            {
-                RequestId = dataPushRequest.RequestId,
-                DestinationNode = dataPushRequest.DestinationNode,
-                Confirmation = 1,
-                BlockNumber = dataPushRequest.BlockNumber,
-                ErrorMessage = string.Empty
-            };
-
-            await responseStream.WriteAsync(response);
 
             return Unit.Default;
         }
@@ -154,7 +140,7 @@ namespace asagiv.datapush.server.Models
         public async Task HandlePullDataAsync(DataPullRequest request, IServerStreamWriter<DataPullResponse> responseStream)
         {
             // Get route request for selected destination node.
-            var routeRequest = _routeRepository.GetRouteRequest(request.DestinationNode);
+            var routeRequest = _routeRepository.ConnectRouteRequest(request.DestinationNode);
 
             if (routeRequest == null)
             {
@@ -250,12 +236,19 @@ namespace asagiv.datapush.server.Models
             }
         }
 
-        public Task<AcknowledgeDataPullResponse> HandleAcknowledgeDataPull(AcknowledgeDataPullRequest request)
+        public async Task<AcknowledgeDataPullResponse> HandleAcknowledgeDataPull(AcknowledgeDataPullRequest request)
         {
-            return Task.FromResult(new AcknowledgeDataPullResponse
+            var routeRequest = _routeRepository.GetRouteRequest(request.DestinationNode);
+
+            if(routeRequest != null)
+            {
+                await routeRequest.ConfirmPayloadReceivedAsync(request);
+            }
+
+            return new AcknowledgeDataPullResponse
             {
                 RequestId = request.RequestId
-            });
+            };
         }
         #endregion
     }

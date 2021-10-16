@@ -4,6 +4,7 @@ using Google.Protobuf;
 using Grpc.Core;
 using System;
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
 namespace asagiv.datapush.server.Interfaces
 {
@@ -73,5 +74,11 @@ namespace asagiv.datapush.server.Interfaces
         /// </summary>
         /// <returns></returns>
         PayloadItem GetFromPayload();
+        /// <summary>
+        /// Confirm that the payload was received by the destination node
+        /// </summary>
+        /// <param name="acknowledgeRequest">The acknowledgement made by the destination node</param>
+        /// <returns>async Task</returns>
+        Task ConfirmPayloadReceivedAsync(AcknowledgeDataPullRequest acknowledgeRequest);
     }
 }

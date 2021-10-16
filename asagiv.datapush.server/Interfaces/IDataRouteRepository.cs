@@ -18,7 +18,13 @@ namespace asagiv.datapush.server.Interfaces
         /// <returns>The reated route request.</returns>
         IRouteRequest AddRouteRequest(DataPushRequest dataPushRequest, IServerStreamWriter<DataPushResponse> responseStream);
         /// <summary>
-        /// Get a route request belonging to a destination node.
+        /// Get a route request belonging to a destination node, and mark it as connected.
+        /// </summary>
+        /// <param name="destinationNode">The destination node of the route request.</param>
+        /// <returns>The route request with the selected destination node.</returns>
+        IRouteRequest ConnectRouteRequest(string destinationNode);
+        /// <summary>
+        /// Get a the route request for the destination node.
         /// </summary>
         /// <param name="destinationNode">The destination node of the route request.</param>
         /// <returns>The route request with the selected destination node.</returns>
