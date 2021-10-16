@@ -7,10 +7,8 @@ using Serilog;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Threading;
 
 namespace asagiv.datapush.server.Models
 {
@@ -30,9 +28,7 @@ namespace asagiv.datapush.server.Models
             _routeRepository = routeRepository;
             _logger = logger;
 
-            _dataPushRequestReceived
-                .SelectMany(x => OnPushRequestReceivedAsync(x))
-                .Subscribe();
+            _dataPushRequestReceived.Subscribe(OnPushRequestReceived);
 
             _logger?.Debug("Request Handler Instantiated.");
         }
@@ -66,8 +62,7 @@ namespace asagiv.datapush.server.Models
             // Add pull nodes to response pul node list.
             response.PullNodeList.AddRange(pullNodes);
 
-            _logger?.Information($"Sending Response to {response.NodeName} " +
-                $"(Is Successful = {response.Successful}).");
+            _logger?.Information($"Sending Response to {response.NodeName} (Is Successful = {response.Successful}).");
 
             // Return register node request with available pull nodes.
             return Task.FromResult(response);
@@ -116,7 +111,7 @@ namespace asagiv.datapush.server.Models
             }
         }
 
-        private async Task<Unit> OnPushRequestReceivedAsync(RouteRequestContext routeRequestContext)
+        private void OnPushRequestReceived(RouteRequestContext routeRequestContext)
         {
             var dataPushRequest = routeRequestContext.DataPushRequest;
             var routeRequest = routeRequestContext.RouteRequest;
@@ -131,10 +126,6 @@ namespace asagiv.datapush.server.Models
 
             // Add payload to route request.
             routeRequest.AddPayload(dataPushRequest.BlockNumber, dataPushRequest.Payload);
-
-
-
-            return Unit.Default;
         }
 
         public async Task HandlePullDataAsync(DataPullRequest request, IServerStreamWriter<DataPullResponse> responseStream)
@@ -242,7 +233,9 @@ namespace asagiv.datapush.server.Models
 
             if(routeRequest != null)
             {
-                await routeRequest.ConfirmPayloadReceivedAsync(request);
+                _logger?.Information($"Payload Delivery Confirmed. ({request.Name} to {request.DestinationNode}, Block {request.BlockNumber})");
+
+                await routeRequest.ConfirmPayloadDeliveredAsync(request);
             }
 
             return new AcknowledgeDataPullResponse
