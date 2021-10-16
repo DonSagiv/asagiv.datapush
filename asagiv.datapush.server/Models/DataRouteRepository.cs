@@ -61,7 +61,7 @@ namespace asagiv.datapush.server.Models
             return routeRequest;
         }
 
-        public IRouteRequest ConnectRouteRequest(string destinationNode)
+        public IRouteRequest GetRouteRequest(string destinationNode)
         {
             var routeRequest = _repository
                 .Where(x => !x.IsRouteConnected)
@@ -73,11 +73,6 @@ namespace asagiv.datapush.server.Models
             }
 
             return routeRequest;
-        }
-
-        public IRouteRequest GetRouteRequest(string destinationNode)
-        {
-            return _repository.FirstOrDefault(x => x.DestinationNode == destinationNode);
         }
 
         public void CloseRouteRequest(IRouteRequest routeRequest)
@@ -93,7 +88,6 @@ namespace asagiv.datapush.server.Models
         private void PurgeRepository(long obj)
         {
             var itemsToPurge = _repository
-                .Where(x => !x.IsRouteConnected)
                 .Where(x => x.PushDateTime > DateTime.Now.AddMinutes(-1 * numMinutesPurge));
 
             foreach (var itemToPurge in itemsToPurge)

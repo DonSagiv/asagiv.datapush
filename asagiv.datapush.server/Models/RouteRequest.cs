@@ -5,7 +5,6 @@ using Google.Protobuf;
 using Grpc.Core;
 using System;
 using System.Collections.Concurrent;
-using System.Threading.Tasks;
 
 namespace asagiv.datapush.server.Models
 {
@@ -64,28 +63,17 @@ namespace asagiv.datapush.server.Models
                 ? payloadToReturn
                 : null;
 
+            if(payload != null)
+            {
+                BlocksRetrieved++;
+            }
+
             return payload;
         }
 
         public void SetRouteError(string errorMessage)
         {
             ErrorMessage = errorMessage;
-        }
-
-        public async Task ConfirmPayloadReceivedAsync(AcknowledgeDataPullRequest acknowledgeRequest)
-        {
-            var response = new DataPushResponse
-            {
-                RequestId = RequestId.ToString(),
-                DestinationNode = DestinationNode,
-                Confirmation = acknowledgeRequest.IsPullSuccessful ? 1 : -1,
-                BlockNumber = acknowledgeRequest.BlockNumber,
-                ErrorMessage = acknowledgeRequest.ErrorMessage
-            };
-
-            await ResponseStream.WriteAsync(response);
-
-            BlocksRetrieved++;
         }
         #endregion
     }
