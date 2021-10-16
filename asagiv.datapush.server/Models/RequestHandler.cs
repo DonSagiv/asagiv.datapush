@@ -130,12 +130,7 @@ namespace asagiv.datapush.server.Models
                 $"Size: {dataPushRequest.Payload.Length} bytes).");
 
             // Add payload to route request.
-            var payload = routeRequest.AddPayload(dataPushRequest.BlockNumber, dataPushRequest.Payload);
-
-            while (!payload.IsConsumed)
-            {
-                await Task.Delay(500);
-            }
+            routeRequest.AddPayload(dataPushRequest.BlockNumber, dataPushRequest.Payload);
 
             var response = new DataPushResponse
             {

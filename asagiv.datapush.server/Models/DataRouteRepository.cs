@@ -88,6 +88,7 @@ namespace asagiv.datapush.server.Models
         private void PurgeRepository(long obj)
         {
             var itemsToPurge = _repository
+                .Where(x => x.IsRouteConnected && !x.IsRouteCompleted)
                 .Where(x => x.PushDateTime > DateTime.Now.AddMinutes(-1 * numMinutesPurge));
 
             foreach (var itemToPurge in itemsToPurge)
