@@ -72,7 +72,7 @@ namespace asagiv.datapush.server.Models
             ErrorMessage = errorMessage;
         }
 
-        public async Task ConfirmPayloadDeliveredAsync(AcknowledgeDataPullRequest acknowledgeRequest)
+        public async Task ConfirmPayloadReceivedAsync(AcknowledgeDataPullRequest acknowledgeRequest)
         {
             var response = new DataPushResponse
             {

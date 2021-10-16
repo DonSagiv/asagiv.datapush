@@ -79,6 +79,6 @@ namespace asagiv.datapush.server.Interfaces
         /// </summary>
         /// <param name="acknowledgeRequest">The acknowledgement made by the destination node</param>
         /// <returns>async Task</returns>
-        Task ConfirmPayloadDeliveredAsync(AcknowledgeDataPullRequest acknowledgeRequest);
+        Task ConfirmPayloadReceivedAsync(AcknowledgeDataPullRequest acknowledgeRequest);
     }
 }
