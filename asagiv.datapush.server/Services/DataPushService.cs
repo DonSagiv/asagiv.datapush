@@ -37,7 +37,7 @@ namespace asagiv.datapush.server
             return _requestHandler.HandleRegisterNodeRequest(request);
         }
 
-        public override Task<AcknowledgeDeliveryResponse> AcknowledgeDataPull(AcknowledgeDeliveryRequest request, ServerCallContext context)
+        public override Task<AcknowledgeDeliveryResponse> AcknowledgeDelivery(AcknowledgeDeliveryRequest request, ServerCallContext context)
         {
             return _requestHandler.HandleAcknowledgeDataPull(request);
         }

@@ -152,9 +152,9 @@ namespace asagiv.datapush.common.Models
             GC.SuppressFinalize(this);
         }
 
-        public async Task AcknowledgeDataPull(AcknowledgeDeliveryRequest acknowledgeDataPullRequest) 
+        public async Task AcknowledgeDeliveryAsync(AcknowledgeDeliveryRequest acknowledgeDataPullRequest) 
         {
-            await Client.AcknowledgeDataPullAsync(acknowledgeDataPullRequest);
+            await Client.AcknowledgeDeliveryAsync(acknowledgeDataPullRequest);
         }
         #endregion
     }
