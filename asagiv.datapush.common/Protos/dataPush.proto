@@ -67,7 +67,7 @@ message AcknowledgeDeliveryRequest
   string requestId = 1;
   string destinationNode = 2;
   string name = 3;
-  bool isPullSuccessful = 4;
+  bool isDeliverySuccessful = 4;
   string errorMessage = 5;
 }
 
@@ -88,6 +88,7 @@ message ConfirmDeliveryResponse
   string requestId = 1;
   string destinationNode = 2;
   string name = 3;
-  bool isPullSuccessful = 4;
-  string errorMessage = 5;
+  bool isRouteCompleted = 4;
+  bool isDeliverySuccessful = 5;
+  string errorMessage = 6;
 }

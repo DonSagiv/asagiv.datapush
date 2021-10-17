@@ -82,7 +82,7 @@ namespace asagiv.datapush.common.Models
                     await PushBlockAsync(block, streamDuplex);
                 }
 
-                return true;
+                return await ConfirmDeliveryAsync();
             }
             catch (Exception ex)
             {
@@ -165,6 +165,30 @@ namespace asagiv.datapush.common.Models
 
             // Update the data push progress.
             return Unit.Default;
+        }
+
+        private async Task<bool> ConfirmDeliveryAsync()
+        {
+            for (var i = 0; i < 100; i++)
+            {
+                var request = new ConfirmDeliveryRequest
+                {
+                    RequestId = RequestId.ToString(),
+                    Name = Name,
+                    DestinationNode = DestinationNode,
+                };
+
+                var response = await _client.ConfirmDeliveryAsync(request);
+
+                if(response.IsRouteCompleted)
+                {
+                    return response.IsDeliverySuccessful;
+                }
+
+                Thread.Sleep(100);
+            }
+
+            return false;
         }
 
         private void RaisePropertyChanged(string propertyName)

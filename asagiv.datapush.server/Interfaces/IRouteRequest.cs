@@ -56,7 +56,7 @@ namespace asagiv.datapush.server.Interfaces
         /// <summary>
         /// True if an error has occurred during routing.
         /// </summary>
-        bool IsRouteErrorRaised { get; }
+        bool IsDeliveryAcknowledged { get; }
         /// <summary>
         /// Response Stream of the Request
         /// </summary>
@@ -73,5 +73,10 @@ namespace asagiv.datapush.server.Interfaces
         /// </summary>
         /// <returns></returns>
         PayloadItem GetFromPayload();
+        /// <summary>
+        /// Confirm that the payloadf for the route requests have been delivered successfully.
+        /// </summary>
+        /// <param name="errorMessage">Error message if there is one</param>
+        void ConfirmRouteDelivery(string errorMessage);
     }
 }

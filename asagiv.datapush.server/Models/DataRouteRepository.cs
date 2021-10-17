@@ -61,7 +61,7 @@ namespace asagiv.datapush.server.Models
             return routeRequest;
         }
 
-        public IRouteRequest GetRouteRequest(string destinationNode)
+        public IRouteRequest ConnectRouteRequest(string destinationNode)
         {
             var routeRequest = _repository
                 .Where(x => !x.IsRouteConnected)
@@ -83,6 +83,23 @@ namespace asagiv.datapush.server.Models
                 $"Name: {routeRequest.Name}).");
 
             _repository.Remove(routeRequest);
+        }
+
+        public IRouteRequest ConfirmRequestDelivery(string destinationNode, string errorMessage)
+        {
+            var routeRequest = _repository
+                .Where(x => x.IsRouteCompleted && !x.IsDeliveryAcknowledged)
+                .FirstOrDefault(x => x.DestinationNode == destinationNode);
+
+            if(routeRequest != null)
+            {
+                _logger.Information($"Confirming Delivery for {routeRequest.Name} " +
+                    $"(RequestId = {routeRequest.RequestId}, Destination = {routeRequest.DestinationNode})");
+
+                routeRequest.ConfirmRouteDelivery(errorMessage);
+            }
+
+            return routeRequest;
         }
 
         private void PurgeRepository(long obj)

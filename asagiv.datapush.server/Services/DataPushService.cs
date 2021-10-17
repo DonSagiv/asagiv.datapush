@@ -39,7 +39,12 @@ namespace asagiv.datapush.server
 
         public override Task<AcknowledgeDeliveryResponse> AcknowledgeDelivery(AcknowledgeDeliveryRequest request, ServerCallContext context)
         {
-            return _requestHandler.HandleAcknowledgeDataPull(request);
+            return _requestHandler.HandleAcknowledgeDelivery(request);
+        }
+
+        public override Task<ConfirmDeliveryResponse> ConfirmDelivery(ConfirmDeliveryRequest request, ServerCallContext context)
+        {
+            return _requestHandler.HandleConfirmDelivery(request);
         }
         #endregion
     }

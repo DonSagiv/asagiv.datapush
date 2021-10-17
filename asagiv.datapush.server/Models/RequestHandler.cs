@@ -90,11 +90,6 @@ namespace asagiv.datapush.server.Models
                         routeRequest = _routeRepository.AddRouteRequest(request, responseStream);
                     }
 
-                    if (routeRequest.IsRouteErrorRaised)
-                    {
-                        throw new Exception(routeRequest.ErrorMessage);
-                    }
-
                     // Push Route Request Context.
                     _dataPushRequestReceived.OnNext(new RouteRequestContext(request, routeRequest, responseStream));
                 }
@@ -149,7 +144,7 @@ namespace asagiv.datapush.server.Models
         public async Task HandlePullDataAsync(DataPullRequest request, IServerStreamWriter<DataPullResponse> responseStream)
         {
             // Get route request for selected destination node.
-            var routeRequest = _routeRepository.GetRouteRequest(request.DestinationNode);
+            var routeRequest = _routeRepository.ConnectRouteRequest(request.DestinationNode);
 
             if (routeRequest == null)
             {
@@ -202,9 +197,6 @@ namespace asagiv.datapush.server.Models
             }
 
             _logger?.Information($"Route Completed: (Destination Node: {routeRequest.DestinationNode})");
-
-            // Close the route request.
-            _routeRepository.CloseRouteRequest(routeRequest);
         }
 
         private async Task PushPayloadToDestination(IServerStreamWriter<DataPullResponse> responseStream, IRouteRequest routeRequest)
@@ -245,11 +237,49 @@ namespace asagiv.datapush.server.Models
             }
         }
 
-        public Task<AcknowledgeDeliveryResponse> HandleAcknowledgeDataPull(AcknowledgeDeliveryRequest request)
+        public Task<AcknowledgeDeliveryResponse> HandleAcknowledgeDelivery(AcknowledgeDeliveryRequest request)
         {
+            _routeRepository.ConfirmRequestDelivery(request.DestinationNode);
+
             return Task.FromResult(new AcknowledgeDeliveryResponse
             {
                 RequestId = request.RequestId
+            });
+        }
+
+        public Task<ConfirmDeliveryResponse> HandleConfirmDelivery(ConfirmDeliveryRequest request)
+        {
+            var acnowledgedRequest = _routeRepository.Repository
+                .Where(x => x.IsDeliveryAcknowledged)
+                .FirstOrDefault(x => x.DestinationNode == request.DestinationNode);
+
+            if(acnowledgedRequest == null)
+            {
+                return Task.FromResult(new ConfirmDeliveryResponse
+                {
+                    RequestId = request.RequestId,
+                    Name = request.Name,
+                    DestinationNode = request.DestinationNode,
+                    IsRouteCompleted = false,
+                    IsDeliverySuccessful = false,
+                    ErrorMessage = string.Empty
+                });
+            }
+
+            _logger.Information($"Sending Delivery Confirmation for {request.Name}. " +
+                $"(Request ID: {request.RequestId}, Is Delivery Successful: {string.IsNullOrWhiteSpace(acnowledgedRequest.ErrorMessage)})");
+
+            // Close the route request.
+            _routeRepository.CloseRouteRequest(acnowledgedRequest);
+
+            return Task.FromResult(new ConfirmDeliveryResponse
+            {
+                RequestId = request.RequestId,
+                Name = request.Name,
+                DestinationNode = request.DestinationNode,
+                IsRouteCompleted = acnowledgedRequest.IsRouteCompleted,
+                IsDeliverySuccessful = string.IsNullOrWhiteSpace(acnowledgedRequest.ErrorMessage),
+                ErrorMessage = acnowledgedRequest.ErrorMessage
             });
         }
         #endregion

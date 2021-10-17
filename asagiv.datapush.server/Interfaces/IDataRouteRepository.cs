@@ -22,7 +22,14 @@ namespace asagiv.datapush.server.Interfaces
         /// </summary>
         /// <param name="destinationNode">The destination node of the route request.</param>
         /// <returns>The route request with the selected destination node.</returns>
-        IRouteRequest GetRouteRequest(string destinationNode);
+        IRouteRequest ConnectRouteRequest(string destinationNode);
+        /// <summary>
+        /// Find a route request with the destination node and confirm its delivery.
+        /// </summary>
+        /// <param name="destinationNode">The destination node of the route request</param>
+        /// <param name="errorMessage">An error message for delivery, if applicable</param>
+        /// <returns></returns>
+        IRouteRequest ConfirmRequestDelivery(string destinationNode, string errorMessage = "");
         /// <summary>
         /// Closes the input route request.
         /// </summary>

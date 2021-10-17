@@ -71,7 +71,7 @@ namespace asagiv.datapush.common.Utilities
                 RequestId = responseStreamContext.ResponseData.RequestId,
                 Name = responseStreamContext.ResponseData.Name,
                 DestinationNode = responseStreamContext.ResponseData.DestinationNode,
-                IsPullSuccessful = isDeliverySuccessful,
+                IsDeliverySuccessful = isDeliverySuccessful,
                 ErrorMessage = errorMessage
             };
 
