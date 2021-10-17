@@ -79,12 +79,14 @@
 
                             <DockPanel>
 
-                                <Ellipse DockPanel.Dock="Right"
-                                         Height="20"
-                                         Width="20"
-                                         Margin="10, 0"
-                                         VerticalAlignment="Center"
-                                         Fill="{Binding DataPushContext.Status, Converter={StaticResource psc}}"/>
+                                <Path DockPanel.Dock="Right"
+                                      Height="20"
+                                      Width="20"
+                                      Margin="10, 0"
+                                      VerticalAlignment="Center"
+                                      Stretch="Uniform"
+                                      Fill="Black"
+                                      Data="{Binding DataPushContext.Status, Converter={StaticResource psc}}"/>
 
                                 <ProgressBar Value="{Binding PushProgress}" 
                                              VerticalAlignment="Center"
