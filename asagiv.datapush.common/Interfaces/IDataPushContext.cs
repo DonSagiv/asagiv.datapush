@@ -1,4 +1,5 @@
-﻿using System;
+﻿using asagiv.datapush.common.Models;
+using System;
 using System.Threading.Tasks;
 
 namespace asagiv.datapush.common.Interfaces
@@ -14,6 +15,7 @@ namespace asagiv.datapush.common.Interfaces
         string Description { get; }
         int NumberOfBlocksPushed { get; }
         int TotalNumberOfBlocks { get; }
+        DeliveryStatus Status { get; }
         IObservable<int> OnPushResponseReceived { get; }
         #endregion
 

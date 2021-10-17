@@ -25,6 +25,7 @@ namespace asagiv.datapush.common.Models
         private Subject<Unit> _onDataPushSubject = new Subject<Unit>();
         private Subject<int> _onPushResponseReceived = new Subject<int>();
         private IDisposable _pushDataDisposable;
+        private DeliveryStatus _status;
         #endregion
 
         #region Delegates
@@ -40,6 +41,11 @@ namespace asagiv.datapush.common.Models
         public string Description => $"{Name} to {DestinationNode}";
         public int NumberOfBlocksPushed { get; private set; }
         public int TotalNumberOfBlocks { get; private set; }
+        public DeliveryStatus Status
+        {
+            get => _status;
+            private set { _status = value; RaisePropertyChanged(nameof(Status)); }
+        }
         public IObservable<int> OnPushResponseReceived => _onPushResponseReceived.AsObservable();
         #endregion
 
@@ -55,6 +61,8 @@ namespace asagiv.datapush.common.Models
             _logger = logger;
 
             RequestId = Guid.NewGuid();
+
+            Status = DeliveryStatus.Pending;
         }
         #endregion
 
@@ -65,6 +73,8 @@ namespace asagiv.datapush.common.Models
 
             try
             {
+                Status = DeliveryStatus.InProgress;
+
                 // Convert data length / block size to double, round up, and then convert back to int.
                 TotalNumberOfBlocks = Convert.ToInt32(Math.Ceiling(Convert.ToDouble(Payload.Length) / blockSize));
 
@@ -87,6 +97,8 @@ namespace asagiv.datapush.common.Models
             catch (Exception ex)
             {
                 _logger?.Error(ex, $"Error Pushing Data: {ex.Message})");
+
+                Status = DeliveryStatus.Failed;
 
                 return false;
             }
@@ -148,7 +160,7 @@ namespace asagiv.datapush.common.Models
             var response = streamDuplex.ResponseStream.Current;
 
             // Check if response has an error.
-            if(response.Confirmation < 0)
+            if (response.Confirmation < 0)
             {
                 _logger?.Information($"Retrieved Error: {response.ErrorMessage})");
 
@@ -169,8 +181,10 @@ namespace asagiv.datapush.common.Models
 
         private async Task<bool> ConfirmDeliveryAsync()
         {
+            // Attempt 100 times (~10 seconds) to see if delivery status is available.
             for (var i = 0; i < 100; i++)
             {
+                // Request delivery status from server.
                 var request = new ConfirmDeliveryRequest
                 {
                     RequestId = RequestId.ToString(),
@@ -178,15 +192,23 @@ namespace asagiv.datapush.common.Models
                     DestinationNode = DestinationNode,
                 };
 
+                // Await response from the server.
                 var response = await _client.ConfirmDeliveryAsync(request);
 
-                if(response.IsRouteCompleted)
+                if (response.IsRouteCompleted)
                 {
+                    // If the route is completed, determine if the delivery is successful.
+                    Status = response.IsDeliverySuccessful ? DeliveryStatus.Successful : DeliveryStatus.Failed;
+
                     return response.IsDeliverySuccessful;
                 }
 
+                // If not, wait 100 milliseconds and try again.
                 Thread.Sleep(100);
             }
+
+            // If fails after 100 times, make staus failed.
+            Status = DeliveryStatus.Failed;
 
             return false;
         }
