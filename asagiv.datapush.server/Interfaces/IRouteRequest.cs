@@ -1,5 +1,7 @@
-﻿using asagiv.datapush.server.common.Models;
+﻿using asagiv.datapush.common;
+using asagiv.datapush.server.common.Models;
 using Google.Protobuf;
+using Grpc.Core;
 using System;
 using System.Collections.Concurrent;
 
@@ -24,6 +26,10 @@ namespace asagiv.datapush.server.Interfaces
         /// </summary>
         string Name { get; }
         /// <summary>
+        /// Number of payload blocks retrieved.
+        /// </summary>
+        int BlocksRetrieved { get; }
+        /// <summary>
         /// The total number of blocks of data.
         /// </summary>
         int TotalBlocks { get; }
@@ -36,20 +42,41 @@ namespace asagiv.datapush.server.Interfaces
         /// </summary>
         ConcurrentQueue<PayloadItem> PayloadQueue { get; }
         /// <summary>
+        /// Error message raised by the route request.
+        /// </summary>
+        string ErrorMessage { get; }
+        /// <summary>
+        /// true if the route has been connected to its destination node.
+        /// </summary>
+        bool IsRouteConnected { get; set; }
+        /// <summary>
         /// True if all data has been successfully pushed.
         /// </summary>
-        bool IsRouteCompleted { get; set; }
+        bool IsRouteCompleted { get; }
+        /// <summary>
+        /// True if an error has occurred during routing.
+        /// </summary>
+        bool IsDeliveryAcknowledged { get; }
+        /// <summary>
+        /// Response Stream of the Request
+        /// </summary>
+        IServerStreamWriter<DataPushResponse> ResponseStream { get; }
 
         /// <summary>
         /// Adds a new payload item to the payload queue.
         /// </summary>
         /// <param name="blockNumber">The block number of the payload item.</param>
         /// <param name="payloadItemToAdd">The acutal payload data.</param>
-        void AddPayload(int blockNumber, ByteString payloadItemToAdd);
+        PayloadItem AddPayload(int blockNumber, ByteString payloadByteString);
         /// <summary>
         /// Dequeues a payload item from the payload queue.
         /// </summary>
         /// <returns></returns>
         PayloadItem GetFromPayload();
+        /// <summary>
+        /// Confirm that the payloadf for the route requests have been delivered successfully.
+        /// </summary>
+        /// <param name="errorMessage">Error message if there is one</param>
+        void ConfirmRouteDelivery(string errorMessage);
     }
 }

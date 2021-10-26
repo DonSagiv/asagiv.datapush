@@ -1,5 +1,6 @@
 ﻿using asagiv.datapush.common;
 using asagiv.datapush.server.Interfaces;
+using Grpc.Core;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -38,7 +39,7 @@ namespace asagiv.datapush.server.Models
             _repository = new List<IRouteRequest>();
         }
 
-        public IRouteRequest AddRouteRequest(DataPushRequest dataPushRequest)
+        public IRouteRequest AddRouteRequest(DataPushRequest dataPushRequest, IServerStreamWriter<DataPushResponse> responseStream)
         {
             var routeRequest = _repository
                             .Where(x => x.SourceNode == dataPushRequest.SourceNode)
@@ -47,7 +48,7 @@ namespace asagiv.datapush.server.Models
 
             if (routeRequest == null)
             {
-                routeRequest = new RouteRequest(dataPushRequest);
+                routeRequest = new RouteRequest(dataPushRequest, responseStream);
 
                 _logger?.Information($"New Route Request Added (Source: {routeRequest.SourceNode}, " +
                     $"Destionation: {routeRequest.DestinationNode}, " +
@@ -60,15 +61,15 @@ namespace asagiv.datapush.server.Models
             return routeRequest;
         }
 
-        public IRouteRequest GetRouteRequest(string destinationNode)
+        public IRouteRequest ConnectRouteRequest(string destinationNode)
         {
             var routeRequest = _repository
-                .Where(x => !x.IsRouteCompleted)
+                .Where(x => !x.IsRouteConnected)
                 .FirstOrDefault(x => x.DestinationNode == destinationNode);
 
-            if (routeRequest != null)
+            if(routeRequest != null)
             {
-                routeRequest.IsRouteCompleted = true;
+                routeRequest.IsRouteConnected = true;
             }
 
             return routeRequest;
@@ -84,9 +85,27 @@ namespace asagiv.datapush.server.Models
             _repository.Remove(routeRequest);
         }
 
+        public IRouteRequest ConfirmRequestDelivery(string destinationNode, string errorMessage)
+        {
+            var routeRequest = _repository
+                .Where(x => x.IsRouteCompleted && !x.IsDeliveryAcknowledged)
+                .FirstOrDefault(x => x.DestinationNode == destinationNode);
+
+            if(routeRequest != null)
+            {
+                _logger.Information($"Confirming Delivery for {routeRequest.Name} " +
+                    $"(RequestId = {routeRequest.RequestId}, Destination = {routeRequest.DestinationNode})");
+
+                routeRequest.ConfirmRouteDelivery(errorMessage);
+            }
+
+            return routeRequest;
+        }
+
         private void PurgeRepository(long obj)
         {
             var itemsToPurge = _repository
+                .Where(x => x.IsRouteConnected && !x.IsRouteCompleted)
                 .Where(x => x.PushDateTime > DateTime.Now.AddMinutes(-1 * numMinutesPurge));
 
             foreach (var itemToPurge in itemsToPurge)

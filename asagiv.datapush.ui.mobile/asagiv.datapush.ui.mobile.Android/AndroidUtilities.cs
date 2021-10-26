@@ -1,6 +1,7 @@
 ﻿using Android.Content;
 using Android.Net;
 using Android.Webkit;
+using asagiv.datapush.ui.common.Interfaces;
 using asagiv.datapush.ui.mobile.Utilities;
 using asagiv.datapush.ui.mobile.ViewModels;
 using Serilog;
@@ -62,7 +63,7 @@ namespace asagiv.datapush.ui.mobile.Droid
 
         public static ClientSettingsViewModel GetViewModel()
         {
-            var service = App.ServiceProvider.GetService(typeof(ClientSettingsViewModel));
+            var service = App.ServiceProvider.GetService(typeof(IClientSettingsViewModel));
 
             return service is ClientSettingsViewModel viewModel ? viewModel : null;
         }

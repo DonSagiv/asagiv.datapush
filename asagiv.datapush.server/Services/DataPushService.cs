@@ -22,9 +22,9 @@ namespace asagiv.datapush.server
         #endregion
 
         #region Methods
-        public override Task<DataPushResponse> PushData(IAsyncStreamReader<DataPushRequest> requestStream, ServerCallContext context)
+        public override Task PushData(IAsyncStreamReader<DataPushRequest> requestStream, IServerStreamWriter<DataPushResponse> responseStream, ServerCallContext context)
         {
-            return _requestHandler.HandlePushDataAsync(requestStream);
+            return _requestHandler.HandlePushDataAsync(requestStream, responseStream);
         }
 
         public override Task PullData(DataPullRequest request, IServerStreamWriter<DataPullResponse> responseStream, ServerCallContext context)
@@ -35,6 +35,16 @@ namespace asagiv.datapush.server
         public override Task<RegisterNodeResponse> RegisterNode(RegisterNodeRequest request, ServerCallContext context)
         {
             return _requestHandler.HandleRegisterNodeRequest(request);
+        }
+
+        public override Task<AcknowledgeDeliveryResponse> AcknowledgeDelivery(AcknowledgeDeliveryRequest request, ServerCallContext context)
+        {
+            return _requestHandler.HandleAcknowledgeDelivery(request);
+        }
+
+        public override Task<ConfirmDeliveryResponse> ConfirmDelivery(ConfirmDeliveryRequest request, ServerCallContext context)
+        {
+            return _requestHandler.HandleConfirmDelivery(request);
         }
         #endregion
     }

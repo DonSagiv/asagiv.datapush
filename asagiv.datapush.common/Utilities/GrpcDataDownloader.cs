@@ -15,6 +15,10 @@ namespace asagiv.datapush.common.Utilities
         private readonly string _saveDirectory;
         #endregion
 
+        #region Delegates
+        public event EventHandler<AcknowledgeDeliveryRequest> AcknowledgeDelivery;
+        #endregion
+
         #region Constructor
         public GrpcDataDownloader(ILogger logger, IConfiguration configuration)
         {
@@ -39,19 +43,39 @@ namespace asagiv.datapush.common.Utilities
 
             _logger?.Information($"Streaming Pulled Data to {tempFilePath}");
 
+            var isDeliverySuccessful = false;
+            var errorMessage = string.Empty;
+
             try
             {
                 if(await DownloadStreamToFileAsync(responseStreamContext, tempFilePath))
                 {
                     UpdateFileName(responseStreamContext.ResponseData.Name, tempFilePath);
                 }
+
+                isDeliverySuccessful = true;
             }
             catch (Exception ex)
             {
                 _logger?.Error(ex, $"File Pull Error: {ex.Message}");
 
+                errorMessage = ex.Message;
+
                 File.Delete(tempFilePath);
             }
+
+            _logger.Information($"Sending Delivery Acknowledgement (Name: {responseStreamContext.ResponseData.Name}, Is Successful: {isDeliverySuccessful})");
+
+            var acknowledgePullDataRequest = new AcknowledgeDeliveryRequest
+            {
+                RequestId = responseStreamContext.ResponseData.RequestId,
+                Name = responseStreamContext.ResponseData.Name,
+                DestinationNode = responseStreamContext.ResponseData.DestinationNode,
+                IsDeliverySuccessful = isDeliverySuccessful,
+                ErrorMessage = errorMessage
+            };
+
+            AcknowledgeDelivery?.Invoke(this, acknowledgePullDataRequest);
         }
 
         private async Task<bool> DownloadStreamToFileAsync(IResponseStreamContext<DataPullResponse> responseStreamContext, string tempFilePath)
@@ -84,7 +108,7 @@ namespace asagiv.datapush.common.Utilities
             return response.BlockNumber == response.TotalBlocks;
         }
 
-        private static void UpdateFileName(string fileName, string tempFilePath)
+        private void UpdateFileName(string fileName, string tempFilePath)
         {
             var tempFileDirectory = Path.GetDirectoryName(tempFilePath);
             var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
@@ -102,6 +126,8 @@ namespace asagiv.datapush.common.Utilities
             }
 
             File.Move(tempFilePath, currentDownloadFilePath);
+
+            _logger?.Information($"Renamed {tempFilePath} Bytes to {currentDownloadFilePath}.");
         }
     }
 }

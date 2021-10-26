@@ -133,7 +133,7 @@ namespace asagiv.datapush.common.Models
 
         public IDataPushContext CreatePushDataContext(string destinationNode, string name, byte[] data)
         {
-            return new DataPushContextBase(Client, _clientConnectionSettings.NodeName, destinationNode, name, data);
+            return new DataPushContext(Client, _clientConnectionSettings.NodeName, destinationNode, name, data, _logger);
         }
 
         public void Dispose()
@@ -150,6 +150,11 @@ namespace asagiv.datapush.common.Models
             }
 
             GC.SuppressFinalize(this);
+        }
+
+        public async Task AcknowledgeDeliveryAsync(AcknowledgeDeliveryRequest acknowledgeDataPullRequest) 
+        {
+            await Client.AcknowledgeDeliveryAsync(acknowledgeDataPullRequest);
         }
         #endregion
     }

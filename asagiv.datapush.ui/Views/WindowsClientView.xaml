@@ -4,89 +4,107 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:vm="clr-namespace:asagiv.datapush.ui.ViewModels"
-			 xmlns:commonInterfaces="clr-namespace:asagiv.datapush.common.Interfaces;assembly=asagiv.datapush.common"
-			 d:DataContext="{d:DesignInstance vm:WindowsClientSettingsViewModel, IsDesignTimeCreatable=False}"
+             xmlns:interfaces="clr-namespace:asagiv.datapush.ui.common.Interfaces;assembly=asagiv.datapush.ui.common" xmlns:utilities="clr-namespace:asagiv.datapush.ui.Utilities"
+             d:DataContext="{d:DesignInstance vm:WindowsClientSettingsViewModel, IsDesignTimeCreatable=False}"
              mc:Ignorable="d" >
 
-	<DockPanel>
+    <UserControl.Resources>
+        <utilities:PushStatusConverter x:Key="psc"/>
+    </UserControl.Resources>
 
-		<DockPanel DockPanel.Dock="Top">
+    <DockPanel>
 
-			<Button Margin="10"
+        <DockPanel DockPanel.Dock="Top">
+
+            <Button Margin="10"
 					DockPanel.Dock="Right"
                     Content="Push Files"
                     Command="{Binding SelectFileToUploadCommand}"/>
 
-			<StackPanel>
+            <StackPanel>
 
-				<DockPanel>
+                <DockPanel>
 
-					<TextBlock Margin="10"
+                    <TextBlock Margin="10"
                                Width="125"
                                Text="Connection Setting:"
                                DockPanel.Dock="Left"
                                VerticalAlignment="Center"/>
 
-					<ComboBox Margin="10"
+                    <ComboBox Margin="10"
 							  ItemsSource="{Binding ConnectionSettingsList}"
 							  SelectedItem="{Binding ClientSettingsModel.ConnectionSettings, Mode=TwoWay}"
 							  IsTextSearchEnabled="False"
 							  VerticalAlignment="Center"
 							  DisplayMemberPath="ConnectionName"/>
 
-				</DockPanel>
+                </DockPanel>
 
-				<DockPanel>
+                <DockPanel>
 
-					<TextBlock Margin="10"
+                    <TextBlock Margin="10"
                                Width="125"
                                Text="Push To:"
                                DockPanel.Dock="Left"
                                VerticalAlignment="Center"/>
 
-					<ComboBox Margin="10"
+                    <ComboBox Margin="10"
 							  ItemsSource="{Binding DestinationNodes}"
 							  IsTextSearchEnabled="False"
                               SelectedItem="{Binding ClientSettingsModel.DestinationNode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                               VerticalAlignment="Center"/>
 
-				</DockPanel>
+                </DockPanel>
 
-			</StackPanel>
+            </StackPanel>
 
-		</DockPanel>
+        </DockPanel>
 
-		<TextBlock Text="Pushed Data History"
+        <TextBlock Text="Pushed Data History"
 				   DockPanel.Dock="Top"
 				   Margin="10"
 				   TextAlignment="Center"/>
 
-		<ScrollViewer Margin="10"
+        <ScrollViewer Margin="10"
 					  VerticalScrollBarVisibility="Auto">
 
-			<ItemsControl ItemsSource="{Binding PushContextList}">
+            <ItemsControl ItemsSource="{Binding PushContextList}">
 
-				<ItemsControl.ItemTemplate>
+                <ItemsControl.ItemTemplate>
 
-					<DataTemplate DataType="{x:Type commonInterfaces:IDataPushContext}">
+                    <DataTemplate DataType="{x:Type interfaces:IDataPushContextViewModel}">
 
-						<GroupBox Header="{Binding Description}"
+                        <GroupBox Header="{Binding DataPushContext.Description}"
 										  Margin="10">
 
-							<ProgressBar Value="{Binding DataPushProgress, Mode=OneWay}" 
-												 Maximum="1"
-												 Margin="10"/>
+                            <DockPanel>
 
-						</GroupBox>
+                                <Path DockPanel.Dock="Right"
+                                      Height="20"
+                                      Width="20"
+                                      Margin="10, 0"
+                                      VerticalAlignment="Center"
+                                      Stretch="Uniform"
+                                      Fill="Black"
+                                      Data="{Binding DataPushContext.Status, Converter={StaticResource psc}}"/>
 
-					</DataTemplate>
+                                <ProgressBar Value="{Binding PushProgress}" 
+                                             VerticalAlignment="Center"
+											 Maximum="1"
+											 Margin="10"/>
 
-				</ItemsControl.ItemTemplate>
+                            </DockPanel>
 
-			</ItemsControl>
+                        </GroupBox>
 
-		</ScrollViewer>
+                    </DataTemplate>
 
-	</DockPanel>
+                </ItemsControl.ItemTemplate>
+
+            </ItemsControl>
+
+        </ScrollViewer>
+
+    </DockPanel>
 
 </UserControl>

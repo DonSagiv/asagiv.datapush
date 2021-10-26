@@ -122,7 +122,7 @@ namespace asagiv.datapush.ui.Models
             await process.WaitForExitAsync();
 
             // Status needs to be updated on the UI thread.
-            await Application.Current?.Dispatcher.BeginInvoke(new Action(() => Status = ParseServiceStatus(result)), System.Windows.Threading.DispatcherPriority.Render);
+            await Application.Current?.Dispatcher?.BeginInvoke(new Action(() => Status = ParseServiceStatus(result)), System.Windows.Threading.DispatcherPriority.Render);
         }
 
         private PullNodeStatus ParseServiceStatus(string serviceQueryResult)
