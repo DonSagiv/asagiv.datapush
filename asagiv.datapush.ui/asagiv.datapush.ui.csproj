@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <CodeAnalysisRuleSet>..\.sonarlint\asagiv_datapushcsharp.ruleset</CodeAnalysisRuleSet>
     <ApplicationIcon>2442125.svg.2021_07_05_20_23_13.0.ico</ApplicationIcon>
@@ -28,8 +28,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.9" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="4.0.0" />
-    <PackageReference Include="ReactiveUI" Version="16.2.6" />
-    <PackageReference Include="ReactiveUI.WPF" Version="16.2.6" />
+    <PackageReference Include="ReactiveUI" Version="16.3.10" />
+    <PackageReference Include="ReactiveUI.WPF" Version="16.3.10" />
     <PackageReference Include="System.Reactive" Version="5.0.0" />
     <PackageReference Include="System.Reactive.Core" Version="5.0.0" />
     <PackageReference Include="System.Reactive.Interfaces" Version="5.0.0" />

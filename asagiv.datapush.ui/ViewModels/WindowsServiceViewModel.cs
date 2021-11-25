@@ -3,6 +3,7 @@ using asagiv.datapush.ui.common.Interfaces;
 using ReactiveUI;
 using Serilog;
 using System;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -13,6 +14,7 @@ namespace asagiv.datapush.ui.ViewModels
     {
         #region Fields
         private readonly ILogger _logger;
+        private IDisposable _intervalDisposable;
         #endregion
 
         #region Properties
@@ -38,15 +40,23 @@ namespace asagiv.datapush.ui.ViewModels
             UpdateSettingsCommand = ReactiveCommand.Create(async () => await ServiceModel.UpdateServiceSettingsAsync());
 
             // Check the status of the service every second.
-            _ = Observable.Interval(TimeSpan.FromSeconds(0.5))
-                .Subscribe(async _ => await GetServiceStatusAsync());
+            _intervalDisposable = Observable.Interval(TimeSpan.FromSeconds(0.5))
+                .SelectMany(GetServiceStatusAsync)
+                .Subscribe();
         }
         #endregion
 
-        #region methods
-        private async Task GetServiceStatusAsync()
+        #region Methods
+        private async Task<Unit> GetServiceStatusAsync(long status)
         {
             await ServiceModel.GetServiceStatusAsync();
+
+            return Unit.Default;
+        }
+
+        public void Dispose()
+        {
+            _intervalDisposable?.Dispose();
         }
         #endregion
     }
