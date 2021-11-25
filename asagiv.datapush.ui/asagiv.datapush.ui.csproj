@@ -28,8 +28,8 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.9" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="4.0.0" />
-    <PackageReference Include="ReactiveUI" Version="16.2.6" />
-    <PackageReference Include="ReactiveUI.WPF" Version="16.2.6" />
+    <PackageReference Include="ReactiveUI" Version="16.3.10" />
+    <PackageReference Include="ReactiveUI.WPF" Version="16.3.10" />
     <PackageReference Include="System.Reactive" Version="5.0.0" />
     <PackageReference Include="System.Reactive.Core" Version="5.0.0" />
     <PackageReference Include="System.Reactive.Interfaces" Version="5.0.0" />
