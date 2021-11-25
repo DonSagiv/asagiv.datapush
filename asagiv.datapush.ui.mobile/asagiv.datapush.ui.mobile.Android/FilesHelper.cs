@@ -369,7 +369,7 @@ namespace asagiv.datapush.ui.mobile.Droid
             }
             catch (Exception ex)
             {
-                // Figure out what to do after.
+                // todo: Figure out what to do after.
             }
             finally
             {

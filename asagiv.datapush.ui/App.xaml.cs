@@ -21,6 +21,7 @@ namespace asagiv.datapush.ui
         private MainWindow _mainWindow;
         #endregion
 
+        #region Methods
         protected override void OnStartup(StartupEventArgs e)
         {
             ServiceProvider = new ServiceCollection()
@@ -41,5 +42,15 @@ namespace asagiv.datapush.ui
 
             _mainWindow.Show();
         }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            base.OnExit(e);
+
+            var pullNodeViewModel = ServiceProvider.GetService(typeof(IPullNodeSettingsViewModel)) as IPullNodeSettingsViewModel;
+
+            pullNodeViewModel?.Dispose();
+        }
+        #endregion
     }
 }
