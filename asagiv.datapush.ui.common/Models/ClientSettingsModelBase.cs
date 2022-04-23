@@ -32,7 +32,7 @@ namespace asagiv.datapush.ui.common.Models
         #endregion
 
         #region Constructor
-        public ClientSettingsModelBase(ILogger logger)
+        protected ClientSettingsModelBase(ILogger logger)
         {
             _logger = logger;
         }
@@ -71,15 +71,11 @@ namespace asagiv.datapush.ui.common.Models
             return contextToAdd;
         }
 
-        /// <summary></summary>
-        /// <returns>True if a pull node is selected.</returns>
         protected virtual bool IsPullNodeSelected()
         {
             return !string.IsNullOrWhiteSpace(DestinationNode);
         }
 
-        /// <summary></summary>
-        /// <returns>True if a connection setting is selected.</returns>
         protected virtual bool IsConnectionSettingSelected()
         {
             return _connectionSettings != null;

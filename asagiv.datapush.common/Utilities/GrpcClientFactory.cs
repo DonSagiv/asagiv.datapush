@@ -14,7 +14,7 @@ namespace asagiv.datapush.common.Utilities
             var logger = serviceProvider?.GetService(typeof(ILogger)) as ILogger;
             var configuration = serviceProvider?.GetService(typeof(IConfiguration)) as IConfiguration;
 
-            logger?.Information($"Initializing Grpc Client.");
+            logger?.Information("Initializing Grpc Client.");
 
             if(configuration == null)
             {

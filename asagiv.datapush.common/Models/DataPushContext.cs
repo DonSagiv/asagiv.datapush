@@ -22,8 +22,8 @@ namespace asagiv.datapush.common.Models
         #region Fields
         private readonly ILogger _logger;
         private readonly DataPush.DataPushClient _client;
-        private Subject<Unit> _onDataPushSubject = new Subject<Unit>();
-        private Subject<int> _onPushResponseReceived = new Subject<int>();
+        private readonly Subject<Unit> _onDataPushSubject = new Subject<Unit>();
+        private readonly Subject<int> _onPushResponseReceived = new Subject<int>();
         private IDisposable _pushDataDisposable;
         private DeliveryStatus _status;
         #endregion
@@ -81,7 +81,7 @@ namespace asagiv.datapush.common.Models
                 var streamDuplex = _client.PushData();
 
                 _pushDataDisposable = _onDataPushSubject
-                    .SelectMany(x => HandleDataPushResponse(streamDuplex))
+                    .SelectMany(_ => HandleDataPushResponse(streamDuplex))
                     .Subscribe();
 
                 var blocks = Enumerable.Range(0, TotalNumberOfBlocks)

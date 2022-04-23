@@ -16,7 +16,7 @@ namespace asagiv.datapush.server.Models
         public string DestinationNode { get; }
         public string Name { get; }
         public int BlocksRetrieved { get; private set; }
-        public int TotalBlocks { get; private set; }
+        public int TotalBlocks { get; }
         public DateTime PushDateTime { get; }
         public ConcurrentQueue<PayloadItem> PayloadQueue { get; }
         public string ErrorMessage { get; private set; }
@@ -42,7 +42,7 @@ namespace asagiv.datapush.server.Models
             ResponseStream = responseStream;
 
             PayloadQueue = new ConcurrentQueue<PayloadItem>();
-            
+
             BlocksRetrieved = 0;
         }
         #endregion

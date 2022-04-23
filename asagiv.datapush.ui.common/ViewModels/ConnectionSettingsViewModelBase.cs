@@ -82,7 +82,7 @@ namespace asagiv.datapush.ui.common
             EntityEntry<ClientConnectionSettings> result;
 
             var clientSetting = _selectedClientConnection as ClientConnectionSettings;
-            
+
             if (await _dataPushDbContext.ConnectionSettingsSet.AnyAsync(x => x.Id == _selectedClientConnection.Id))
             {
                 result = _dataPushDbContext.ConnectionSettingsSet.Update(clientSetting);
@@ -117,8 +117,8 @@ namespace asagiv.datapush.ui.common
         protected virtual bool SettingsListHasName()
         {
             return ClientConnectionSettingsList
-                .Where(x => x != _selectedClientConnection)
-                .Any(x => x.ConnectionName == _selectedClientConnection.ConnectionName);
+                .Any(x => x != _selectedClientConnection && x.ConnectionName == _selectedClientConnection.ConnectionName)
+;
         }
 
         protected virtual bool ConnectionStringIsNullOrEmpty(string connectionString)

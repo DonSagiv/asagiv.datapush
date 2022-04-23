@@ -63,7 +63,7 @@ namespace asagiv.datapush.server.common.Models
 
                 _logger?.Information($"Set Node {deviceId} to {nodeName}.");
             }
-            
+
             return node;
         }
 

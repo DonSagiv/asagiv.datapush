@@ -28,7 +28,7 @@ namespace asagiv.datapush.common.Utilities
 
             if (_saveDirectory == null)
             {
-                _logger.Warning($"Save Diretory Not Specified.");
+                _logger.Warning("Save Diretory Not Specified.");
             }
             else
             {

@@ -4,5 +4,5 @@ using Grpc.Core;
 
 namespace asagiv.datapush.server.Models
 {
-    record RouteRequestContext(DataPushRequest DataPushRequest, IRouteRequest RouteRequest, IServerStreamWriter<DataPushResponse> ResponseStream);
+    public record RouteRequestContext(DataPushRequest DataPushRequest, IRouteRequest RouteRequest, IServerStreamWriter<DataPushResponse> ResponseStream);
 }

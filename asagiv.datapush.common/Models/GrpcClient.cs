@@ -18,7 +18,7 @@ namespace asagiv.datapush.common.Models
 
         #region Fields
         private readonly ILogger _logger;
-        private IClientConnectionSettings _clientConnectionSettings;
+        private readonly IClientConnectionSettings _clientConnectionSettings;
         #endregion
 
         #region Delegates
@@ -138,7 +138,7 @@ namespace asagiv.datapush.common.Models
 
         public void Dispose()
         {
-            _logger?.Information($"Disposing Grpc Client.");
+            _logger?.Information("Disposing Grpc Client.");
 
             IsDisposed = true;
 
@@ -152,7 +152,7 @@ namespace asagiv.datapush.common.Models
             GC.SuppressFinalize(this);
         }
 
-        public async Task AcknowledgeDeliveryAsync(AcknowledgeDeliveryRequest acknowledgeDataPullRequest) 
+        public async Task AcknowledgeDeliveryAsync(AcknowledgeDeliveryRequest acknowledgeDataPullRequest)
         {
             await Client.AcknowledgeDeliveryAsync(acknowledgeDataPullRequest);
         }

@@ -42,8 +42,7 @@ namespace asagiv.datapush.server.Models
         public IRouteRequest AddRouteRequest(DataPushRequest dataPushRequest, IServerStreamWriter<DataPushResponse> responseStream)
         {
             var routeRequest = _repository
-                            .Where(x => x.SourceNode == dataPushRequest.SourceNode)
-                            .Where(x => x.DestinationNode == dataPushRequest.DestinationNode)
+                            .Where(x => x.SourceNode == dataPushRequest.SourceNode && x.DestinationNode == dataPushRequest.DestinationNode)
                             .FirstOrDefault(x => x.Name == dataPushRequest.Name);
 
             if (routeRequest == null)
@@ -77,7 +76,7 @@ namespace asagiv.datapush.server.Models
 
         public void CloseRouteRequest(IRouteRequest routeRequest)
         {
-            _logger?.Information($"Closing Route Request " +
+            _logger?.Information("Closing Route Request " +
                 $"(Source: {routeRequest.SourceNode}, " +
                 $"Destination: {routeRequest.DestinationNode}, " +
                 $"Name: {routeRequest.Name}).");
@@ -105,12 +104,11 @@ namespace asagiv.datapush.server.Models
         private void PurgeRepository(long obj)
         {
             var itemsToPurge = _repository
-                .Where(x => x.IsRouteConnected && !x.IsRouteCompleted)
-                .Where(x => x.PushDateTime > DateTime.Now.AddMinutes(-1 * numMinutesPurge));
+                .Where(x => x.IsRouteConnected && !x.IsRouteCompleted && x.PushDateTime > DateTime.Now.AddMinutes(-1 * numMinutesPurge));
 
             foreach (var itemToPurge in itemsToPurge)
             {
-                _logger?.Warning($"Purging Route Request from Repository " +
+                _logger?.Warning("Purging Route Request from Repository " +
                     $"(Source: {itemToPurge.SourceNode}, " +
                     $"Destination: {itemToPurge.DestinationNode}, " +
                     $"Name:{itemToPurge.Name}).");

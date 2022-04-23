@@ -14,8 +14,8 @@ namespace asagiv.datapush.testing
         public void GetNewNodeEmptyRepository()
         {
             // Arrange -- createEmptyRepository.
-            var nodeName = "Test Node";
-            var repository = createEmptyRepository();
+            const string nodeName = "Test Node";
+            var repository = CreateEmptyRepository();
 
             // Action -- "Get" a node from a repository
             var node = repository.GetNode(nodeName, Guid.NewGuid().ToString(), false);
@@ -39,12 +39,12 @@ namespace asagiv.datapush.testing
             // -- Arrange
 
             // Create pre-populated node
-            var repository = createPopulatedRepository(numNodes);
+            var repository = CreatePopulatedRepository(numNodes);
 
             // Use "Device 2", populate different node, pull node status
-            var newNodeName = "Test 2 New";
-            var deviceName = "Device 2";
-            var newIsPullNode = false;
+            const string newNodeName = "Test 2 New";
+            const string deviceName = "Device 2";
+            const bool newIsPullNode = false;
 
             // -- Action
 
@@ -70,14 +70,14 @@ namespace asagiv.datapush.testing
         }
 
         // Setup Methods
-        private INodeRepository createEmptyRepository()
+        private static INodeRepository CreateEmptyRepository()
         {
             return new NodeRepository();
         }
 
-        private INodeRepository createPopulatedRepository(int numberOfNodes = 3)
+        private static INodeRepository CreatePopulatedRepository(int numberOfNodes = 3)
         {
-            var repository = createEmptyRepository();
+            var repository = CreateEmptyRepository();
 
             // Create nodes
             for (var i = 0; i < numberOfNodes; i++)

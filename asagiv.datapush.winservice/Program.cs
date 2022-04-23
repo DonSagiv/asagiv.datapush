@@ -17,7 +17,7 @@ namespace asagiv.datapush.winservice
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .UseWindowsService()
-                .ConfigureServices((hostContext, services) =>
+                .ConfigureServices((_, services) =>
                 {
                     services.AddSingleton(GrpcClientFactory.CreateGprcClient);
                     services.AddSingleton<IGrpcDataDownloader, GrpcDataDownloader>();

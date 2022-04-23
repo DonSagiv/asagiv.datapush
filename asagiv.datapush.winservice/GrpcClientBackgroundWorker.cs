@@ -31,8 +31,8 @@ namespace asagiv.datapush.winservice
                 await _client.CreatePullSubscriberAsync();
                 await _client.RegisterNodeAsync(true);
 
-                _client.DataRetrieved += async (s, e) => await _downloader.OnDataRetrievedAsync(e);
-                _downloader.AcknowledgeDelivery += async (s, e) => await _client.AcknowledgeDeliveryAsync(e);
+                _client.DataRetrieved += async (_, e) => await _downloader.OnDataRetrievedAsync(e);
+                _downloader.AcknowledgeDelivery += async (_, e) => await _client.AcknowledgeDeliveryAsync(e);
 
                 while (!stoppingToken.IsCancellationRequested && !_client.IsDisposed)
                 {

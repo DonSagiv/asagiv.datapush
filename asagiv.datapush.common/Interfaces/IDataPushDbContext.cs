@@ -4,7 +4,7 @@ using System.Text;
 
 namespace asagiv.datapush.common.Interfaces
 {
-    interface IDataPushDbContext
+    public interface IDataPushDbContext
     {
     }
 }

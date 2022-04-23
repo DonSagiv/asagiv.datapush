@@ -20,7 +20,7 @@ namespace asagiv.datapush.server.Models
         private readonly ILogger _logger;
         private readonly INodeRepository _nodeRepository;
         private readonly IDataRouteRepository _routeRepository;
-        private readonly Subject<RouteRequestContext> _dataPushRequestReceived = new Subject<RouteRequestContext>();
+        private readonly Subject<RouteRequestContext> _dataPushRequestReceived = new();
         #endregion
 
         #region Constructor
@@ -41,7 +41,7 @@ namespace asagiv.datapush.server.Models
         #region Methods
         public Task<RegisterNodeResponse> HandleRegisterNodeRequest(RegisterNodeRequest request)
         {
-            _logger?.Information($"Register Node Request Received " +
+            _logger?.Information("Register Node Request Received " +
                 $"(Node Name: {request.NodeName}, " +
                 $"Device ID: {request.DeviceId}, " +
                 $"Is Pull Node: {request.IsPullNode}).");
@@ -117,7 +117,7 @@ namespace asagiv.datapush.server.Models
             var routeRequest = routeRequestContext.RouteRequest;
             var responseStream = routeRequestContext.ResponseStream;
 
-            _logger?.Information($"Adding Payload to Route Request " +
+            _logger?.Information("Adding Payload to Route Request " +
                 $"({dataPushRequest.BlockNumber} of {dataPushRequest.TotalBlocks} " +
                 $"Source: {dataPushRequest.SourceNode}, " +
                 $"Destionation: {dataPushRequest.DestinationNode}, " +

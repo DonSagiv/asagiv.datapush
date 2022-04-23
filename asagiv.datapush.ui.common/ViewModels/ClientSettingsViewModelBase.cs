@@ -19,7 +19,7 @@ namespace asagiv.datapush.ui.common.ViewModels
     public abstract class ClientSettingsViewModelBase : ReactiveObject, IClientSettingsViewModel
     {
         #region Fields
-        private DataPushDbContextBase _dataPushDbContext;
+        private readonly DataPushDbContextBase _dataPushDbContext;
         protected readonly ILogger _logger;
         #endregion
 
@@ -32,7 +32,7 @@ namespace asagiv.datapush.ui.common.ViewModels
         public ObservableCollection<IDataPushContextViewModel> PushContextList { get; }
         public ObservableCollection<string> DestinationNodes { get; }
         public IClientSettingsModel ClientSettingsModel { get; }
-        public bool IsConnected { get; private set; }
+        public bool IsConnected { get; }
         #endregion
 
         #region Commands
@@ -40,7 +40,7 @@ namespace asagiv.datapush.ui.common.ViewModels
         #endregion
 
         #region Constructor
-        public ClientSettingsViewModelBase(DataPushDbContextBase dataPushDbContext, IClientSettingsModel clientModel, ILogger logger)
+        protected ClientSettingsViewModelBase(DataPushDbContextBase dataPushDbContext, IClientSettingsModel clientModel, ILogger logger)
         {
             _logger = logger;
 
@@ -58,7 +58,7 @@ namespace asagiv.datapush.ui.common.ViewModels
 
             var task = this.WhenAnyValue(x => x.ClientSettingsModel.ConnectionSettings)
                 .Where(x => x != null)
-                .ForEachAsync(async x => await ConnectToServerAsync());
+                .ForEachAsync(async _ => await ConnectToServerAsync());
         }
         #endregion
 
@@ -78,7 +78,7 @@ namespace asagiv.datapush.ui.common.ViewModels
 
             ConnectionSettingsList.AddRange(retrievedConnectionSettings);
 
-            ClientSettingsModel.ConnectionSettings = retrievedConnectionSettings.FirstOrDefault(x => x.Id == selectedConnnectionSetting);
+            ClientSettingsModel.ConnectionSettings = retrievedConnectionSettings.Find(x => x.Id == selectedConnnectionSetting);
             ClientSettingsModel.DestinationNode = selectedDestinationNode;
         }
 
@@ -140,7 +140,7 @@ namespace asagiv.datapush.ui.common.ViewModels
             _logger.Information($"Adding {context.Name} to context list.");
 
             // Insert the push context to the top of the list.
-            var contextViewModel = getDataContextViewModel(context);
+            var contextViewModel = GetDataContextViewModel(context);
 
             PushContextList.Insert(0, contextViewModel);
 
@@ -150,7 +150,7 @@ namespace asagiv.datapush.ui.common.ViewModels
             await context.PushDataAsync();
         }
 
-        public abstract IDataPushContextViewModel getDataContextViewModel(IDataPushContext dataPushContext);
+        public abstract IDataPushContextViewModel GetDataContextViewModel(IDataPushContext dataPushContext);
         #endregion
     }
 }
