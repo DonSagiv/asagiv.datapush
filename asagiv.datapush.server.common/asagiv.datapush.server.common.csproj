@@ -6,10 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <AdditionalFiles Include="..\.sonarlint\asagiv_datapush\CSharp\SonarLint.xml" Link="SonarLint.xml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Serilog" Version="2.11.0" />
     <PackageReference Include="System.Reactive.Linq" Version="5.0.0" />
   </ItemGroup>

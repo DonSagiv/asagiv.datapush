@@ -7,17 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <AdditionalFiles Include="..\.sonarlint\asagiv_datapush\CSharp\SonarLint.xml" Link="SonarLint.xml" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="asagiv.common" Version="0.0.5" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="6.0.0" />
     <PackageReference Include="Serilog" Version="2.11.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\asagiv.common\asagiv.common\asagiv.common.csproj" />
     <ProjectReference Include="..\asagiv.datapush.common\asagiv.datapush.common.csproj" />
     <ProjectReference Include="..\asagiv.datapush.server.common\asagiv.datapush.server.common.csproj" />
     <ProjectReference Include="..\asagiv.datapush.testing\asagiv.datapush.testing.csproj" />
