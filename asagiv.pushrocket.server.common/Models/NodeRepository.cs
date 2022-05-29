@@ -85,7 +85,7 @@ namespace asagiv.pushrocket.server.common.Models
                 }
             }
 
-            _logger.Information($"Number of Nodes: {_nodeList.Count}");
+            _logger?.Information($"Number of Nodes: {_nodeList?.Count}");
         }
         #endregion
     }

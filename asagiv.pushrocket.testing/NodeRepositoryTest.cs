@@ -1,5 +1,7 @@
+using asagiv.common.Logging;
 using asagiv.pushrocket.server.common.Interfaces;
 using asagiv.pushrocket.server.common.Models;
+using Serilog;
 using System;
 using System.Linq;
 using Xunit;
