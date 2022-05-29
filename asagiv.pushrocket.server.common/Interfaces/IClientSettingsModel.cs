@@ -1,9 +1,8 @@
-﻿using asagiv.pushrocket.common.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace asagiv.pushrocket.ui.common.Interfaces
+namespace asagiv.pushrocket.common.Interfaces
 {
     public interface IClientSettingsModel : IDisposable
     {

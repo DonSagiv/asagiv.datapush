@@ -1,7 +1,6 @@
 ﻿using asagiv.pushrocket.common.Interfaces;
 using asagiv.pushrocket.common.Models;
 using asagiv.pushrocket.common.Utilities;
-using asagiv.pushrocket.ui.common.Interfaces;
 using ReactiveUI;
 using Serilog;
 using System;

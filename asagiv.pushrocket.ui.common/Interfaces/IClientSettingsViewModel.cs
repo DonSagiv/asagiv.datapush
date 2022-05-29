@@ -1,5 +1,4 @@
 ﻿using asagiv.pushrocket.common.Interfaces;
-using asagiv.pushrocket.common.Models;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
