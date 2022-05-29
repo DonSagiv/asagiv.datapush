@@ -1,5 +1,6 @@
 ﻿using asagiv.pushrocket.common;
 using asagiv.pushrocket.server.common.Interfaces;
+using asagiv.pushrocket.server.Models;
 using Grpc.Core;
 using Serilog;
 using System;
@@ -8,7 +9,7 @@ using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 
-namespace asagiv.pushrocket.server.Models
+namespace asagiv.pushrocket.server.common.Models
 {
     public class DataRouteRepository : IDataRouteRepository
     {

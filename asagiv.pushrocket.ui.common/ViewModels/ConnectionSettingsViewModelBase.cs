@@ -1,7 +1,7 @@
-﻿using asagiv.pushrocket.common.Models;
+﻿using asagiv.pushrocket.common.Interfaces;
+using asagiv.pushrocket.common.Models;
 using asagiv.pushrocket.common.Utilities;
 using asagiv.pushrocket.ui.common.Interfaces;
-using asagiv.pushrocket.common.Interfaces;
 using DynamicData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;

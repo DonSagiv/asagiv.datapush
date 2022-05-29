@@ -1,4 +1,6 @@
-﻿using asagiv.pushrocket.common.Interfaces;
+﻿using asagiv.pushrocket.common;
+using asagiv.pushrocket.common.Interfaces;
+using asagiv.pushrocket.common.Models;
 using Grpc.Core;
 using Grpc.Net.Client;
 using Serilog;
@@ -41,7 +43,7 @@ namespace asagiv.pushrocket.common.Models
             Client = new DataPush.DataPushClient(GrpcChannel.ForAddress(clientConnectionSettings.ConnectionString));
         }
 
-        public GrpcClient(IClientConnectionSettings clientConnectionSettings, Channel channel, string deviceId, ILogger logger = null) : this(deviceId, logger)
+        public GrpcClient(IClientConnectionSettings clientConnectionSettings, GrpcChannel channel, string deviceId, ILogger logger = null) : this(deviceId, logger)
         {
             _clientConnectionSettings = clientConnectionSettings;
 
@@ -87,7 +89,7 @@ namespace asagiv.pushrocket.common.Models
             _logger?.Information($"Creating Register Node Request for {DeviceId}. (Name: {_clientConnectionSettings.NodeName}, IsPullNode: {isPullNode})");
 
             var getPullNodeTask = GetPullNodeListAsync(isPullNode);
-            var timeoutTask = Task.Delay(1000);
+            var timeoutTask = Task.Delay(5000);
 
             await Task.WhenAny(getPullNodeTask, timeoutTask);
 

@@ -10,14 +10,17 @@ namespace asagiv.pushrocket.server
     {
         #region Fields
         private readonly IRequestHandler _requestHandler;
+        private readonly ILogger _logger;
         #endregion
 
         #region Constructor
         public DataPushService(IRequestHandler requestHandler, ILogger logger)
         {
+            _logger = logger;
+
             _requestHandler = requestHandler;
 
-            logger?.Debug("Data push service instantiated.");
+            _logger?.Information("Data push service instantiated.");
         }
         #endregion
 
