@@ -20,7 +20,6 @@
     <ProjectReference Include="..\..\asagiv.common\asagiv.common\asagiv.common.csproj" />
     <ProjectReference Include="..\asagiv.datapush.common\asagiv.datapush.common.csproj" />
     <ProjectReference Include="..\asagiv.datapush.server.common\asagiv.datapush.server.common.csproj" />
-    <ProjectReference Include="..\asagiv.datapush.server\asagiv.datapush.server.csproj" />
     <ProjectReference Include="..\asagiv.datapush.testing\asagiv.datapush.testing.csproj" />
     <ProjectReference Include="..\asagiv.datapush.ui.common\asagiv.datapush.ui.common.csproj" />
   </ItemGroup>
