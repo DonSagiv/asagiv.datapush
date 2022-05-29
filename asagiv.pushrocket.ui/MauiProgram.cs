@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Components.WebView.Maui;
+﻿using Blazorise;
+using Blazorise.Bootstrap;
+using Blazorise.Icons.FontAwesome;
 
 namespace asagiv.pushrocket.ui
 {
@@ -9,15 +11,17 @@ namespace asagiv.pushrocket.ui
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
-                .ConfigureFonts(fonts =>
-                {
-                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                });
+                .ConfigureFonts(fonts => fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"));
 
             builder.Services.AddMauiBlazorWebView();
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
 #endif
+            builder.Services
+                .AddBlazorise(o => o.Immediate = true)
+                .AddBootstrapProviders()
+                .AddFontAwesomeIcons();
+
             return builder.Build();
         }
     }

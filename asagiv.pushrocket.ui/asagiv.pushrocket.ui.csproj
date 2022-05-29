@@ -49,4 +49,14 @@
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <PackageReference Include="Blazorise" Version="1.0.4" />
+	  <PackageReference Include="Blazorise.Bootstrap" Version="1.0.4" />
+	  <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.0.4" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\asagiv.pushrocket.common\asagiv.pushrocket.common.csproj" />
+	</ItemGroup>
+
 </Project>
