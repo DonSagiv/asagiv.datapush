@@ -1,6 +1,5 @@
 ﻿using asagiv.datapush.common;
 using asagiv.datapush.server.common.Interfaces;
-using asagiv.datapush.server.Interfaces;
 using Google.Protobuf;
 using Grpc.Core;
 using Serilog;
@@ -12,7 +11,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 
-namespace asagiv.datapush.server.Models
+namespace asagiv.datapush.server.common.Models
 {
     public class RequestHandler : IRequestHandler
     {

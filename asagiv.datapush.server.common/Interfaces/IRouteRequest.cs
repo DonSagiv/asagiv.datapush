@@ -5,7 +5,7 @@ using Grpc.Core;
 using System;
 using System.Collections.Concurrent;
 
-namespace asagiv.datapush.server.Interfaces
+namespace asagiv.datapush.server.common.Interfaces
 {
     public interface IRouteRequest
     {

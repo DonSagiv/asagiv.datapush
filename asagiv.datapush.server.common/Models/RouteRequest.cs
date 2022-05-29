@@ -1,6 +1,6 @@
 ﻿using asagiv.datapush.common;
+using asagiv.datapush.server.common.Interfaces;
 using asagiv.datapush.server.common.Models;
-using asagiv.datapush.server.Interfaces;
 using Google.Protobuf;
 using Grpc.Core;
 using System;

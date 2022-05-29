@@ -4,6 +4,7 @@ using asagiv.datapush.common.Utilities;
 using asagiv.datapush.ui.common.Interfaces;
 using ReactiveUI;
 using Serilog;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -83,6 +84,8 @@ namespace asagiv.datapush.ui.common.Models
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
+
             Client.Dispose();
         }
         #endregion

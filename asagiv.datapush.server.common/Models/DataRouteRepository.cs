@@ -1,5 +1,5 @@
 ﻿using asagiv.datapush.common;
-using asagiv.datapush.server.Interfaces;
+using asagiv.datapush.server.common.Interfaces;
 using Grpc.Core;
 using Serilog;
 using System;

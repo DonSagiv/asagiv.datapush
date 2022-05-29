@@ -22,8 +22,8 @@ namespace asagiv.datapush.common.Models
         #region Fields
         private readonly ILogger _logger;
         private readonly DataPush.DataPushClient _client;
-        private readonly Subject<Unit> _onDataPushSubject = new Subject<Unit>();
-        private readonly Subject<int> _onPushResponseReceived = new Subject<int>();
+        private readonly Subject<Unit> _onDataPushSubject = new();
+        private readonly Subject<int> _onPushResponseReceived = new();
         private IDisposable _pushDataDisposable;
         private DeliveryStatus _status;
         #endregion

@@ -2,7 +2,7 @@
 using Grpc.Core;
 using System.Collections.Generic;
 
-namespace asagiv.datapush.server.Interfaces
+namespace asagiv.datapush.server.common.Interfaces
 {
     public interface IDataRouteRepository
     {

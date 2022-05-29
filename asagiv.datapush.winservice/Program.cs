@@ -22,7 +22,7 @@ namespace asagiv.datapush.winservice
                 {
                     services.AddSingleton(GrpcClientFactory.CreateGprcClient);
                     services.AddSingleton<IGrpcDataDownloader, GrpcDataDownloader>();
-                    services.AddSingleton(LoggerFactory.CreateLoggerWindows);
+                    services.UseSerilog();
                     services.AddHostedService<GrpcClientBackgroundWorker>();
                 });
     }

@@ -2,7 +2,7 @@
 using Grpc.Core;
 using System.Threading.Tasks;
 
-namespace asagiv.datapush.server.Interfaces
+namespace asagiv.datapush.server.common.Interfaces
 {
     public interface IRequestHandler
     {
