@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\asagiv.pushrocket.common\asagiv.pushrocket.common.csproj" />
+    <ProjectReference Include="..\asagiv.pushrocket.grpcserver\asagiv.pushrocket.grpcserver.csproj" />
+    <ProjectReference Include="..\asagiv.pushrocket.server.common\asagiv.pushrocket.server.common.csproj" />
+  </ItemGroup>
+
+</Project>
