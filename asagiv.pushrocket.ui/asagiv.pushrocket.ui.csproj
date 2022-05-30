@@ -55,6 +55,7 @@
 	  <PackageReference Include="Blazorise.Bootstrap" Version="1.0.4" />
 	  <PackageReference Include="Blazorise.Components" Version="1.0.4" />
 	  <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.0.4" />
+	  <PackageReference Include="Blazorise.SpinKit" Version="1.0.4" />
 	  <PackageReference Include="ReactiveUI" Version="18.0.10" />
 	  <PackageReference Include="ReactiveUI.Blazor" Version="18.0.10" />
 	  <PackageReference Include="ReactiveUI.Maui" Version="18.0.10" />

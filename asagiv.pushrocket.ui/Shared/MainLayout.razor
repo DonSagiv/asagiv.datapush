@@ -1,9 +1,11 @@
 ﻿@using Blazorise.Components
+@using asagiv.pushrocket.ui.common.Utilities
 @inherits LayoutComponentBase
+@inject WaitIndicatorService WaitIndicator
 
 <Div class="page">
 
-	<Layout>
+	<Layout Loading="@(WaitIndicator?.WaitIndicatorVisible ?? false)">
 
 		<LayoutContent Margin="Margin.Is3">
 			@Body
@@ -12,3 +14,21 @@
 	</Layout>
 
 </Div>
+
+<!-- SpinKit Type="SpinKitType.CircleFade" Centered="true" / -->
+
+@code
+{
+	protected override void OnInitialized() 
+	{
+		base.OnInitialized();
+
+		WaitIndicator.WaitIndicatorSetObservable
+			.Subscribe(SetWaitIndicator);
+	}
+
+	protected void SetWaitIndicator(bool showIndicator)
+	{
+		this.StateHasChanged();
+	}
+}

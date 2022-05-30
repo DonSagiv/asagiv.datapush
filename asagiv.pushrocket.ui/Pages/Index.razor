@@ -5,19 +5,33 @@
 @using asagiv.pushrocket.common.Models
 @using asagiv.pushrocket.ui.common.ViewModels
 @inject MainViewModel ViewModel
+@inject IMessageService MessageService
 
-<Div class="d-flex align-items-stretch">
+<Div>
 
-    <Div class="form-floating flex-grow-1" Margin="Margin.Is2">
+    <Div class="d-flex align-items-stretch">
 
-        <TextEdit InputMode="TextInputMode.Url" Background="Background.Light" TextColor="TextColor.Dark"
-            class="form-control" id="floatingInput" @bind-Text="@ViewModel.ConnectionString" placeholder=" " />
+        <Div class="form-floating flex-grow-1" Margin="Margin.Is2">
 
-        <FieldLabel For="floatingInput">Connection String</FieldLabel>
+            <TextEdit InputMode="TextInputMode.Url" Background="Background.Light" TextColor="TextColor.Dark"
+                      class="form-control" id="floatingInput" @bind-Text="@ViewModel.ConnectionString" placeholder=" " />
+
+            <FieldLabel For="floatingInput">Connection String</FieldLabel>
+
+        </Div>
+
+        <Button Color="Color.Primary" Margin="Margin.Is2" Clicked="@(x => ViewModel.ConnectCommand.Execute(null))">Connect</Button>
 
     </Div>
 
-    <Button Color="Color.Primary" Margin="Margin.Is2" Clicked="@(x => ViewModel.ConnectCommand.Execute(null))">Connect</Button>
+    @if (ViewModel.IsConnected)
+    {
+        <Div class="d-flex align-items-stretch">
+
+            <Button Color="Color.Primary" Margin="Margin.Is2" Block>Select Files</Button>
+
+        </Div>
+    }
 
 </Div>
 
@@ -25,16 +39,15 @@
 {
     private Snackbar _snackbar;
 
-    [Inject]
-    private IMessageService MessageService { get; set; }
-
-    protected override void OnInitialized() 
+    protected override void OnInitialized()
     {
         base.OnInitialized();
 
         ViewModel.ErrorObservable
             .SelectMany(ShowErrorNotifier)
             .Subscribe();
+
+        ViewModel.PropertyChanged += (s, e) => this.StateHasChanged();
     }
 
     private async Task<Unit> ShowErrorNotifier(string errorMessage)

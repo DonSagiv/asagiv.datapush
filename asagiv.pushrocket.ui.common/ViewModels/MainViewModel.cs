@@ -1,4 +1,5 @@
 ﻿using asagiv.pushrocket.common.Models;
+using asagiv.pushrocket.ui.common.Utilities;
 using Grpc.Net.Client;
 using ReactiveUI;
 using Serilog;
@@ -12,8 +13,10 @@ namespace asagiv.pushrocket.ui.common.ViewModels
     {
         #region Fields
         private readonly ILogger _logger;
+        private readonly WaitIndicatorService _waitIndicator;
         private readonly Subject<string> _errorSubject = new();
         private string _connectionString;
+        private bool _isConnected;
         #endregion
 
         #region Properties
@@ -21,6 +24,11 @@ namespace asagiv.pushrocket.ui.common.ViewModels
         {
             get => _connectionString;
             set => this.RaiseAndSetIfChanged(ref _connectionString, value);
+        }
+        public bool IsConnected
+        {
+            get => _isConnected;
+            private set => this.RaiseAndSetIfChanged(ref _isConnected, value);
         }
         public IObservable<string> ErrorObservable => _errorSubject.AsObservable();
         #endregion
@@ -30,11 +38,13 @@ namespace asagiv.pushrocket.ui.common.ViewModels
         #endregion
 
         #region Constructor
-        public MainViewModel(ILogger logger)
+        public MainViewModel(WaitIndicatorService waitIndicator, ILogger logger)
         {
             _logger = logger;
 
             _logger?.Debug("Instantiating MainViewModel");
+
+            _waitIndicator = waitIndicator;
 
             ConnectCommand = ReactiveCommand.CreateFromTask(ConnectAsync);
         }
@@ -43,6 +53,8 @@ namespace asagiv.pushrocket.ui.common.ViewModels
         #region Methods
         private async Task ConnectAsync()
         {
+            _waitIndicator.ShowWaitIndicator();
+
             if (string.IsNullOrWhiteSpace(ConnectionString))
             {
                 _errorSubject?.OnNext("Please enter a connection string.");
@@ -71,6 +83,8 @@ namespace asagiv.pushrocket.ui.common.ViewModels
                 await connection.RegisterNodeAsync(false);
 
                 _logger.Information("Successfully connected to {ConnectionString}", ConnectionString);
+
+                IsConnected = true;
             }
             catch (Exception ex)
             {
@@ -80,6 +94,8 @@ namespace asagiv.pushrocket.ui.common.ViewModels
 
                 _errorSubject.OnNext(message);
             }
+
+            _waitIndicator.HideWaitIndicator();
         }
         #endregion
     }
