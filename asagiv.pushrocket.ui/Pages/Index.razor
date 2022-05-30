@@ -28,7 +28,7 @@
     {
         <Div class="d-flex align-items-stretch">
 
-            <Button Color="Color.Primary" Margin="Margin.Is2" Block>Select Files</Button>
+            <Button Color="Color.Primary" Margin="Margin.Is2" Clicked="@(x => ViewModel.PushFilesCommand.Execute(null))" Block>Select Files</Button>
 
         </Div>
     }

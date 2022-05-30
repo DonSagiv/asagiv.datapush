@@ -35,6 +35,7 @@ namespace asagiv.pushrocket.ui.common.ViewModels
 
         #region Commands
         public ICommand ConnectCommand { get; }
+        public ICommand PushFilesCommand { get; }
         #endregion
 
         #region Constructor
@@ -47,6 +48,8 @@ namespace asagiv.pushrocket.ui.common.ViewModels
             _waitIndicator = waitIndicator;
 
             ConnectCommand = ReactiveCommand.CreateFromTask(ConnectAsync);
+
+            PushFilesCommand = ReactiveCommand.CreateFromTask(PushFilesAsync);
         }
         #endregion
 
@@ -94,8 +97,36 @@ namespace asagiv.pushrocket.ui.common.ViewModels
 
                 _errorSubject.OnNext(message);
             }
+            finally
+            {
+                _waitIndicator.HideWaitIndicator();
+            }
+        }
 
-            _waitIndicator.HideWaitIndicator();
+        private async Task PushFilesAsync()
+        {
+            try
+            {
+                var pickOptions = new PickOptions
+                {
+                    FileTypes = FilePickerFileType.Images
+                };
+
+                var result = await FilePicker.Default.PickMultipleAsync(pickOptions);
+
+                if(result == null)
+                {
+                    return;
+                }
+            }
+            catch(Exception ex)
+            {
+                const string message = "Unable to push file(s)";
+
+                _logger.Error(ex, message);
+
+                _errorSubject?.OnNext(message);
+            }
         }
         #endregion
     }
