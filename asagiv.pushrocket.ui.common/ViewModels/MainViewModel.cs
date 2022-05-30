@@ -2,6 +2,8 @@
 using Grpc.Net.Client;
 using ReactiveUI;
 using Serilog;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Windows.Input;
 
 namespace asagiv.pushrocket.ui.common.ViewModels
@@ -10,6 +12,7 @@ namespace asagiv.pushrocket.ui.common.ViewModels
     {
         #region Fields
         private readonly ILogger _logger;
+        private readonly Subject<string> _errorSubject = new();
         private string _connectionString;
         #endregion
 
@@ -19,6 +22,7 @@ namespace asagiv.pushrocket.ui.common.ViewModels
             get => _connectionString;
             set => this.RaiseAndSetIfChanged(ref _connectionString, value);
         }
+        public IObservable<string> ErrorObservable => _errorSubject.AsObservable();
         #endregion
 
         #region Commands
@@ -39,6 +43,13 @@ namespace asagiv.pushrocket.ui.common.ViewModels
         #region Methods
         private async Task ConnectAsync()
         {
+            if (string.IsNullOrWhiteSpace(ConnectionString))
+            {
+                _errorSubject?.OnNext("Please enter a connection string.");
+
+                return;
+            }
+
             var connectionSettings = new ClientConnectionSettings
             {
                 ConnectionString = ConnectionString,
@@ -63,7 +74,11 @@ namespace asagiv.pushrocket.ui.common.ViewModels
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, "Unable to connect to {ConnectionString}", ConnectionString);
+                var message = $"Unable to connect to {ConnectionString}";
+
+                _logger.Error(ex, message, ConnectionString);
+
+                _errorSubject.OnNext(message);
             }
         }
         #endregion

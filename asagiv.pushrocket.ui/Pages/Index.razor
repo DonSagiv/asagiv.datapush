@@ -1,5 +1,7 @@
 ﻿@page "/"
 @using Grpc.Net.Client
+@using System.Reactive.Linq
+@using System.Reactive
 @using asagiv.pushrocket.common.Models
 @using asagiv.pushrocket.ui.common.ViewModels
 @inject MainViewModel ViewModel
@@ -18,3 +20,27 @@
     <Button Color="Color.Primary" Margin="Margin.Is2" Clicked="@(x => ViewModel.ConnectCommand.Execute(null))">Connect</Button>
 
 </Div>
+
+@code
+{
+    private Snackbar _snackbar;
+
+    [Inject]
+    private IMessageService MessageService { get; set; }
+
+    protected override void OnInitialized() 
+    {
+        base.OnInitialized();
+
+        ViewModel.ErrorObservable
+            .SelectMany(ShowErrorNotifier)
+            .Subscribe();
+    }
+
+    private async Task<Unit> ShowErrorNotifier(string errorMessage)
+    {
+        await MessageService.Error(errorMessage, "Error");
+
+        return Unit.Default;
+    }
+}
