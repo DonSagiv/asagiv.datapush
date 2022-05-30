@@ -1,37 +1,20 @@
 ﻿@page "/"
 @using Grpc.Net.Client
 @using asagiv.pushrocket.common.Models
+@using asagiv.pushrocket.ui.common.ViewModels
+@inject MainViewModel ViewModel
 
 <Div class="d-flex align-items-stretch">
 
     <Div class="form-floating flex-grow-1" Margin="Margin.Is2">
-        <TextEdit InputMode="TextInputMode.Url" class="form-control" id="floatingInput" @bind-Text="@_connectionString" placeholder=" " />
+
+        <TextEdit InputMode="TextInputMode.Url" Background="Background.Light" TextColor="TextColor.Dark"
+            class="form-control" id="floatingInput" @bind-Text="@ViewModel.ConnectionString" placeholder=" " />
+
         <FieldLabel For="floatingInput">Connection String</FieldLabel>
+
     </Div>
 
-    <Button Color="Color.Primary" Margin="Margin.Is2" Clicked="@(x => ConnectAsync())">Connect</Button>
+    <Button Color="Color.Primary" Margin="Margin.Is2" Clicked="@(x => ViewModel.ConnectCommand.Execute(null))">Connect</Button>
 
 </Div>
-
-@code {
-    private string _connectionString;
-
-    private async Task ConnectAsync()
-    {
-        var connectionSettings = new ClientConnectionSettings
-        {
-            ConnectionString = _connectionString,
-            ConnectionName = "TestConnection",
-            NodeName = "Computer",
-            IsPullNode = false,
-        };
-
-        var channel = GrpcChannel.ForAddress(connectionSettings.ConnectionString);
-
-        await channel.ConnectAsync();
-
-        var connection = new GrpcClient(connectionSettings, channel, "Test");
-
-        await connection.RegisterNodeAsync(false);
-    }
-}

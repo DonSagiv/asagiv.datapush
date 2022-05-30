@@ -50,13 +50,18 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <PackageReference Include="asagiv.common" Version="0.0.5" />
 	  <PackageReference Include="Blazorise" Version="1.0.4" />
 	  <PackageReference Include="Blazorise.Bootstrap" Version="1.0.4" />
 	  <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.0.4" />
+	  <PackageReference Include="ReactiveUI" Version="18.0.10" />
+	  <PackageReference Include="ReactiveUI.Blazor" Version="18.0.10" />
+	  <PackageReference Include="ReactiveUI.Maui" Version="18.0.10" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\asagiv.pushrocket.common\asagiv.pushrocket.common.csproj" />
+	  <ProjectReference Include="..\asagiv.pushrocket.ui.common\asagiv.pushrocket.ui.common.csproj" />
 	</ItemGroup>
 
 </Project>
