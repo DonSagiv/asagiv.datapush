@@ -41,13 +41,13 @@
 
     protected override void OnInitialized()
     {
-        base.OnInitialized();
-
         ViewModel.ErrorObservable
             .SelectMany(ShowErrorNotifier)
             .Subscribe();
 
-        ViewModel.PropertyChanged += (s, e) => this.StateHasChanged();
+        ViewModel.PropertyChanged += async (s, e) => await InvokeAsync(() => this.StateHasChanged());
+
+        base.OnInitialized();
     }
 
     private async Task<Unit> ShowErrorNotifier(string errorMessage)
