@@ -1,7 +1,4 @@
-﻿using asagiv.pushrocket.common;
-using asagiv.pushrocket.common.Interfaces;
-using asagiv.pushrocket.common.Models;
-using Grpc.Core;
+﻿using asagiv.pushrocket.common.Interfaces;
 using Grpc.Net.Client;
 using Serilog;
 using System;

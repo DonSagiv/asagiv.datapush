@@ -146,12 +146,16 @@ namespace asagiv.pushrocket.ui.common.ViewModels
                     FileTypes = FilePickerFileType.Images
                 };
 
-                var result = await FilePicker.Default.PickMultipleAsync(pickOptions);
+                var fileResultList = await FilePicker.Default.PickMultipleAsync(pickOptions);
 
-                if(result == null)
+                if(fileResultList?.Any() != true)
                 {
                     return;
                 }
+
+                var contexts = fileResultList
+                    .Select(x => _grpcClient.CreatePushFileContextAsync(SelectedDestinationNode, x.FullPath))
+                    .ToList();
             }
             catch(Exception ex)
             {
@@ -167,7 +171,7 @@ namespace asagiv.pushrocket.ui.common.ViewModels
         {
             if (string.IsNullOrEmpty(selectedDestinationNode) || selectedDestinationNode == "(None)")
             {
-                _logger?.Warning($"Destination node de-Selected.");
+                _logger?.Warning("Destination node de-Selected.");
             }
             else
             {
