@@ -1,8 +1,11 @@
-﻿using asagiv.pushrocket.common.Models;
+﻿using asagiv.common.Extensions;
+using asagiv.pushrocket.common.Interfaces;
+using asagiv.pushrocket.common.Models;
 using asagiv.pushrocket.ui.common.Utilities;
 using Grpc.Net.Client;
 using ReactiveUI;
 using Serilog;
+using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows.Input;
@@ -17,6 +20,8 @@ namespace asagiv.pushrocket.ui.common.ViewModels
         private readonly Subject<string> _errorSubject = new();
         private string _connectionString;
         private bool _isConnected;
+        private IGrpcClient _grpcClient;
+        private string _selectedDestinationNode;
         #endregion
 
         #region Properties
@@ -29,6 +34,12 @@ namespace asagiv.pushrocket.ui.common.ViewModels
         {
             get => _isConnected;
             private set => this.RaiseAndSetIfChanged(ref _isConnected, value);
+        }
+        public ObservableCollection<string> DestinationNodes { get; }
+        public string SelectedDestinationNode
+        {
+            get => _selectedDestinationNode;
+            set => this.RaiseAndSetIfChanged(ref _selectedDestinationNode, value);
         }
         public IObservable<string> ErrorObservable => _errorSubject.AsObservable();
         #endregion
@@ -47,8 +58,9 @@ namespace asagiv.pushrocket.ui.common.ViewModels
 
             _waitIndicator = waitIndicator;
 
-            ConnectCommand = ReactiveCommand.CreateFromTask(ConnectAsync);
+            DestinationNodes = new ObservableCollection<string>();
 
+            ConnectCommand = ReactiveCommand.CreateFromTask(ConnectAsync);
             PushFilesCommand = ReactiveCommand.CreateFromTask(PushFilesAsync);
         }
         #endregion
@@ -79,11 +91,23 @@ namespace asagiv.pushrocket.ui.common.ViewModels
             {
                 var channel = GrpcChannel.ForAddress(connectionSettings.ConnectionString);
 
-                await channel.ConnectAsync();
+                var timeoutTask = Task.Delay(10000);
+                var connectTask = channel.ConnectAsync();
 
-                var connection = new GrpcClient(connectionSettings, channel, "Test");
+                await Task.WhenAny(timeoutTask, connectTask);
 
-                await connection.RegisterNodeAsync(false);
+                if (!connectTask.IsCompletedSuccessfully)
+                {
+                    throw new TimeoutException($"Connection to {ConnectionString} timed out.");
+                }
+
+                _grpcClient = new GrpcClient(connectionSettings, channel, "Test");
+
+                var pullNodesToAdd = await _grpcClient.RegisterNodeAsync(false);
+
+                DestinationNodes.Clear();
+
+                DestinationNodes.AddRange(pullNodesToAdd);
 
                 _logger.Information("Successfully connected to {ConnectionString}", ConnectionString);
 

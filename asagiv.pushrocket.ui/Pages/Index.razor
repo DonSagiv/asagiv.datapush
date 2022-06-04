@@ -14,7 +14,7 @@
         <Div class="form-floating flex-grow-1" Margin="Margin.Is2">
 
             <TextEdit InputMode="TextInputMode.Url" Background="Background.Light" TextColor="TextColor.Dark"
-                      class="form-control" id="floatingInput" @bind-Text="@ViewModel.ConnectionString" placeholder=" " />
+                      Class="form-control" id="floatingInput" @bind-Text="@ViewModel.ConnectionString" placeholder=" " />
 
             <FieldLabel For="floatingInput">Connection String</FieldLabel>
 
@@ -26,10 +26,31 @@
 
     @if (ViewModel.IsConnected)
     {
-        <Div class="d-flex align-items-stretch">
+        <Div Class="d-flex align-items-stretch" Margin="Margin.Is2">
+
+            <Select TValue="string" @bind-SelectedValue="@ViewModel.SelectedDestinationNode">
+
+                @foreach(var destinationNode in ViewModel.DestinationNodes)
+                {
+                    <SelectItem Value="@destinationNode">@destinationNode</SelectItem>
+                }
+
+            </Select>
+
+        </Div>
+
+        <Div Class="d-flex align-items-stretch">
 
             <Button Color="Color.Primary" Margin="Margin.Is2" Clicked="@(x => ViewModel.PushFilesCommand.Execute(null))" Block>Select Files</Button>
 
+        </Div>
+    }
+    else
+    {
+        <Div Class="d-flex align-items-center">
+            <Text TextAlignment="TextAlignment.Center">
+                Please connect to a PushRocket server.
+            </Text>
         </Div>
     }
 

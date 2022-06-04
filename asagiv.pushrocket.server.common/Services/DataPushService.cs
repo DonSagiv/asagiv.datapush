@@ -20,7 +20,7 @@ namespace asagiv.pushrocket.server
 
             _requestHandler = requestHandler;
 
-            _logger?.Information("Data push service instantiated.");
+            _logger?.Debug("Data push service instantiated.");
         }
         #endregion
 
