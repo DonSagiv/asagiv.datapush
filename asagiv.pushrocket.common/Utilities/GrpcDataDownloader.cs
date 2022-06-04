@@ -34,11 +34,19 @@ namespace asagiv.pushrocket.common.Utilities
             {
                 _logger?.Information($"Initializing GRPC Stream Downloader. (Save Directory: {_saveDirectory})");
             }
+
+            // Create the directory if it doesn't exist.
+            if (!Directory.Exists(_saveDirectory))
+            {
+                Directory.CreateDirectory(_saveDirectory);
+            }
         }
         #endregion
 
         public async Task OnDataRetrievedAsync(IResponseStreamContext<DataPullResponse> responseStreamContext)
         {
+
+
             var tempFilePath = Path.Combine(_saveDirectory, $"{responseStreamContext.ResponseData.SourceRequestId}.tmp");
 
             _logger?.Information($"Streaming Pulled Data to {tempFilePath}");

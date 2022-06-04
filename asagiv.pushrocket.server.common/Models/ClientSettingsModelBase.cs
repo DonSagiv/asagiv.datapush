@@ -59,18 +59,6 @@ namespace asagiv.pushrocket.ui.common.Models
             return pullNodes;
         }
 
-        public async Task<IDataPushContext> CreatePushContextAsync(string filePath)
-        {
-            if (!IsPullNodeSelected())
-            {
-                return null;
-            }
-
-            var contextToAdd = await Client.CreatePushFileContextAsync(DestinationNode, filePath);
-
-            return contextToAdd;
-        }
-
         protected virtual bool IsPullNodeSelected()
         {
             return !string.IsNullOrWhiteSpace(DestinationNode);

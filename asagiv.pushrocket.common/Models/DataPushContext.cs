@@ -1,9 +1,11 @@
 ﻿using asagiv.pushrocket.common.Interfaces;
+using asagiv.common.Extensions;
 using Google.Protobuf;
 using Grpc.Core;
 using Serilog;
 using System;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -37,7 +39,7 @@ namespace asagiv.pushrocket.common.Models
         public string SourceNode { get; }
         public string DestinationNode { get; }
         public string Name { get; }
-        public byte[] Payload { get; }
+        public Stream Payload { get; }
         public string Description => $"{Name} to {DestinationNode}";
         public int NumberOfBlocksPushed { get; private set; }
         public int TotalNumberOfBlocks { get; private set; }
@@ -50,7 +52,7 @@ namespace asagiv.pushrocket.common.Models
         #endregion
 
         #region Constructor
-        public DataPushContext(DataPush.DataPushClient client, string sourceNode, string destinationNode, string name, byte[] payload, ILogger logger = null)
+        public DataPushContext(DataPush.DataPushClient client, string sourceNode, string destinationNode, string name, Stream payload, ILogger logger = null)
         {
             SourceNode = sourceNode;
             DestinationNode = destinationNode;
@@ -85,9 +87,10 @@ namespace asagiv.pushrocket.common.Models
                     .Subscribe();
 
                 var blocks = Enumerable.Range(0, TotalNumberOfBlocks)
-                    .Select(x => GetPayloadPushRequest(x));
+                    .Select(x => GetPayloadPushRequest(x))
+                    .ToAsync();
 
-                foreach (var block in blocks)
+                await foreach (var block in blocks)
                 {
                     await PushBlockAsync(block, streamDuplex);
                 }
@@ -104,18 +107,20 @@ namespace asagiv.pushrocket.common.Models
             }
         }
 
-        private DataPushRequest GetPayloadPushRequest(int blockNumber)
+        private async Task<DataPushRequest> GetPayloadPushRequest(int blockNumber)
         {
             // Get the start index of the payload byte array.
             var start = blockNumber * blockSize;
 
             // Get the end index of the payload byte array.
-            var end = start + blockSize >= Payload.Length
-                ? Payload.Length // In case the index exceeds the payload length
-                : start + blockSize;
+            var length = blockSize >= Payload.Length
+                ? Payload.Length - start // In case the index exceeds the payload length
+                : blockSize;
 
             // Get the data block from the payload.
-            var dataBlock = Payload[start..end];
+            var dataBlock = new byte[length];
+
+            await Payload.ReadAsync(dataBlock);
 
             // Return the data push request with the payload block.
             return new DataPushRequest

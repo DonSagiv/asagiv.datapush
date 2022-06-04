@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "asagiv.pushrocket.consoledi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "asagiv.pushrocket.ui", "asagiv.pushrocket.ui\asagiv.pushrocket.ui.csproj", "{09E8A884-22D8-4E58-B2F5-81EE3DC9538C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asagiv.pushrocket.ui.common", "asagiv.pushrocket.ui.common\asagiv.pushrocket.ui.common.csproj", "{ABDC0F4F-2818-4EFA-B683-FC3A5DE61311}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "asagiv.pushrocket.ui.common", "asagiv.pushrocket.ui.common\asagiv.pushrocket.ui.common.csproj", "{ABDC0F4F-2818-4EFA-B683-FC3A5DE61311}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -14,7 +14,6 @@ namespace asagiv.pushrocket.common.Interfaces
 
         #region Methods
         Task<IList<string>> ConnectToServerAsync();
-        Task<IDataPushContext> CreatePushContextAsync(string filePath);
         #endregion
     }
 }

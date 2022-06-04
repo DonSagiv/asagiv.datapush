@@ -10,7 +10,7 @@ namespace asagiv.pushrocket.ui.common
     {
         public static void SetUpWindow(WindowStartupLocation startupLocation = WindowStartupLocation.None, int width = 1000, int height = 800)
         {
-            WindowHandler.Mapper.AppendToMapping(nameof(IWindow), (handler, view) =>
+            WindowHandler.Mapper.AppendToMapping(nameof(IWindow), (handler, _) =>
             {
                 var mauiWindow = handler.VirtualView;
                 var nativeWindow = handler.PlatformView;
@@ -35,8 +35,8 @@ namespace asagiv.pushrocket.ui.common
                 }
                 else
                 {
-                    var X0 = (bounds.Width - width) / 2 + bounds.Left;
-                    var Y0 = (bounds.Height - height) / 2 + bounds.Top;
+                    var X0 = ((bounds.Width - width) / 2) + bounds.Left;
+                    var Y0 = ((bounds.Height - height) / 2) + bounds.Top;
 
                     appWindow.MoveAndResize(new RectInt32(X0, Y0, width, height));
                 }

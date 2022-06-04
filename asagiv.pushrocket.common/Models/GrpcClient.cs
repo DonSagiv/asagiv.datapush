@@ -116,23 +116,16 @@ namespace asagiv.pushrocket.common.Models
             DataRetrieved?.Invoke(sender, e);
         }
 
-        public async Task<IDataPushContext> CreatePushFileContextAsync(string destinationNode, string filePath)
+        public async Task<IDataPushContext> CreatePushFileContextAsync(string destinationNode, string fileName, Task<Stream> streamTask)
         {
-            if (string.IsNullOrWhiteSpace(filePath))
-            {
-                return null;
-            }
+            var stream = await streamTask;
 
-            var data = await File.ReadAllBytesAsync(filePath);
-
-            var name = Path.GetFileName(filePath);
-
-            return CreatePushDataContext(destinationNode, name, data);
+            return CreatePushDataContext(destinationNode, fileName, stream);
         }
 
-        public IDataPushContext CreatePushDataContext(string destinationNode, string name, byte[] data)
+        public IDataPushContext CreatePushDataContext(string destinationNode, string name, Stream stream)
         {
-            return new DataPushContext(Client, _clientConnectionSettings.NodeName, destinationNode, name, data, _logger);
+            return new DataPushContext(Client, _clientConnectionSettings.NodeName, destinationNode, name, stream, _logger);
         }
 
         public void Dispose()

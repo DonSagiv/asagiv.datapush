@@ -1,6 +1,7 @@
 ﻿using asagiv.pushrocket.common.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace asagiv.pushrocket.common.Interfaces
@@ -22,8 +23,8 @@ namespace asagiv.pushrocket.common.Interfaces
         #region Methods
         public Task CreatePullSubscriberAsync();
         Task<IEnumerable<string>> RegisterNodeAsync(bool isPullNode);
-        Task<IDataPushContext> CreatePushFileContextAsync(string destinationNode, string filePath);
-        IDataPushContext CreatePushDataContext(string destinationNode, string name, byte[] data);
+        Task<IDataPushContext> CreatePushFileContextAsync(string destinationNode, string filePath, Task<Stream> stream);
+        IDataPushContext CreatePushDataContext(string destinationNode, string name, Stream stream);
         Task AcknowledgeDeliveryAsync(AcknowledgeDeliveryRequest acknowledgeDataPullRequest);
         #endregion
     }

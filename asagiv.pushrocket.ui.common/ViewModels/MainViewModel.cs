@@ -79,6 +79,8 @@ namespace asagiv.pushrocket.ui.common.ViewModels
             {
                 _errorSubject?.OnNext("Please enter a connection string.");
 
+                _waitIndicator.HideWaitIndicator();
+
                 return;
             }
 
@@ -154,8 +156,13 @@ namespace asagiv.pushrocket.ui.common.ViewModels
                 }
 
                 var contexts = fileResultList
-                    .Select(x => _grpcClient.CreatePushFileContextAsync(SelectedDestinationNode, x.FullPath))
-                    .ToList();
+                    .Select(x => _grpcClient.CreatePushFileContextAsync(SelectedDestinationNode, x.FileName, x.OpenReadAsync()))
+                    .ToAsync();
+
+                await foreach(var context in contexts)
+                {
+                    await context.PushDataAsync();
+                }
             }
             catch(Exception ex)
             {
