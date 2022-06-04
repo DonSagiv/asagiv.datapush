@@ -62,6 +62,11 @@ namespace asagiv.pushrocket.ui.common.ViewModels
 
             ConnectCommand = ReactiveCommand.CreateFromTask(ConnectAsync);
             PushFilesCommand = ReactiveCommand.CreateFromTask(PushFilesAsync);
+
+            SelectedDestinationNode = null;
+
+            this.WhenAnyValue(x => x.SelectedDestinationNode)
+                .Subscribe(OnSelectedDestinationNodeChanged);
         }
         #endregion
 
@@ -107,7 +112,12 @@ namespace asagiv.pushrocket.ui.common.ViewModels
 
                 DestinationNodes.Clear();
 
+                // Default Value for destination nodes
+                DestinationNodes.Add("(None)");
+
                 DestinationNodes.AddRange(pullNodesToAdd);
+
+                _logger.Information("Destination nodes retrieved from server.");
 
                 _logger.Information("Successfully connected to {ConnectionString}", ConnectionString);
 
@@ -150,6 +160,18 @@ namespace asagiv.pushrocket.ui.common.ViewModels
                 _logger.Error(ex, message);
 
                 _errorSubject?.OnNext(message);
+            }
+        }
+
+        public void OnSelectedDestinationNodeChanged(string selectedDestinationNode)
+        {
+            if (string.IsNullOrEmpty(selectedDestinationNode) || selectedDestinationNode == "(None)")
+            {
+                _logger?.Warning($"Destination node de-Selected.");
+            }
+            else
+            {
+                _logger?.Information($"Selected destionation node: {SelectedDestinationNode}");
             }
         }
         #endregion
