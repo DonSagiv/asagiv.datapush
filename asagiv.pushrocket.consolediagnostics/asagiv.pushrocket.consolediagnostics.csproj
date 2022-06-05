@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="asagiv.common" Version="0.0.8" />
+    <PackageReference Include="asagiv.common" Version="0.0.9" />
   </ItemGroup>
 
   <ItemGroup>
