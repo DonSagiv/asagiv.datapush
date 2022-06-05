@@ -1,4 +1,6 @@
 ﻿using asagiv.common.Logging;
+using asagiv.pushrocket.ui.common;
+using asagiv.pushrocket.ui.common.Interfaces;
 using asagiv.pushrocket.ui.common.Utilities;
 using asagiv.pushrocket.ui.common.ViewModels;
 using Blazorise;
@@ -16,6 +18,7 @@ namespace asagiv.pushrocket.ui
                 .UseMauiApp<App>()
                 .ConfigureFonts(fonts => fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"));
 
+            builder.Services.AddSingleton<IPlatformSpecificData, PlatformSpecificData>();
             builder.Services.AddSingleton<WaitIndicatorService>();
             builder.Services.UseSerilog();
             builder.Services.AddSingleton<MainViewModel>();
