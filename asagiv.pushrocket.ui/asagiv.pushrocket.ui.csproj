@@ -50,7 +50,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="asagiv.common" Version="0.0.8" />
+	  <PackageReference Include="asagiv.common" Version="0.0.9" />
 	  <PackageReference Include="Blazorise" Version="1.0.4" />
 	  <PackageReference Include="Blazorise.Bootstrap" Version="1.0.4" />
 	  <PackageReference Include="Blazorise.Components" Version="1.0.4" />

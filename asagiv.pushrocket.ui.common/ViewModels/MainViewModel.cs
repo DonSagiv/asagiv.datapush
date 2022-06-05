@@ -1,6 +1,7 @@
 ﻿using asagiv.common.Extensions;
 using asagiv.pushrocket.common.Interfaces;
 using asagiv.pushrocket.common.Models;
+using asagiv.pushrocket.ui.common.Interfaces;
 using asagiv.pushrocket.ui.common.Utilities;
 using Grpc.Net.Client;
 using ReactiveUI;
@@ -51,9 +52,9 @@ namespace asagiv.pushrocket.ui.common.ViewModels
         #endregion
 
         #region Constructor
-        public MainViewModel(WaitIndicatorService waitIndicator, ILogger logger)
+        public MainViewModel(WaitIndicatorService waitIndicator, IPlatformSpecificData platformSpecificData)
         {
-            _logger = logger;
+            _logger = platformSpecificData.logger;
 
             _logger?.Debug("Instantiating MainViewModel");
 

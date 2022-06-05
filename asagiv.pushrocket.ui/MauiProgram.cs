@@ -20,7 +20,6 @@ namespace asagiv.pushrocket.ui
 
             builder.Services.AddSingleton<IPlatformSpecificData, PlatformSpecificData>();
             builder.Services.AddSingleton<WaitIndicatorService>();
-            builder.Services.UseSerilog();
             builder.Services.AddSingleton<MainViewModel>();
 
             builder.Services.AddMauiBlazorWebView();

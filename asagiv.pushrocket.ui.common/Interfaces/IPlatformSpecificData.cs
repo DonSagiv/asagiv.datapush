@@ -1,7 +1,9 @@
-﻿namespace asagiv.pushrocket.ui.common.Interfaces
+﻿using Serilog;
+
+namespace asagiv.pushrocket.ui.common.Interfaces
 {
     public interface IPlatformSpecificData
     {
-        string LogFileDirectory { get; }
+        public ILogger logger { get; }
     }
 }
