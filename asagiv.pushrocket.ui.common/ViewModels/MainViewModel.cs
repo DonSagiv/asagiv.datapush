@@ -145,14 +145,11 @@ namespace asagiv.pushrocket.ui.common.ViewModels
         {
             try
             {
-                var pickOptions = new PickOptions
-                {
-                    FileTypes = FilePickerFileType.Images
-                };
+                var pickOptions = new PickOptions { };
 
                 var fileResultList = await FilePicker.Default.PickMultipleAsync(pickOptions);
 
-                if(fileResultList?.Any() != true)
+                if (fileResultList?.Any() != true)
                 {
                     return;
                 }
@@ -161,14 +158,14 @@ namespace asagiv.pushrocket.ui.common.ViewModels
                     .Select(x => _grpcClient.CreatePushFileContextAsync(SelectedDestinationNode, x.FileName, x.OpenReadAsync()))
                     .ToAsync();
 
-                await foreach(var context in contextsToAdd)
+                await foreach (var context in contextsToAdd)
                 {
                     PushContexts.Add(context);
 
                     await context.PushDataAsync();
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 const string message = "Unable to push file(s)";
 

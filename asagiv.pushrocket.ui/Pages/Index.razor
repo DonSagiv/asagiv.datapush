@@ -54,13 +54,42 @@
         </Div>
     }
 
-    @foreach (var context in ViewModel.PushContexts)
+    @foreach (var context in ViewModel.PushContexts.Reverse())
     {
         <Div Class="d-flex align-items-stretch">
             <Card Margin="Margin.Is2" Width="Width.Is100">
                 <CardBody>
-                    <CardTitle>@context.Name</CardTitle>
-                    <Progress Max="@context.TotalNumberOfBlocks" Min="0" Value="@context.NumberOfBlocksPushed"></Progress>
+
+                    <CardTitle>
+                        <Div Class="d-flex justify-content-between align-items-center">
+                            <Text>@context.Name</Text>
+
+                            @switch (context.Status)
+                            {
+                                case DeliveryStatus.InProgress:
+                                    <Icon Name="IconName.Hourglass" TextColor="TextColor.Primary" IconStyle="IconStyle.Regular"></Icon>
+                                    break;
+                                case DeliveryStatus.Successful:
+                                    <Icon Name="IconName.Check" TextColor="TextColor.Success" IconStyle="IconStyle.Solid"></Icon>
+                                    break;
+                                default:
+                                    <Icon Name="IconName.ExclamationTriangle" TextColor="TextColor.Primary" IconStyle="IconStyle.Regular"></Icon>
+                                    break;
+                            }
+
+                        </Div>
+                    </CardTitle>
+
+                    @if (context.Status == DeliveryStatus.InProgress)
+                    {
+                        <div>
+                            <progress max="@context.TotalNumberOfBlocks"
+                                      style="height: 30px;width: 100%"
+                                      value="@context.NumberOfBlocksPushed">
+                            </progress>
+                        </div>
+                    }
+
                 </CardBody>
             </Card>
         </Div>
