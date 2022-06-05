@@ -18,7 +18,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="asagiv.common" Version="0.0.7" />
+	  <PackageReference Include="asagiv.common" Version="0.0.8" />
 	  <PackageReference Include="Grpc.Net.Client" Version="2.46.0" />
 	  <PackageReference Include="ReactiveUI.Blazor" Version="18.0.10" />
 	  <PackageReference Include="ReactiveUI.Maui" Version="18.0.10" />

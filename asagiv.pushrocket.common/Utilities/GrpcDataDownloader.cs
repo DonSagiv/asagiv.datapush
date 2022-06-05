@@ -38,6 +38,8 @@ namespace asagiv.pushrocket.common.Utilities
             // Create the directory if it doesn't exist.
             if (!Directory.Exists(_saveDirectory))
             {
+                _logger.Information("{saveDirectory} could not be found. Creating directory.", _saveDirectory);
+
                 Directory.CreateDirectory(_saveDirectory);
             }
         }

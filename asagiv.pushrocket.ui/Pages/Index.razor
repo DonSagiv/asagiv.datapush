@@ -14,10 +14,10 @@
         <Div class="form-floating flex-grow-1" Margin="Margin.Is2">
 
             <TextEdit InputMode="TextInputMode.Url"
-                      Class="form-control" 
-                      id="floatingInput" 
+                      Class="form-control"
+                      id="floatingInput"
                       @bind-Text="@ViewModel.ConnectionString"
-                      placeholder=" "/>
+                      placeholder=" " />
 
             <FieldLabel For="floatingInput">Connection String</FieldLabel>
 
@@ -33,41 +33,36 @@
     @if (ViewModel.IsConnected)
     {
         <Div Class="d-flex align-items-stretch" Margin="Margin.Is2">
-
             <Select TValue="string" @bind-SelectedValue="@ViewModel.SelectedDestinationNode">
-
                 @foreach (var destinationNode in ViewModel.DestinationNodes)
                 {
                     <SelectItem Value="@destinationNode">@destinationNode</SelectItem>
                 }
-
             </Select>
-
         </Div>
 
-        @if (string.IsNullOrEmpty(ViewModel.SelectedDestinationNode) || ViewModel.SelectedDestinationNode == "(None)")
-        {
-            <Div Class="d-flex align-items-center">
-                <Text TextAlignment="TextAlignment.Center">
-                    Select desination node.
-                </Text>
-            </Div>
-        }
-        else
-        {
-            <Div Class="d-flex align-items-stretch">
-
-                <Button Color="Color.Primary" Margin="Margin.Is2" Clicked="@(x => ViewModel.PushFilesCommand.Execute(null))" Block>Select Files</Button>
-
-            </Div>
-        }
+        <Div Class="d-flex align-items-stretch">
+            <Button Color="Color.Primary" Margin="Margin.Is2" Clicked="@(x => ViewModel.PushFilesCommand.Execute(null))" Block>Select Files</Button>
+        </Div>
     }
     else
     {
-        <Div Class="d-flex align-items-center">
+        <Div>
             <Text TextAlignment="TextAlignment.Center">
                 Please connect to a PushRocket server.
             </Text>
+        </Div>
+    }
+
+    @foreach (var context in ViewModel.PushContexts)
+    {
+        <Div Class="d-flex align-items-stretch">
+            <Card Margin="Margin.Is2" Width="Width.Is100">
+                <CardBody>
+                    <CardTitle>@context.Name</CardTitle>
+                    <Progress Max="@context.TotalNumberOfBlocks" Min="0" Value="@context.NumberOfBlocksPushed"></Progress>
+                </CardBody>
+            </Card>
         </Div>
     }
 
@@ -82,6 +77,23 @@
             .Subscribe();
 
         ViewModel.PropertyChanged += async (s, e) => await InvokeAsync(() => this.StateHasChanged());
+
+        ViewModel.PushContexts.CollectionChanged += async (s, e) =>
+        {
+            await InvokeAsync(() => this.StateHasChanged());
+
+            var newItems = e.NewItems?.OfType<DataPushContext>();
+
+            if (newItems == null)
+            {
+                return;
+            }
+
+            foreach (var newItem in newItems)
+            {
+                newItem.PropertyChanged += async (t, f) => await InvokeAsync(() => this.StateHasChanged());
+            }
+        };
 
         base.OnInitialized();
     }

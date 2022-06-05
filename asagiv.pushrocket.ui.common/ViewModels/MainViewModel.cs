@@ -36,6 +36,7 @@ namespace asagiv.pushrocket.ui.common.ViewModels
             private set => this.RaiseAndSetIfChanged(ref _isConnected, value);
         }
         public ObservableCollection<string> DestinationNodes { get; }
+        public ObservableCollection<IDataPushContext> PushContexts { get; }
         public string SelectedDestinationNode
         {
             get => _selectedDestinationNode;
@@ -59,6 +60,7 @@ namespace asagiv.pushrocket.ui.common.ViewModels
             _waitIndicator = waitIndicator;
 
             DestinationNodes = new ObservableCollection<string>();
+            PushContexts = new ObservableCollection<IDataPushContext>();
 
             ConnectCommand = ReactiveCommand.CreateFromTask(ConnectAsync);
             PushFilesCommand = ReactiveCommand.CreateFromTask(PushFilesAsync);
@@ -155,12 +157,14 @@ namespace asagiv.pushrocket.ui.common.ViewModels
                     return;
                 }
 
-                var contexts = fileResultList
+                var contextsToAdd = fileResultList
                     .Select(x => _grpcClient.CreatePushFileContextAsync(SelectedDestinationNode, x.FileName, x.OpenReadAsync()))
                     .ToAsync();
 
-                await foreach(var context in contexts)
+                await foreach(var context in contextsToAdd)
                 {
+                    PushContexts.Add(context);
+
                     await context.PushDataAsync();
                 }
             }
