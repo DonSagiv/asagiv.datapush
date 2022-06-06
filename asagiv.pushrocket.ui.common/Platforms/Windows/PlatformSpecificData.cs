@@ -13,11 +13,18 @@ namespace asagiv.pushrocket.ui.common
         #region Constructor
         public PlatformSpecificData()
         {
-            var appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var appDataFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
             var logFileDirectory = Path.Combine(appDataFolder, "PushRocket", "Logs");
 
+            if (!Directory.Exists(logFileDirectory))
+            {
+                var dir = Directory.CreateDirectory(logFileDirectory);
+            }
+
             logger = LoggerFactory.CreateLogger(logFileDirectory);
+
+            logger.Debug("Logger instantiated.");
         }
         #endregion
     }
