@@ -20,8 +20,13 @@ namespace asagiv.pushrocket.ui
 
             var appDataDirectory = FileSystem.Current.AppDataDirectory;
 
+            var useDebug = false;
+#if DEBUG
+            useDebug = true;
+#endif
+
             builder.Services.AddSingleton<WaitIndicatorService>();
-            builder.Services.UseSerilog(appDataDirectory);
+            builder.Services.UseSerilog(appDataDirectory, useDebug);
             builder.Services.AddSingleton<MainViewModel>();
 
             builder.Services.AddMauiBlazorWebView();
