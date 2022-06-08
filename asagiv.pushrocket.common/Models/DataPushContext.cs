@@ -39,7 +39,7 @@ namespace asagiv.pushrocket.common.Models
         public string Name { get; }
         public Stream Payload { get; }
         public string Description => $"{Name} to {DestinationNode}";
-        public int NumberOfBlocksPushed 
+        public int NumberOfBlocksPushed
         {
             get => _numberOfBlocksPushed;
             private set => RaiseAndSetIfChanged(ref _numberOfBlocksPushed, value);

@@ -47,8 +47,6 @@ namespace asagiv.pushrocket.common.Utilities
 
         public async Task OnDataRetrievedAsync(IResponseStreamContext<DataPullResponse> responseStreamContext)
         {
-
-
             var tempFilePath = Path.Combine(_saveDirectory, $"{responseStreamContext.ResponseData.SourceRequestId}.tmp");
 
             _logger?.Information($"Streaming Pulled Data to {tempFilePath}");

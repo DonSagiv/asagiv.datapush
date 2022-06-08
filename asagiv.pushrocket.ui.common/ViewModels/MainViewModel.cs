@@ -52,9 +52,9 @@ namespace asagiv.pushrocket.ui.common.ViewModels
         #endregion
 
         #region Constructor
-        public MainViewModel(WaitIndicatorService waitIndicator, IPlatformSpecificData platformSpecificData)
+        public MainViewModel(WaitIndicatorService waitIndicator, ILogger logger)
         {
-            _logger = platformSpecificData.logger;
+            _logger = logger;
 
             _logger?.Debug("Instantiating MainViewModel");
 
@@ -146,7 +146,7 @@ namespace asagiv.pushrocket.ui.common.ViewModels
         {
             try
             {
-                var pickOptions = new PickOptions { };
+                var pickOptions = new PickOptions();
 
                 var fileResultList = await FilePicker.Default.PickMultipleAsync(pickOptions);
 

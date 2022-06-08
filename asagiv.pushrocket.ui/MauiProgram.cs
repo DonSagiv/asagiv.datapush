@@ -18,8 +18,10 @@ namespace asagiv.pushrocket.ui
                 .UseMauiApp<App>()
                 .ConfigureFonts(fonts => fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"));
 
-            builder.Services.AddSingleton<IPlatformSpecificData, PlatformSpecificData>();
+            var appDataDirectory = FileSystem.Current.AppDataDirectory;
+
             builder.Services.AddSingleton<WaitIndicatorService>();
+            builder.Services.UseSerilog(appDataDirectory);
             builder.Services.AddSingleton<MainViewModel>();
 
             builder.Services.AddMauiBlazorWebView();
