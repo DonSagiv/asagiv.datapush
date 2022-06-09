@@ -22,14 +22,11 @@
 	  <PackageReference Include="Grpc.Net.Client" Version="2.46.0" />
 	  <PackageReference Include="ReactiveUI.Blazor" Version="18.0.10" />
 	  <PackageReference Include="ReactiveUI.Maui" Version="18.0.10" />
+	  <PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\asagiv.pushrocket.common\asagiv.pushrocket.common.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Database\" />
 	</ItemGroup>
 
 </Project>

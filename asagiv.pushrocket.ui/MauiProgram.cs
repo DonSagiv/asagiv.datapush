@@ -1,5 +1,6 @@
 ﻿using asagiv.common.Logging;
 using asagiv.pushrocket.ui.common;
+using asagiv.pushrocket.ui.common.Database;
 using asagiv.pushrocket.ui.common.Interfaces;
 using asagiv.pushrocket.ui.common.Utilities;
 using asagiv.pushrocket.ui.common.ViewModels;
@@ -25,6 +26,7 @@ namespace asagiv.pushrocket.ui
             useDebug = true;
 #endif
 
+            builder.Services.AddSingleton<PushRocketDatabase>();
             builder.Services.AddSingleton<WaitIndicatorService>();
             builder.Services.UseSerilog(appDataDirectory, useDebug);
             builder.Services.AddSingleton<MainViewModel>();

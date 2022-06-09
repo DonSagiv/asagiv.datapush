@@ -1,6 +1,7 @@
 ﻿using asagiv.common.Extensions;
 using asagiv.pushrocket.common.Interfaces;
 using asagiv.pushrocket.common.Models;
+using asagiv.pushrocket.ui.common.Database;
 using asagiv.pushrocket.ui.common.Interfaces;
 using asagiv.pushrocket.ui.common.Utilities;
 using Grpc.Net.Client;
@@ -26,6 +27,7 @@ namespace asagiv.pushrocket.ui.common.ViewModels
         #endregion
 
         #region Properties
+        public PushRocketDatabase Database { get; }
         public string ConnectionString
         {
             get => _connectionString;
@@ -52,8 +54,10 @@ namespace asagiv.pushrocket.ui.common.ViewModels
         #endregion
 
         #region Constructor
-        public MainViewModel(WaitIndicatorService waitIndicator, ILogger logger)
+        public MainViewModel(WaitIndicatorService waitIndicator, PushRocketDatabase database, ILogger logger)
         {
+            Database = database;
+
             _logger = logger;
 
             _logger?.Debug("Instantiating MainViewModel");

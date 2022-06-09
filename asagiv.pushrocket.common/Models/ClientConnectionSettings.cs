@@ -1,9 +1,10 @@
 ﻿using asagiv.pushrocket.common.Interfaces;
+using SQLite;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 
 namespace asagiv.pushrocket.common.Models
 {
+    [Table("ConnectionSettings")]
     public class ClientConnectionSettings : INotifyPropertyChanged, IClientConnectionSettings
     {
         #region Fields
@@ -19,12 +20,13 @@ namespace asagiv.pushrocket.common.Models
         #endregion
 
         #region Properties
-        [Key]
+        [PrimaryKey, AutoIncrement]
         public uint Id
         {
             get { return _id; }
             set { _id = value; RaisePropertyChanged(nameof(Id)); }
         }
+        [Unique]
         public string ConnectionName
         {
             get { return _connectionName; }
