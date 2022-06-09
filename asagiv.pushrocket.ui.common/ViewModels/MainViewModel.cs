@@ -187,6 +187,11 @@ namespace asagiv.pushrocket.ui.common.ViewModels
                 _logger?.Information($"Selected destionation node: {SelectedDestinationNode}");
             }
         }
+
+        public void RemoveContext(IDataPushContext contextToRemove)
+        {
+            PushContexts.Remove(contextToRemove);
+        }
         #endregion
     }
 }
