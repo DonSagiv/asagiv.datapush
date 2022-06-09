@@ -1,42 +1,88 @@
 ﻿@page "/ConnectionSettings"
+@using asagiv.pushrocket.common.Models
+@using asagiv.pushrocket.ui.common.ViewModels
+@inject ConnectionSettingsViewModel ViewModel
 
 <Div>
 
-    <Div class="form-floating flex-grow-1" Margin="Margin.Is2">
+    <Div Class="d-flex align-items-stretch" Margin="Margin.Is2">
+        <Select TValue="ClientConnectionSettings" @bind-SelectedValue="@ViewModel.SelectedConnectionSettings">
+            @foreach (var connectionSetting in ViewModel.ConnectionSettingsList)
+            {
+                <SelectItem Value="@connectionSetting">@connectionSetting.ConnectionName</SelectItem>
+            }
+        </Select>
+    </Div>
 
-        <TextEdit InputMode="TextInputMode.Text"
+    <Div Class="d-flex justify-content-center">
+        <Button Color="Color.Primary" Margin="Margin.Is2"
+                Clicked="() => ViewModel.NewConnectionSettingsCommand.Execute(null)"
+                Block>
+            Add
+        </Button>
+        <Button Color="Color.Primary" Margin="Margin.Is2"
+                Clicked="() => ViewModel.SaveConnectionSettingsCommand.Execute(null)"
+                Block>
+            Save
+        </Button>
+    </Div>
+
+    @if (ViewModel.SelectedConnectionSettings != null)
+    {
+        <Div class="form-floating flex-grow-1" Margin="Margin.Is2">
+
+            <TextEdit InputMode="TextInputMode.Text"
                   Class="form-control"
+                  @bind-Text="ViewModel.SelectedConnectionSettings.ConnectionName"
                   id="floatingInput"
                   placeholder=" " />
 
-        <FieldLabel For="floatingInput">Connection Name</FieldLabel>
+            <FieldLabel For="floatingInput">Connection Name</FieldLabel>
 
-    </Div>
+        </Div>
 
-    <Div class="form-floating flex-grow-1" Margin="Margin.Is2">
+        <Div class="form-floating flex-grow-1" Margin="Margin.Is2">
 
-        <TextEdit InputMode="TextInputMode.Url"
+            <TextEdit InputMode="TextInputMode.Url"
                   Class="form-control"
+                  @bind-Text="ViewModel.SelectedConnectionSettings.ConnectionString"
                   id="floatingInput"
                   placeholder=" " />
 
-        <FieldLabel For="floatingInput">Connection String</FieldLabel>
+            <FieldLabel For="floatingInput">Connection URL</FieldLabel>
 
-    </Div>
+        </Div>
 
-    <Div class="form-floating flex-grow-1" Margin="Margin.Is2">
+        <Div class="form-floating flex-grow-1" Margin="Margin.Is2">
 
-        <TextEdit InputMode="TextInputMode.Text"
+            <TextEdit InputMode="TextInputMode.Text"
                   Class="form-control"
+                  @bind-Text="ViewModel.SelectedConnectionSettings.NodeName"
                   id="floatingInput"
                   placeholder=" " />
 
-        <FieldLabel For="floatingInput">Connection NodeName</FieldLabel>
+            <FieldLabel For="floatingInput">Connection Node Name</FieldLabel>
 
-    </Div>
+        </Div>
+
+        <Div Margin="Margin.Is2">
+
+            <Button Color="Color.Primary" 
+                Clicked="() => ViewModel.DeleteConnectionSettingsCommand.Execute(null)"
+                Block>
+                Delete
+            </Button>
+
+        </Div>
+    }
 
 </Div>
 
 @code {
+    protected override async Task OnInitializedAsync()
+    {
+        ViewModel.PropertyChanged += async (s, e) => await InvokeAsync(() => this.StateHasChanged());
 
+        await base.OnInitializedAsync();
+    }
 }

@@ -30,6 +30,7 @@ namespace asagiv.pushrocket.ui
             builder.Services.AddSingleton<WaitIndicatorService>();
             builder.Services.UseSerilog(appDataDirectory, useDebug);
             builder.Services.AddSingleton<MainViewModel>();
+            builder.Services.AddSingleton<ConnectionSettingsViewModel>();
 
             builder.Services.AddMauiBlazorWebView();
 #if DEBUG
