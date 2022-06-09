@@ -2,33 +2,49 @@
 @using asagiv.pushrocket.ui.common.Utilities
 @inherits LayoutComponentBase
 @inject WaitIndicatorService WaitIndicator
+@inject NavigationManager NavManager
 
 <Div class="page">
 
-	<Layout Loading="@(WaitIndicator?.WaitIndicatorVisible ?? false)">
+    <Layout Loading="@(WaitIndicator?.WaitIndicatorVisible ?? false)">
 
-		<LayoutContent Margin="Margin.Is3">
-			@Body
-		</LayoutContent>
+        <LayoutContent Margin="Margin.Is3">
+            @Body
+        </LayoutContent>
 
-	</Layout>
+        <LayoutFooter Fixed>
+            <Div Class="d-flex justify-content-around" Style="background-color: #CCCCCC">
+
+                <Div Style="cursor:pointer">
+                    <Icon Name="IconName.Home" IconSize="IconSize.x2" TextColor="TextColor.Default" Margin="Margin.Is2" IconStyle="IconStyle.Solid" 
+                          Clicked="@(_ => NavManager.NavigateTo("/"))"/>
+                </Div>
+
+                <Div Style="cursor:pointer">
+                    <Icon Name="IconName.Wrench" IconSize="IconSize.x2" TextColor="TextColor.Default" Margin="Margin.Is2" IconStyle="IconStyle.Solid" 
+                          Clicked="@(_ => NavManager.NavigateTo("/ConnectionSettings"))" />
+                </Div>
+
+            </Div>
+        </LayoutFooter>
+
+    </Layout>
 
 </Div>
 
 <!-- SpinKit Type="SpinKitType.CircleFade" Centered="true" / -->
-
 @code
 {
-	protected override void OnInitialized() 
-	{
-		base.OnInitialized();
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
 
-		WaitIndicator.WaitIndicatorSetObservable
-			.Subscribe(SetWaitIndicator);
-	}
+        WaitIndicator.WaitIndicatorSetObservable
+            .Subscribe(SetWaitIndicator);
+    }
 
-	protected void SetWaitIndicator(bool showIndicator)
-	{
-		this.StateHasChanged();
-	}
+    protected void SetWaitIndicator(bool showIndicator)
+    {
+        this.StateHasChanged();
+    }
 }
