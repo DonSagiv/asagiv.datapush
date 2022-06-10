@@ -2,12 +2,12 @@
 using asagiv.pushrocket.common.Interfaces;
 using asagiv.pushrocket.common.Models;
 using asagiv.pushrocket.ui.common.Database;
-using asagiv.pushrocket.ui.common.Interfaces;
 using asagiv.pushrocket.ui.common.Utilities;
 using Grpc.Net.Client;
 using ReactiveUI;
 using Serilog;
 using System.Collections.ObjectModel;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows.Input;
@@ -19,24 +19,31 @@ namespace asagiv.pushrocket.ui.common.ViewModels
         #region Fields
         private readonly ILogger _logger;
         private readonly WaitIndicatorService _waitIndicator;
+        private readonly PushRocketDatabase _pushRocketDatabase;
         private readonly Subject<string> _errorSubject = new();
-        private string _connectionString;
         private bool _isConnected;
         private IGrpcClient _grpcClient;
         private string _selectedDestinationNode;
+        private uint _selectedConnectionSettingIndex;
+        private ClientConnectionSettings _selectedConnectionSetting;
         #endregion
 
         #region Properties
-        public PushRocketDatabase Database { get; }
-        public string ConnectionString
-        {
-            get => _connectionString;
-            set => this.RaiseAndSetIfChanged(ref _connectionString, value);
-        }
         public bool IsConnected
         {
             get => _isConnected;
             private set => this.RaiseAndSetIfChanged(ref _isConnected, value);
+        }
+        public ObservableCollection<ClientConnectionSettings> ConnectionSettingsList { get; }
+        public uint SelectedConnectionSettingsIndex
+        {
+            get => _selectedConnectionSettingIndex;
+            set => this.RaiseAndSetIfChanged(ref _selectedConnectionSettingIndex, value);
+        }
+        public ClientConnectionSettings SelectedConnectionSettings
+        {
+            get => _selectedConnectionSetting;
+            set => this.RaiseAndSetIfChanged(ref _selectedConnectionSetting, value);
         }
         public ObservableCollection<string> DestinationNodes { get; }
         public ObservableCollection<IDataPushContext> PushContexts { get; }
@@ -49,14 +56,13 @@ namespace asagiv.pushrocket.ui.common.ViewModels
         #endregion
 
         #region Commands
-        public ICommand ConnectCommand { get; }
         public ICommand PushFilesCommand { get; }
         #endregion
 
         #region Constructor
         public MainViewModel(WaitIndicatorService waitIndicator, PushRocketDatabase database, ILogger logger)
         {
-            Database = database;
+            _pushRocketDatabase = database;
 
             _logger = logger;
 
@@ -64,13 +70,26 @@ namespace asagiv.pushrocket.ui.common.ViewModels
 
             _waitIndicator = waitIndicator;
 
+            ConnectionSettingsList = new ObservableCollection<ClientConnectionSettings>();
             DestinationNodes = new ObservableCollection<string>();
             PushContexts = new ObservableCollection<IDataPushContext>();
 
-            ConnectCommand = ReactiveCommand.CreateFromTask(ConnectAsync);
             PushFilesCommand = ReactiveCommand.CreateFromTask(PushFilesAsync);
 
+            SelectedConnectionSettingsIndex = uint.MaxValue;
+
+            ConnectionSettingsList = new();
+
+            ConnectionSettingsList.CollectionChanged += (s, e) => this.RaisePropertyChanged();
+
             SelectedDestinationNode = null;
+
+            this.WhenAnyValue(x => x.SelectedConnectionSettingsIndex)
+                .Subscribe(OnSelectedConnectionSettingChanged);
+
+            this.WhenAnyValue(x => x.SelectedConnectionSettings)
+                .SelectMany(ConnectAsync)
+                .Subscribe();
 
             this.WhenAnyValue(x => x.SelectedDestinationNode)
                 .Subscribe(OnSelectedDestinationNodeChanged);
@@ -78,28 +97,43 @@ namespace asagiv.pushrocket.ui.common.ViewModels
         #endregion
 
         #region Methods
-        private async Task ConnectAsync()
+        public async Task InitializeAsync()
         {
-            _waitIndicator.ShowWaitIndicator();
+            await _pushRocketDatabase.ConnectAsync();
 
-            if (string.IsNullOrWhiteSpace(ConnectionString))
+            if (!_pushRocketDatabase.IsConnected)
             {
-                _errorSubject?.OnNext("Please enter a connection string.");
-
-                _waitIndicator.HideWaitIndicator();
-
-                return;
+                _logger.Error("Unable to connect to PushRocket database.");
             }
 
-            var connectionSettings = new ClientConnectionSettings
-            {
-                ConnectionString = ConnectionString,
-                ConnectionName = "TestConnection",
-                NodeName = "Computer",
-                IsPullNode = false,
-            };
+            ConnectionSettingsList.Clear();
 
-            _logger.Information("Appempting to connect to {ConnectionString}", ConnectionString);
+            var connectionSettingsToAdd = await _pushRocketDatabase.GetAllConnectionSettingsAsync();
+
+            ConnectionSettingsList.AddRange(connectionSettingsToAdd);
+        }
+
+        private void OnSelectedConnectionSettingChanged(uint index)
+        {
+            if (index == uint.MaxValue)
+            {
+                SelectedConnectionSettings = null;
+            }
+
+            SelectedConnectionSettings = ConnectionSettingsList
+                .FirstOrDefault(x => x.Id == index);
+        }
+
+        private async Task<Unit> ConnectAsync(ClientConnectionSettings connectionSettings)
+        {
+            if(connectionSettings == null)
+            {
+                return Unit.Default;
+            }
+
+            _waitIndicator.ShowWaitIndicator();
+
+            _logger.Information("Appempting to connect to {ConnectionString}", connectionSettings.ConnectionString);
 
             try
             {
@@ -112,7 +146,7 @@ namespace asagiv.pushrocket.ui.common.ViewModels
 
                 if (!connectTask.IsCompletedSuccessfully)
                 {
-                    throw new TimeoutException($"Connection to {ConnectionString} timed out.");
+                    throw new TimeoutException($"Connection to {connectionSettings.ConnectionString} timed out.");
                 }
 
                 _grpcClient = new GrpcClient(connectionSettings, channel, "Test");
@@ -121,22 +155,19 @@ namespace asagiv.pushrocket.ui.common.ViewModels
 
                 DestinationNodes.Clear();
 
-                // Default Value for destination nodes
-                DestinationNodes.Add("(None)");
-
                 DestinationNodes.AddRange(pullNodesToAdd);
 
                 _logger.Information("Destination nodes retrieved from server.");
 
-                _logger.Information("Successfully connected to {ConnectionString}", ConnectionString);
+                _logger.Information("Successfully connected to {ConnectionString}", connectionSettings.ConnectionString);
 
                 IsConnected = true;
             }
             catch (Exception ex)
             {
-                var message = $"Unable to connect to {ConnectionString}";
+                var message = $"Unable to connect to {connectionSettings.ConnectionString}";
 
-                _logger.Error(ex, message, ConnectionString);
+                _logger.Error(ex, message, connectionSettings.ConnectionString);
 
                 _errorSubject.OnNext(message);
             }
@@ -144,6 +175,8 @@ namespace asagiv.pushrocket.ui.common.ViewModels
             {
                 _waitIndicator.HideWaitIndicator();
             }
+
+            return Unit.Default;
         }
 
         private async Task PushFilesAsync()
@@ -179,10 +212,9 @@ namespace asagiv.pushrocket.ui.common.ViewModels
                 _errorSubject?.OnNext(message);
             }
         }
-
         public void OnSelectedDestinationNodeChanged(string selectedDestinationNode)
         {
-            if (string.IsNullOrEmpty(selectedDestinationNode) || selectedDestinationNode == "(None)")
+            if (string.IsNullOrEmpty(selectedDestinationNode))
             {
                 _logger?.Warning("Destination node de-Selected.");
             }

@@ -9,48 +9,41 @@
 
 <Div>
 
-    <Div class="d-flex align-items-stretch">
+    <Div Class="form-floating flex-grow-1" Margin="Margin.Is2">
+        
+        <Select Class="form-select" TValue="uint" @bind-SelectedValue="@ViewModel.SelectedConnectionSettingsIndex">
+            <SelectItem TValue="uint" Value="uint.MaxValue">Select a Connection</SelectItem>
+            @foreach (var connectionSetting in ViewModel.ConnectionSettingsList)
+            {
+                <SelectItem TValue="uint" Value="@connectionSetting.Id">@connectionSetting.ConnectionName</SelectItem>
+            }
+        </Select>
 
-        <Div class="form-floating flex-grow-1" Margin="Margin.Is2">
-
-            <TextEdit InputMode="TextInputMode.Url"
-                      Class="form-control"
-                      id="floatingInput"
-                      @bind-Text="@ViewModel.ConnectionString"
-                      placeholder=" " />
-
-            <FieldLabel For="floatingInput">Connection String</FieldLabel>
-
-        </Div>
-
-        <Button Color="Color.Primary" Margin="Margin.Is2"
-                Clicked="@(x => ViewModel.ConnectCommand.Execute(null))">
-            Connect
-        </Button>
+        <FieldLabel for="floatingSelect">Connection</FieldLabel>
 
     </Div>
 
     @if (ViewModel.IsConnected)
     {
-        <Div Class="d-flex align-items-stretch" Margin="Margin.Is2">
-            <Select TValue="string" @bind-SelectedValue="@ViewModel.SelectedDestinationNode">
+        <Div Class="form-floating flex-grow-1" Margin="Margin.Is2">
+
+            <Select Class="form-select" TValue="string" @bind-SelectedValue="@ViewModel.SelectedDestinationNode">
+                <SelectItem Value="string.Empty">Select a Desitination</SelectItem>
                 @foreach (var destinationNode in ViewModel.DestinationNodes)
                 {
                     <SelectItem Value="@destinationNode">@destinationNode</SelectItem>
                 }
             </Select>
-        </Div>
 
-        <Div Class="d-flex align-items-stretch">
-            <Button Color="Color.Primary" Margin="Margin.Is2" Clicked="@(x => ViewModel.PushFilesCommand.Execute(null))" Block>Select Files</Button>
+            <FieldLabel for="floatingSelect">Destination</FieldLabel>
+
         </Div>
     }
-    else
+
+    @if (!string.IsNullOrWhiteSpace(ViewModel.SelectedDestinationNode))
     {
-        <Div>
-            <Text TextAlignment="TextAlignment.Center">
-                Please connect to a PushRocket server.
-            </Text>
+        <Div Class="d-flex align-items-stretch">
+            <Button Color="Color.Primary" Margin="Margin.Is2" Clicked="@(x => ViewModel.PushFilesCommand.Execute(null))" Block>Select Files</Button>
         </Div>
     }
 
@@ -78,7 +71,7 @@
                     }
 
                     <Icon Name="IconName.Times" TextColor="TextColor.Default" Margin="Margin.Is2" IconStyle="IconStyle.Solid"
-                          Style="cursor:pointer" Clicked="@(() => ViewModel.RemoveContext(context))"></Icon>
+                      Style="cursor:pointer" Clicked="@(() => ViewModel.RemoveContext(context))"></Icon>
 
                 </Div>
 
@@ -96,7 +89,6 @@
             }
 
         </Div>
-
     }
 
 </Div>
@@ -128,7 +120,7 @@
             }
         };
 
-        await ViewModel.Database.ConnectAsync();
+        await ViewModel.InitializeAsync();
 
         await base.OnInitializedAsync();
     }

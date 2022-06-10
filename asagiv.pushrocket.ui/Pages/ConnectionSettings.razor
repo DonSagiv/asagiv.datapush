@@ -5,13 +5,18 @@
 
 <Div>
 
-    <Div Class="d-flex align-items-stretch" Margin="Margin.Is2">
-        <Select TValue="ClientConnectionSettings" @bind-SelectedValue="@ViewModel.SelectedConnectionSettings">
+    <Div Class="form-floating flex-grow-1" Margin="Margin.Is2">
+
+        <Select Class="form-select" TValue="uint" @bind-SelectedValue="@ViewModel.SelectedConnectionSettingsIndex" id="floatingInput">
+            <SelectItem TValue="uint" Value="uint.MaxValue">Select a Connection Setting</SelectItem>
             @foreach (var connectionSetting in ViewModel.ConnectionSettingsList)
             {
-                <SelectItem Value="@connectionSetting">@connectionSetting.ConnectionName</SelectItem>
+                <SelectItem TValue="uint" Value="@connectionSetting.Id">@connectionSetting.ConnectionName</SelectItem>
             }
         </Select>
+
+        <FieldLabel for="floatingSelect">Connection</FieldLabel>
+
     </Div>
 
     <Div Class="d-flex justify-content-center">
@@ -23,7 +28,7 @@
         <Button Color="Color.Primary" Margin="Margin.Is2"
                 Clicked="() => ViewModel.SaveConnectionSettingsCommand.Execute(null)"
                 Block>
-            Save
+            Save All
         </Button>
     </Div>
 
@@ -67,7 +72,7 @@
 
         <Div Margin="Margin.Is2">
 
-            <Button Color="Color.Primary" 
+            <Button Color="Color.Primary"
                 Clicked="() => ViewModel.DeleteConnectionSettingsCommand.Execute(null)"
                 Block>
                 Delete
@@ -82,6 +87,8 @@
     protected override async Task OnInitializedAsync()
     {
         ViewModel.PropertyChanged += async (s, e) => await InvokeAsync(() => this.StateHasChanged());
+
+        await ViewModel.InitializeAsync();
 
         await base.OnInitializedAsync();
     }
