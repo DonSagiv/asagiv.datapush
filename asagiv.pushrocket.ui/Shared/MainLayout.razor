@@ -3,24 +3,32 @@
 @inject WaitIndicatorService WaitIndicator
 @inject NavigationManager NavManager
 
-<MudThemeProvider />
-<MudDialogProvider />
+<MudThemeProvider IsDarkMode="true" />
+<MudDialogProvider CloseButton="true" DisableBackdropClick="true" />
 <MudSnackbarProvider />
 
 <div class="page">
 
     @Body
 
-    <MudTabs Color="Color.Dark" Elevation="4" Class="fixed-bottom" Centered="true" Position="Position.Bottom" Border="true">
-        <MudTabPanel Icon="@Icons.Material.Filled.Home" OnClick="(_ => HomeIconClicked())"/>
-        <MudTabPanel Icon="@Icons.Material.Filled.Settings" OnClick="(_ => SettingsIconClicked())"/>
-    </MudTabs>
+    @if (!_showWaitIndicator)
+    {
+        <MudTabs Color="Color.Dark" Elevation="4" Class="fixed-bottom" Centered="true" Position="Position.Bottom" Border="true">
+            <MudTabPanel Icon="@Icons.Material.Filled.Home" OnClick="(_ => HomeIconClicked())" />
+            <MudTabPanel Icon="@Icons.Material.Filled.Settings" OnClick="(_ => SettingsIconClicked())" />
+        </MudTabs>
+    }
 
 </div>
 
-<!-- SpinKit Type="SpinKitType.CircleFade" Centered="true" / -->
+<MudOverlay Visible="_showWaitIndicator" DarkBackground="true" Absolute="true">
+    <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+</MudOverlay>
+
 @code
 {
+    bool _showWaitIndicator;
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -31,6 +39,8 @@
 
     protected void SetWaitIndicator(bool showIndicator)
     {
+        _showWaitIndicator = showIndicator;
+
         this.StateHasChanged();
     }
 
