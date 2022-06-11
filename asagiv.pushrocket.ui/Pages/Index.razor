@@ -35,7 +35,7 @@
     {
         <div class="d-flex">
             <MudButton Class="m-3" Variant="Variant.Filled" Color="Color.Primary" OnClick="@(x => ViewModel.PushFilesCommand.Execute(null))"
-                FullWidth="true">Select Files</MudButton>
+                   FullWidth="true">Select Files</MudButton>
         </div>
     }
 
@@ -52,7 +52,10 @@
                     @switch (context.Status)
                     {
                         case DeliveryStatus.InProgress:
-                            <MudIcon Icon="@Icons.Material.Filled.HourglassEmpty" Color="Color.Primary" />
+                            <MudProgressCircular Max="@context.TotalNumberOfBlocks"
+                                     Style="height:20px;width:20px;"
+                                     Color="Color.Primary"
+                                     Value="@context.NumberOfBlocksPushed" />
                             break;
                         case DeliveryStatus.Successful:
                             <MudIcon Icon="@Icons.Material.Filled.Check" Color="Color.Success" />
@@ -63,20 +66,12 @@
                     }
 
                     <MudIcon Icon="@Icons.Material.Filled.Close" Style="cursor:pointer"
-                             @onclick="(_ => ViewModel.RemoveContext(context))"
-                             Color="Color.Default" />
+                         @onclick="(_ => ViewModel.RemoveContext(context))"
+                         Color="Color.Default" />
 
                 </div>
 
             </div>
-
-            @if (context.Status == DeliveryStatus.InProgress)
-            {
-                <progress max="@context.TotalNumberOfBlocks"
-                  class="my-2"
-                  style="height: 10px; width: 100%"
-                  value="@context.NumberOfBlocksPushed" />
-            }
 
         </MudPaper>
     }
