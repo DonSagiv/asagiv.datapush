@@ -13,10 +13,10 @@
 		<EnableDefaultCssItems>false</EnableDefaultCssItems>
 
 		<!-- Display name -->
-		<ApplicationTitle>asagiv.pushrocket.ui</ApplicationTitle>
+		<ApplicationTitle>PushRocket</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.asagiv.pushrocket.ui</ApplicationId>
+		<ApplicationId>com.asagiv.pushrocket.ui</ApplicationId>
 		<ApplicationIdGuid>B6423A11-315D-456F-90C6-95E9C8FD1415</ApplicationIdGuid>
 
 		<!-- Versions -->
