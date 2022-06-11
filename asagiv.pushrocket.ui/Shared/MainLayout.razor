@@ -1,38 +1,22 @@
-﻿@using Blazorise.Components
-@using asagiv.pushrocket.ui.common.Utilities
+﻿@using asagiv.pushrocket.ui.common.Utilities
 @inherits LayoutComponentBase
 @inject WaitIndicatorService WaitIndicator
 @inject NavigationManager NavManager
 
-<Div class="page">
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
-    <Layout Loading="@(WaitIndicator?.WaitIndicatorVisible ?? false)">
+<div class="page">
 
-        <LayoutContent Margin="Margin.Is3">
-            @Body
-        </LayoutContent>
+    @Body
 
-        <LayoutFooter Fixed>
+    <MudTabs Color="Color.Dark" Elevation="4" Class="fixed-bottom" Centered="true" Position="Position.Bottom" Border="true">
+        <MudTabPanel Icon="@Icons.Material.Filled.Home" OnClick="(_ => HomeIconClicked())"/>
+        <MudTabPanel Icon="@Icons.Material.Filled.Settings" OnClick="(_ => SettingsIconClicked())"/>
+    </MudTabs>
 
-            <Div Class="d-flex justify-content-around" Style="background-color: #CCCCCC">
-
-                <Div Style="cursor:pointer">
-                    <Icon Name="IconName.Home" IconSize="IconSize.x2" TextColor="TextColor.Default" Margin="Margin.Is2" IconStyle="IconStyle.Solid" 
-                          Clicked="@(_ => NavManager.NavigateTo("/"))"/>
-                </Div>
-
-                <Div Style="cursor:pointer">
-                    <Icon Name="IconName.Wrench" IconSize="IconSize.x2" TextColor="TextColor.Default" Margin="Margin.Is2" IconStyle="IconStyle.Solid" 
-                          Clicked="@(_ => NavManager.NavigateTo("/ConnectionSettings"))" />
-                </Div>
-
-            </Div>
-
-        </LayoutFooter>
-
-    </Layout>
-
-</Div>
+</div>
 
 <!-- SpinKit Type="SpinKitType.CircleFade" Centered="true" / -->
 @code
@@ -48,5 +32,15 @@
     protected void SetWaitIndicator(bool showIndicator)
     {
         this.StateHasChanged();
+    }
+
+    protected void HomeIconClicked()
+    {
+        NavManager.NavigateTo("/");
+    }
+
+    protected void SettingsIconClicked()
+    {
+        NavManager.NavigateTo("/ConnectionSettings");
     }
 }

@@ -3,93 +3,79 @@
 @using asagiv.pushrocket.ui.common.ViewModels
 @inject ConnectionSettingsViewModel ViewModel
 
-<Div>
+<div>
 
-    <Div Class="form-floating flex-grow-1" Margin="Margin.Is2">
+    <MudSelect Label="Connection" T="string"
+               Class="m-3"
+               Variant="Variant.Outlined"
+               @bind-Value="@ViewModel.SelectedConnectionSettingsString"
+               AnchorOrigin="Origin.BottomCenter">
+        @foreach (var connectionSetting in ViewModel.ConnectionSettingsList)
+        {
+            <MudSelectItem Value="@connectionSetting.ConnectionName">@connectionSetting.ConnectionName</MudSelectItem>
+        }
+    </MudSelect>
 
-        <Select Class="form-select" TValue="uint" @bind-SelectedValue="@ViewModel.SelectedConnectionSettingsIndex" id="floatingInput">
-            <SelectItem TValue="uint" Value="uint.MaxValue">Select a Connection Setting</SelectItem>
-            @foreach (var connectionSetting in ViewModel.ConnectionSettingsList)
-            {
-                <SelectItem TValue="uint" Value="@connectionSetting.Id">@connectionSetting.ConnectionName</SelectItem>
-            }
-        </Select>
+    <div Class="d-flex justify-content-center">
 
-        <FieldLabel for="floatingSelect">Connection</FieldLabel>
-
-    </Div>
-
-    <Div Class="d-flex justify-content-center">
-        <Button Color="Color.Primary" Margin="Margin.Is2"
-                Clicked="() => ViewModel.NewConnectionSettingsCommand.Execute(null)"
-                Block>
+        <MudButton Class="m-3" Color="Color.Primary"
+                   FullWidth="true"
+                   Variant="Variant.Filled"
+                   OnClick="(() => ViewModel.NewConnectionSettingsCommand.Execute(null))">
             Add
-        </Button>
-        <Button Color="Color.Primary" Margin="Margin.Is2"
-                Clicked="() => ViewModel.SaveConnectionSettingsCommand.Execute(null)"
-                Block>
+        </MudButton>
+
+        <MudButton Class="m-3" Color="Color.Primary"
+                   FullWidth="true"
+                   Variant="Variant.Filled"
+                   OnClick="(() => ViewModel.SaveConnectionSettingsCommand.Execute(null))">
             Save All
-        </Button>
-    </Div>
+        </MudButton>
+
+    </div>
 
     @if (ViewModel.SelectedConnectionSettings != null)
     {
-        <Div class="form-floating flex-grow-1" Margin="Margin.Is2">
+        <MudTextField T="string" InputMode="InputMode.text"
+                  Variant="Variant.Outlined"
+                  Class="m-3"
+                  Label="Connection Name"
+                  Text="@ViewModel.SelectedConnectionSettings.ConnectionName" />
 
-            <TextEdit InputMode="TextInputMode.Text"
-                  Class="form-control"
-                  @bind-Text="ViewModel.SelectedConnectionSettings.ConnectionName"
-                  id="floatingInput"
-                  placeholder=" " />
+        <MudTextField T="string" InputMode="InputMode.url"
+                  Variant="Variant.Outlined"
+                  Class="m-3"
+                  Label="Connection URL"
+                  Value="@ViewModel.SelectedConnectionSettings.ConnectionString" />
 
-            <FieldLabel For="floatingInput">Connection Name</FieldLabel>
+        <MudTextField T="string" InputMode="InputMode.text"
+                  Variant="Variant.Outlined"
+                  Class="m-3"
+                  Label="ConnectionNodeName"
+                  Value="@ViewModel.SelectedConnectionSettings.NodeName" />
 
-        </Div>
+        <div class="d-flex">
 
-        <Div class="form-floating flex-grow-1" Margin="Margin.Is2">
-
-            <TextEdit InputMode="TextInputMode.Url"
-                  Class="form-control"
-                  @bind-Text="ViewModel.SelectedConnectionSettings.ConnectionString"
-                  id="floatingInput"
-                  placeholder=" " />
-
-            <FieldLabel For="floatingInput">Connection URL</FieldLabel>
-
-        </Div>
-
-        <Div class="form-floating flex-grow-1" Margin="Margin.Is2">
-
-            <TextEdit InputMode="TextInputMode.Text"
-                  Class="form-control"
-                  @bind-Text="ViewModel.SelectedConnectionSettings.NodeName"
-                  id="floatingInput"
-                  placeholder=" " />
-
-            <FieldLabel For="floatingInput">Connection Node Name</FieldLabel>
-
-        </Div>
-
-        <Div Margin="Margin.Is2">
-
-            <Button Color="Color.Primary"
-                Clicked="() => ViewModel.DeleteConnectionSettingsCommand.Execute(null)"
-                Block>
+            <MudButton Color="Color.Primary"
+                   FullWidth="true"
+                   Class="m-3"
+                   Variant="Variant.Filled"
+                   OnClick="() => ViewModel.DeleteConnectionSettingsCommand.Execute(null)">
                 Delete
-            </Button>
+            </MudButton>
 
-        </Div>
+        </div>
     }
-
-</Div>
+</div>
 
 @code {
     protected override async Task OnInitializedAsync()
     {
-        ViewModel.PropertyChanged += async (s, e) => await InvokeAsync(() => this.StateHasChanged());
+        ViewModel.PropertyChanged += async (s, e) => await InvokeAsync(() =>
+        this.StateHasChanged());
 
         await ViewModel.InitializeAsync();
 
         await base.OnInitializedAsync();
     }
-}
+    }

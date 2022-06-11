@@ -15,16 +15,16 @@ namespace asagiv.pushrocket.ui.common.ViewModels
         private readonly WaitIndicatorService _waitIndicator;
         private readonly ILogger _logger;
         private readonly PushRocketDatabase _pushRocketDatabase;
-        private uint _selectedConnectionSettingIndex;
+        private string _selectedConnectionSettingString;
         private ClientConnectionSettings _selectedConnectionSettings;
         #endregion
 
         #region Properties
         public ObservableCollection<ClientConnectionSettings> ConnectionSettingsList { get; }
-        public uint SelectedConnectionSettingsIndex
+        public string SelectedConnectionSettingsString
         {
-            get => _selectedConnectionSettingIndex;
-            set => this.RaiseAndSetIfChanged(ref _selectedConnectionSettingIndex, value);
+            get => _selectedConnectionSettingString;
+            set => this.RaiseAndSetIfChanged(ref _selectedConnectionSettingString, value);
         }
         public ClientConnectionSettings SelectedConnectionSettings
         {
@@ -48,13 +48,11 @@ namespace asagiv.pushrocket.ui.common.ViewModels
 
             _logger.Debug("Instantiating ConnectionSettingsViewModel");
 
-            SelectedConnectionSettingsIndex = uint.MaxValue;
-
             ConnectionSettingsList = new();
 
             ConnectionSettingsList.CollectionChanged += (s, e) => this.RaisePropertyChanged();
 
-            this.WhenAnyValue(x => x.SelectedConnectionSettingsIndex)
+            this.WhenAnyValue(x => x.SelectedConnectionSettingsString)
                 .Subscribe(OnSelectedConnectionSettingChanged);
 
             NewConnectionSettingsCommand = ReactiveCommand.Create(CreateNewConnection);
@@ -80,7 +78,6 @@ namespace asagiv.pushrocket.ui.common.ViewModels
             if (!connectionSettingsToAdd.Any())
             {
                 CreateNewConnection();
-                SelectedConnectionSettingsIndex = 0;
             }
             else
             {
@@ -88,15 +85,15 @@ namespace asagiv.pushrocket.ui.common.ViewModels
             }
         }
 
-        private void OnSelectedConnectionSettingChanged(uint index)
+        private void OnSelectedConnectionSettingChanged(string inputConnectionName)
         {
-            if(index == uint.MaxValue)
+            if(string.IsNullOrEmpty(inputConnectionName))
             {
                 SelectedConnectionSettings = null;
             }
 
             SelectedConnectionSettings = ConnectionSettingsList
-                .FirstOrDefault(x => x.Id == index);
+                .FirstOrDefault(x => x.ConnectionName == inputConnectionName);
         }
 
         private void CreateNewConnection()
@@ -142,7 +139,7 @@ namespace asagiv.pushrocket.ui.common.ViewModels
             }
             else
             {
-                SelectedConnectionSettingsIndex = 1;
+                SelectedConnectionSettingsString = ConnectionSettingsList.FirstOrDefault().ConnectionName;
             }
         }
         #endregion

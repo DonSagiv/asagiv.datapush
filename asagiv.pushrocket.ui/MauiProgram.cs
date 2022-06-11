@@ -1,12 +1,8 @@
 ﻿using asagiv.common.Logging;
-using asagiv.pushrocket.ui.common;
 using asagiv.pushrocket.ui.common.Database;
-using asagiv.pushrocket.ui.common.Interfaces;
 using asagiv.pushrocket.ui.common.Utilities;
 using asagiv.pushrocket.ui.common.ViewModels;
-using Blazorise;
-using Blazorise.Bootstrap;
-using Blazorise.Icons.FontAwesome;
+using MudBlazor.Services;
 
 namespace asagiv.pushrocket.ui
 {
@@ -36,10 +32,7 @@ namespace asagiv.pushrocket.ui
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
 #endif
-            builder.Services
-                .AddBlazorise(o => o.Immediate = false)
-                .AddBootstrapProviders()
-                .AddFontAwesomeIcons();
+            builder.Services.AddMudServices();
 
             return builder.Build();
         }

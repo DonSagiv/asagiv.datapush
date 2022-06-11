@@ -4,94 +4,83 @@
 @using System.Reactive
 @using asagiv.pushrocket.common.Models
 @using asagiv.pushrocket.ui.common.ViewModels
+@using MudBlazor
 @inject MainViewModel ViewModel
-@inject IMessageService MessageService
 
-<Div>
+<div>
 
-    <Div Class="form-floating flex-grow-1" Margin="Margin.Is2">
-        
-        <Select Class="form-select" TValue="uint" @bind-SelectedValue="@ViewModel.SelectedConnectionSettingsIndex">
-            <SelectItem TValue="uint" Value="uint.MaxValue">Select a Connection</SelectItem>
-            @foreach (var connectionSetting in ViewModel.ConnectionSettingsList)
-            {
-                <SelectItem TValue="uint" Value="@connectionSetting.Id">@connectionSetting.ConnectionName</SelectItem>
-            }
-        </Select>
-
-        <FieldLabel for="floatingSelect">Connection</FieldLabel>
-
-    </Div>
+    <MudSelect Class="m-3" T="string" Label="Connection" Variant="Variant.Outlined"
+               @bind-Value="@ViewModel.SelectedConnectionSettingString"
+               AnchorOrigin="Origin.BottomCenter">
+        @foreach (var connectionSetting in ViewModel.ConnectionSettingsList)
+        {
+            <MudSelectItem Value="@connectionSetting.ConnectionName">@connectionSetting.ConnectionName</MudSelectItem>
+        }
+    </MudSelect>
 
     @if (ViewModel.IsConnected)
     {
-        <Div Class="form-floating flex-grow-1" Margin="Margin.Is2">
-
-            <Select Class="form-select" TValue="string" @bind-SelectedValue="@ViewModel.SelectedDestinationNode">
-                <SelectItem Value="string.Empty">Select a Desitination</SelectItem>
-                @foreach (var destinationNode in ViewModel.DestinationNodes)
-                {
-                    <SelectItem Value="@destinationNode">@destinationNode</SelectItem>
-                }
-            </Select>
-
-            <FieldLabel for="floatingSelect">Destination</FieldLabel>
-
-        </Div>
+        <MudSelect Class="m-3" Label="Send To" T="string" Variant="Variant.Outlined"
+               @bind-Value="@ViewModel.SelectedDestinationNode"
+               AnchorOrigin="Origin.BottomCenter">
+            @foreach (var destinationNode in ViewModel.DestinationNodes)
+            {
+                <MudSelectItem Value="@destinationNode">@destinationNode</MudSelectItem>
+            }
+        </MudSelect>
     }
 
     @if (!string.IsNullOrWhiteSpace(ViewModel.SelectedDestinationNode))
     {
-        <Div Class="d-flex align-items-stretch">
-            <Button Color="Color.Primary" Margin="Margin.Is2" Clicked="@(x => ViewModel.PushFilesCommand.Execute(null))" Block>Select Files</Button>
-        </Div>
+        <div class="d-flex">
+            <MudButton Class="m-3" Variant="Variant.Filled" Color="Color.Primary" OnClick="@(x => ViewModel.PushFilesCommand.Execute(null))"
+                FullWidth="true">Select Files</MudButton>
+        </div>
     }
 
     @foreach (var context in ViewModel.PushContexts.Reverse())
     {
-        <Div class="m-2 p-2" Style="background-color: #DDDDDD;border-color: #444444;border-radius: 5px">
+        <MudPaper Elevation="2" Class="m-3 p-3" Outlined="true" Style="background-color:#DDDDDD">
 
-            <Div Class="d-flex justify-content-between align-items-center" Margin="Margin.Is2">
+            <div class="d-flex justify-content-between align-items-center">
 
-                <Text>@context.Name</Text>
+                <MudText>@context.Name</MudText>
 
-                <Div Class="d-flex justify-content-right align-items-center">
+                <div Class="d-flex justify-content-right align-items-center">
 
                     @switch (context.Status)
                     {
                         case DeliveryStatus.InProgress:
-                            <Icon Name="IconName.Hourglass" TextColor="TextColor.Primary" Margin="Margin.Is2" IconStyle="IconStyle.Regular"></Icon>
+                            <MudIcon Icon="@Icons.Material.Filled.HourglassEmpty" Color="Color.Primary" />
                             break;
                         case DeliveryStatus.Successful:
-                            <Icon Name="IconName.Check" TextColor="TextColor.Success" Margin="Margin.Is2" IconStyle="IconStyle.Solid"></Icon>
+                            <MudIcon Icon="@Icons.Material.Filled.Check" Color="Color.Success" />
                             break;
                         default:
-                            <Icon Name="IconName.ExclamationTriangle" TextColor="TextColor.Primary" Margin="Margin.Is2" IconStyle="IconStyle.Regular"></Icon>
+                            <MudIcon Icon="@Icons.Material.Filled.Error" Color="Color.Error" />
                             break;
                     }
 
-                    <Icon Name="IconName.Times" TextColor="TextColor.Default" Margin="Margin.Is2" IconStyle="IconStyle.Solid"
-                      Style="cursor:pointer" Clicked="@(() => ViewModel.RemoveContext(context))"></Icon>
+                    <MudIcon Icon="@Icons.Material.Filled.Close" Style="cursor:pointer"
+                             @onclick="(_ => ViewModel.RemoveContext(context))"
+                             Color="Color.Default" />
 
-                </Div>
+                </div>
 
-            </Div>
+            </div>
 
             @if (context.Status == DeliveryStatus.InProgress)
             {
-                <Div Margin="Margin.Is2">
-
-                    <progress max="@context.TotalNumberOfBlocks"
-                      style="height: 30px;width: 100%"
-                      value="@context.NumberOfBlocksPushed" />
-
-                </Div>
+                <progress max="@context.TotalNumberOfBlocks"
+                  class="my-2"
+                  style="height: 10px; width: 100%"
+                  value="@context.NumberOfBlocksPushed" />
             }
 
-        </Div>
+        </MudPaper>
     }
 
-</Div>
+</div>
 
 @code
 {
@@ -127,8 +116,6 @@
 
     private async Task<Unit> ShowErrorNotifier(string errorMessage)
     {
-        await MessageService.Error(errorMessage, "Error");
-
         return Unit.Default;
     }
 }

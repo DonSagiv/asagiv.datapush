@@ -24,7 +24,7 @@ namespace asagiv.pushrocket.ui.common.ViewModels
         private bool _isConnected;
         private IGrpcClient _grpcClient;
         private string _selectedDestinationNode;
-        private uint _selectedConnectionSettingIndex;
+        private string _selectedConnectionSettingString;
         private ClientConnectionSettings _selectedConnectionSetting;
         #endregion
 
@@ -35,10 +35,10 @@ namespace asagiv.pushrocket.ui.common.ViewModels
             private set => this.RaiseAndSetIfChanged(ref _isConnected, value);
         }
         public ObservableCollection<ClientConnectionSettings> ConnectionSettingsList { get; }
-        public uint SelectedConnectionSettingsIndex
+        public string SelectedConnectionSettingString
         {
-            get => _selectedConnectionSettingIndex;
-            set => this.RaiseAndSetIfChanged(ref _selectedConnectionSettingIndex, value);
+            get => _selectedConnectionSettingString;
+            set => this.RaiseAndSetIfChanged(ref _selectedConnectionSettingString, value);
         }
         public ClientConnectionSettings SelectedConnectionSettings
         {
@@ -76,15 +76,13 @@ namespace asagiv.pushrocket.ui.common.ViewModels
 
             PushFilesCommand = ReactiveCommand.CreateFromTask(PushFilesAsync);
 
-            SelectedConnectionSettingsIndex = uint.MaxValue;
-
             ConnectionSettingsList = new();
 
             ConnectionSettingsList.CollectionChanged += (s, e) => this.RaisePropertyChanged();
 
             SelectedDestinationNode = null;
 
-            this.WhenAnyValue(x => x.SelectedConnectionSettingsIndex)
+            this.WhenAnyValue(x => x.SelectedConnectionSettingString)
                 .Subscribe(OnSelectedConnectionSettingChanged);
 
             this.WhenAnyValue(x => x.SelectedConnectionSettings)
@@ -113,15 +111,15 @@ namespace asagiv.pushrocket.ui.common.ViewModels
             ConnectionSettingsList.AddRange(connectionSettingsToAdd);
         }
 
-        private void OnSelectedConnectionSettingChanged(uint index)
+        private void OnSelectedConnectionSettingChanged(string connectionNameInput)
         {
-            if (index == uint.MaxValue)
+            if (string.IsNullOrWhiteSpace(connectionNameInput))
             {
                 SelectedConnectionSettings = null;
             }
 
             SelectedConnectionSettings = ConnectionSettingsList
-                .FirstOrDefault(x => x.Id == index);
+                .FirstOrDefault(x => x.ConnectionName == connectionNameInput);
         }
 
         private async Task<Unit> ConnectAsync(ClientConnectionSettings connectionSettings)
