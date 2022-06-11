@@ -2,8 +2,9 @@
 @inherits LayoutComponentBase
 @inject WaitIndicatorService WaitIndicator
 @inject NavigationManager NavManager
+@inject DarkModeService DarkThemeService
 
-<MudThemeProvider IsDarkMode="true" />
+<MudThemeProvider IsDarkMode="@_darkThemeEnabled" />
 <MudDialogProvider CloseButton="true" DisableBackdropClick="true" />
 <MudSnackbarProvider />
 
@@ -28,23 +29,36 @@
 @code
 {
     bool _showWaitIndicator;
+    bool _darkThemeEnabled;
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
 
+        _darkThemeEnabled = true;
+
+        DarkThemeService.DarkModeSetObservable
+            .Subscribe(SetDarkMode);
+
         WaitIndicator.WaitIndicatorSetObservable
             .Subscribe(SetWaitIndicator);
     }
 
-    protected void SetWaitIndicator(bool showIndicator)
+    private void SetDarkMode(bool isDarkTheme)
+    {
+        _darkThemeEnabled = isDarkTheme;
+
+        StateHasChanged();
+    }
+
+    private void SetWaitIndicator(bool showIndicator)
     {
         _showWaitIndicator = showIndicator;
 
         this.StateHasChanged();
     }
 
-    protected void HomeIconClicked()
+    private void HomeIconClicked()
     {
         NavManager.NavigateTo("/");
     }

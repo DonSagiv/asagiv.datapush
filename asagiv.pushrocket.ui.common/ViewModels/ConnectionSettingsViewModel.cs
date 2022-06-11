@@ -12,7 +12,8 @@ namespace asagiv.pushrocket.ui.common.ViewModels
     public class ConnectionSettingsViewModel : ReactiveObject
     {
         #region Fields
-        private readonly WaitIndicatorService _waitIndicator;
+        private bool _isDarkModeEnabled;
+        private readonly DarkModeService _darkThemeModeManager;
         private readonly ILogger _logger;
         private readonly PushRocketDatabase _pushRocketDatabase;
         private string _selectedConnectionSettingString;
@@ -21,6 +22,11 @@ namespace asagiv.pushrocket.ui.common.ViewModels
 
         #region Properties
         public ObservableCollection<ClientConnectionSettings> ConnectionSettingsList { get; }
+        public bool IsDarkModeEnabled
+        {
+            get => _isDarkModeEnabled;
+            set => this.RaiseAndSetIfChanged(ref _isDarkModeEnabled, value);
+        }
         public string SelectedConnectionSettingsString
         {
             get => _selectedConnectionSettingString;
@@ -40,11 +46,13 @@ namespace asagiv.pushrocket.ui.common.ViewModels
         #endregion
 
         #region Constructor
-        public ConnectionSettingsViewModel(WaitIndicatorService waitIndicator, PushRocketDatabase database, ILogger logger)
+        public ConnectionSettingsViewModel(DarkModeService darkModeService, PushRocketDatabase database, ILogger logger)
         {
-            _waitIndicator = waitIndicator;
+            _darkThemeModeManager = darkModeService;
             _pushRocketDatabase = database;
             _logger = logger;
+
+            IsDarkModeEnabled = true;
 
             _logger.Debug("Instantiating ConnectionSettingsViewModel");
 
@@ -54,6 +62,9 @@ namespace asagiv.pushrocket.ui.common.ViewModels
 
             this.WhenAnyValue(x => x.SelectedConnectionSettingsString)
                 .Subscribe(OnSelectedConnectionSettingChanged);
+
+            this.WhenAnyValue(x => x.IsDarkModeEnabled)
+                .Subscribe(b => _darkThemeModeManager.DarkModeEnabled = b);
 
             NewConnectionSettingsCommand = ReactiveCommand.Create(CreateNewConnection);
             SaveConnectionSettingsCommand = ReactiveCommand.CreateFromTask(SaveAllConnectionsAsync);

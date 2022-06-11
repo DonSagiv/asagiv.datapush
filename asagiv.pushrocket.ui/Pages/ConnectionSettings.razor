@@ -5,6 +5,10 @@
 
 <div>
 
+    <MudSwitch Class="m-3" Label="Enable Dark Mode" Color="Color.Primary" @bind-Checked="ViewModel.IsDarkModeEnabled" />
+
+    <MudDivider />
+
     <MudSelect Label="Connection" T="string"
                Class="m-3"
                Variant="Variant.Outlined"
@@ -68,7 +72,8 @@
     }
 </div>
 
-@code {
+@code
+{
     protected override async Task OnInitializedAsync()
     {
         ViewModel.PropertyChanged += async (s, e) => await InvokeAsync(() =>
@@ -78,4 +83,4 @@
 
         await base.OnInitializedAsync();
     }
-    }
+}

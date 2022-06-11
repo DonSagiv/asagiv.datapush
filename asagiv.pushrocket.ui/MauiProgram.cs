@@ -24,6 +24,7 @@ namespace asagiv.pushrocket.ui
 
             builder.Services.AddSingleton<PushRocketDatabase>();
             builder.Services.AddSingleton<WaitIndicatorService>();
+            builder.Services.AddSingleton<DarkModeService>();
             builder.Services.UseSerilog(appDataDirectory, useDebug);
             builder.Services.AddSingleton<MainViewModel>();
             builder.Services.AddSingleton<ConnectionSettingsViewModel>();
