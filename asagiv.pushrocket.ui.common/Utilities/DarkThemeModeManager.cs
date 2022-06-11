@@ -11,8 +11,8 @@ namespace asagiv.pushrocket.ui.common.Utilities
         #endregion
 
         #region Properties
-        public bool DarkModeEnabled 
-        { 
+        public bool DarkModeEnabled
+        {
             get => _darkModeEnabled;
             set { _darkModeEnabled = value; _darkModeSetSubject.OnNext(_darkModeEnabled); }
         }

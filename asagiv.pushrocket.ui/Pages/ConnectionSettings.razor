@@ -44,19 +44,19 @@
                   Variant="Variant.Outlined"
                   Class="m-3"
                   Label="Connection Name"
-                  Text="@ViewModel.SelectedConnectionSettings.ConnectionName" />
+                  @bind-Value="@ViewModel.SelectedConnectionSettings.ConnectionName" />
 
         <MudTextField T="string" InputMode="InputMode.url"
                   Variant="Variant.Outlined"
                   Class="m-3"
                   Label="Connection URL"
-                  Value="@ViewModel.SelectedConnectionSettings.ConnectionString" />
+                  @bind-Value="@ViewModel.SelectedConnectionSettings.ConnectionString" />
 
         <MudTextField T="string" InputMode="InputMode.text"
                   Variant="Variant.Outlined"
                   Class="m-3"
                   Label="ConnectionNodeName"
-                  Value="@ViewModel.SelectedConnectionSettings.NodeName" />
+                  @bind-Value="@ViewModel.SelectedConnectionSettings.NodeName" />
 
         <div class="d-flex">
 

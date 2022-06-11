@@ -87,7 +87,7 @@ namespace asagiv.pushrocket.ui.common.ViewModels
 
             this.WhenAnyValue(x => x.SelectedConnectionSettings)
                 .SelectMany(ConnectAsync)
-                .Subscribe();
+                .Subscribe(OnConnected);
 
             this.WhenAnyValue(x => x.SelectedDestinationNode)
                 .Subscribe(OnSelectedDestinationNodeChanged);
@@ -109,6 +109,18 @@ namespace asagiv.pushrocket.ui.common.ViewModels
             var connectionSettingsToAdd = await _pushRocketDatabase.GetAllConnectionSettingsAsync();
 
             ConnectionSettingsList.AddRange(connectionSettingsToAdd);
+
+            var lastConnectionSettingId = Preferences.Get("LastConnectedSettingsId", uint.MaxValue);
+
+            var lastConnectionSetting = ConnectionSettingsList
+                .FirstOrDefault(x => x.Id == lastConnectionSettingId);
+
+            if (lastConnectionSetting is null)
+            {
+                return;
+            }
+
+            SelectedConnectionSettingString = lastConnectionSetting.ConnectionName;
         }
 
         private void OnSelectedConnectionSettingChanged(string connectionNameInput)
@@ -122,11 +134,11 @@ namespace asagiv.pushrocket.ui.common.ViewModels
                 .FirstOrDefault(x => x.ConnectionName == connectionNameInput);
         }
 
-        private async Task<Unit> ConnectAsync(ClientConnectionSettings connectionSettings)
+        private async Task<ClientConnectionSettings> ConnectAsync(ClientConnectionSettings connectionSettings)
         {
             if(connectionSettings == null)
             {
-                return Unit.Default;
+                return null;
             }
 
             _waitIndicator.ShowWaitIndicator();
@@ -155,11 +167,13 @@ namespace asagiv.pushrocket.ui.common.ViewModels
 
                 DestinationNodes.AddRange(pullNodesToAdd);
 
-                _logger.Information("Destination nodes retrieved from server.");
-
                 _logger.Information("Successfully connected to {ConnectionString}", connectionSettings.ConnectionString);
 
-                IsConnected = true;
+                var previousDestinationNode = Preferences.Get("LastDestinationNode", string.Empty);
+
+                SelectedDestinationNode = DestinationNodes.FirstOrDefault(x => x == previousDestinationNode);
+
+                return connectionSettings;
             }
             catch (Exception ex)
             {
@@ -168,13 +182,41 @@ namespace asagiv.pushrocket.ui.common.ViewModels
                 _logger.Error(ex, message, connectionSettings.ConnectionString);
 
                 _errorSubject.OnNext(message);
+
+                return null;
             }
             finally
             {
                 _waitIndicator.HideWaitIndicator();
             }
+        }
 
-            return Unit.Default;
+        private void OnConnected(ClientConnectionSettings connectionSettings)
+        {
+            if(connectionSettings == null)
+            {
+                IsConnected = false;
+
+                return;
+            }
+
+            IsConnected = true;
+
+            Preferences.Set("LastConnectedSettingsId", connectionSettings.Id);
+        }
+
+        public void OnSelectedDestinationNodeChanged(string selectedDestinationNodeInput)
+        {
+            if (string.IsNullOrEmpty(selectedDestinationNodeInput))
+            {
+                _logger?.Warning("Destination node de-Selected.");
+            }
+            else
+            {
+                _logger?.Information($"Selected destionation node: {SelectedDestinationNode}");
+
+                Preferences.Set("LastDestinationNode", selectedDestinationNodeInput);
+            }
         }
 
         private async Task PushFilesAsync()
@@ -208,17 +250,6 @@ namespace asagiv.pushrocket.ui.common.ViewModels
                 _logger.Error(ex, message);
 
                 _errorSubject?.OnNext(message);
-            }
-        }
-        public void OnSelectedDestinationNodeChanged(string selectedDestinationNode)
-        {
-            if (string.IsNullOrEmpty(selectedDestinationNode))
-            {
-                _logger?.Warning("Destination node de-Selected.");
-            }
-            else
-            {
-                _logger?.Information($"Selected destionation node: {SelectedDestinationNode}");
             }
         }
 
