@@ -17,15 +17,10 @@ namespace asagiv.pushrocket.ui
 
             var appDataDirectory = FileSystem.Current.AppDataDirectory;
 
-            var useDebug = false;
-#if DEBUG
-            useDebug = true;
-#endif
-
             builder.Services.AddSingleton<PushRocketDatabase>();
             builder.Services.AddSingleton<WaitIndicatorService>();
             builder.Services.AddSingleton<DarkModeService>();
-            builder.Services.UseSerilog(appDataDirectory, useDebug);
+            builder.Services.UseSerilog(appDataDirectory);
             builder.Services.AddSingleton<MainViewModel>();
             builder.Services.AddSingleton<ConnectionSettingsViewModel>();
 
