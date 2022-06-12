@@ -7,7 +7,6 @@ using Grpc.Net.Client;
 using ReactiveUI;
 using Serilog;
 using System.Collections.ObjectModel;
-using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows.Input;
@@ -52,7 +51,7 @@ namespace asagiv.pushrocket.ui.common.ViewModels
             get => _selectedDestinationNode;
             set => this.RaiseAndSetIfChanged(ref _selectedDestinationNode, value);
         }
-        public IObservable<string> ErrorObservable => _errorSubject.AsObservable();
+        public IObservable<string> ErrorObservable => _errorSubject?.AsObservable();
         #endregion
 
         #region Commands
@@ -110,17 +109,29 @@ namespace asagiv.pushrocket.ui.common.ViewModels
 
             ConnectionSettingsList.AddRange(connectionSettingsToAdd);
 
-            var lastConnectionSettingId = Preferences.Get("LastConnectedSettingsId", uint.MaxValue);
-
-            var lastConnectionSetting = ConnectionSettingsList
-                .FirstOrDefault(x => x.Id == lastConnectionSettingId);
-
-            if (lastConnectionSetting is null)
+            try
             {
-                return;
-            }
+                var lastConnectionSettingIdString = Preferences.Get("LastConnectedSettingsId", String.Empty);
 
-            SelectedConnectionSettingString = lastConnectionSetting.ConnectionName;
+                if(!uint.TryParse(lastConnectionSettingIdString, out var lastConnectionSettingId))
+                {
+                    return;
+                }
+
+                var lastConnectionSetting = ConnectionSettingsList
+                    .FirstOrDefault(x => x.Id == lastConnectionSettingId);
+
+                if (lastConnectionSetting is null)
+                {
+                    return;
+                }
+
+                SelectedConnectionSettingString = lastConnectionSetting.ConnectionName;
+            }
+            catch(Exception ex)
+            {
+                _logger.Error(ex, "Connection Load Error");
+            }
         }
 
         private void OnSelectedConnectionSettingChanged(string connectionNameInput)
@@ -181,7 +192,7 @@ namespace asagiv.pushrocket.ui.common.ViewModels
 
                 _logger.Error(ex, message, connectionSettings.ConnectionString);
 
-                _errorSubject.OnNext(message);
+                _errorSubject?.OnNext(message);
 
                 return null;
             }
@@ -202,7 +213,7 @@ namespace asagiv.pushrocket.ui.common.ViewModels
 
             IsConnected = true;
 
-            Preferences.Set("LastConnectedSettingsId", connectionSettings.Id);
+            Preferences.Set("LastConnectedSettingsId", connectionSettings?.Id.ToString());
         }
 
         public void OnSelectedDestinationNodeChanged(string selectedDestinationNodeInput)

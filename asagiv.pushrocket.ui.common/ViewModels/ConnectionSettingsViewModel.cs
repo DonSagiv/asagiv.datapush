@@ -118,7 +118,7 @@ namespace asagiv.pushrocket.ui.common.ViewModels
 
             ConnectionSettingsList.Add(connection);
 
-            SelectedConnectionSettings = connection;
+            SelectedConnectionSettingsString = connection.ConnectionName;
         }
 
         private async Task SaveAllConnectionsAsync()

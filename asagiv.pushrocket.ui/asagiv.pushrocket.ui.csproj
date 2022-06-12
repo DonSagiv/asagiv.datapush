@@ -50,7 +50,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="asagiv.common" Version="0.0.11" />
+	  <PackageReference Include="asagiv.common" Version="0.0.12" />
 	  <PackageReference Include="MudBlazor" Version="6.0.10" />
 	  <PackageReference Include="ReactiveUI" Version="18.1.8" />
 	  <PackageReference Include="ReactiveUI.Blazor" Version="18.1.8" />

@@ -8,7 +8,7 @@ namespace asagiv.pushrocket.common.Models
     public class ClientConnectionSettings : INotifyPropertyChanged, IClientConnectionSettings
     {
         #region Fields
-        private uint _id;
+        private uint? _id;
         private string _connectionName;
         private string _connectionString;
         private string _nodeName;
@@ -21,7 +21,7 @@ namespace asagiv.pushrocket.common.Models
 
         #region Properties
         [PrimaryKey, AutoIncrement]
-        public uint Id
+        public uint? Id
         {
             get { return _id; }
             set { _id = value; RaisePropertyChanged(nameof(Id)); }

@@ -1,5 +1,6 @@
 ﻿using Android.App;
 using Android.Runtime;
+using Serilog;
 
 namespace asagiv.pushrocket.ui
 {
@@ -12,6 +13,13 @@ namespace asagiv.pushrocket.ui
         {
         }
 
-        protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+        protected override MauiApp CreateMauiApp()
+        {
+            var app = MauiProgram.CreateMauiApp();
+
+            MainActivity.Logger = app.Services.GetService<ILogger>();
+
+            return app;
+        }
     }
 }
