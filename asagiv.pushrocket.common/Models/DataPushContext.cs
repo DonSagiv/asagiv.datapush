@@ -60,6 +60,7 @@ namespace asagiv.pushrocket.common.Models
             DestinationNode = destinationNode;
             Name = name;
             Payload = payload;
+            Status = DeliveryStatus.Pending;
 
             _client = client;
             _logger = logger;

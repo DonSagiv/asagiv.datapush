@@ -51,6 +51,9 @@
 
                     @switch (context.Status)
                     {
+                        case DeliveryStatus.Pending:
+                            <MudIcon Icon="@Icons.Material.Filled.HourglassEmpty" Color="Color.Primary" />
+                            break;
                         case DeliveryStatus.InProgress:
                             <MudProgressCircular Max="@context.TotalNumberOfBlocks"
                                      Style="height:20px;width:20px;"
@@ -76,6 +79,9 @@
         </MudPaper>
     }
 
+</div>
+
+<div style="height:100px">
 </div>
 
 @code

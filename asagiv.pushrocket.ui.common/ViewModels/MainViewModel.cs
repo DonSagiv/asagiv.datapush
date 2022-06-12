@@ -232,14 +232,16 @@ namespace asagiv.pushrocket.ui.common.ViewModels
                     return;
                 }
 
-                var contextsToAdd = fileResultList
-                    .Select(x => _grpcClient.CreatePushFileContextAsync(SelectedDestinationNode, x.FileName, x.OpenReadAsync()))
-                    .ToAsync();
+                var contextsToAddTasks = fileResultList
+                    .Select(x => _grpcClient.CreatePushFileContextAsync(SelectedDestinationNode, x.FileName, x.OpenReadAsync()));
 
-                await foreach (var context in contextsToAdd)
+                var contextsToAdd = await Task.WhenAll(contextsToAddTasks);
+
+                PushContexts.AddRange(contextsToAdd);
+
+                // Start with the last file.
+                foreach (var context in contextsToAdd.Reverse())
                 {
-                    PushContexts.Add(context);
-
                     await context.PushDataAsync();
                 }
             }
