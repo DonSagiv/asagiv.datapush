@@ -15,11 +15,7 @@ namespace asagiv.pushrocket.ui
 
         protected override MauiApp CreateMauiApp()
         {
-            var app = MauiProgram.CreateMauiApp();
-
-            MainActivity.Logger = app.Services.GetService<ILogger>();
-
-            return app;
+            return MauiProgram.CreateMauiApp();
         }
     }
 }

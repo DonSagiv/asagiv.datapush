@@ -2,7 +2,8 @@
 
 namespace asagiv.pushrocket.ui.common.Interfaces
 {
-    public interface IPlatformSpecificData
+    public interface IPlatformServices
     {
+        void StartPullBackgroundService();
     }
 }

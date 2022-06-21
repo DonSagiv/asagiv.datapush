@@ -2,6 +2,7 @@
 using Android.Content;
 using Android.Content.PM;
 using Android.OS;
+using asagiv.pushrocket.ui.common.Utilities;
 using Serilog;
 
 namespace asagiv.pushrocket.ui
@@ -14,7 +15,16 @@ namespace asagiv.pushrocket.ui
     public class MainActivity : MauiAppCompatActivity
     {
         #region Fields
-        public static ILogger Logger;
+        private readonly ILogger _logger;
+        #endregion
+
+        #region Constructor
+        public MainActivity()
+        {
+            _logger = MauiAppServices.Instance.GetService<ILogger>();
+
+            _logger?.Information("Android MainActivity Instantiated.");
+        }
         #endregion
 
         #region Methods
@@ -22,7 +32,7 @@ namespace asagiv.pushrocket.ui
         {
             base.OnCreate(savedInstanceState);
 
-            Logger?.Information("Android App OnCreate");
+            _logger?.Information("Android App OnCreate");
 
             // Do nothing if no intents found.
             if (Intent == null)
@@ -32,17 +42,17 @@ namespace asagiv.pushrocket.ui
 
             if (Intent.Action == Intent.ActionSend || Intent.Action == Intent.ActionSendMultiple)
             {
-                Logger?.Information($"Found Intent Action: {Intent.Action}");
+                _logger?.Information($"Found Intent Action: {Intent.Action}");
             }
         }
 
         protected override void OnNewIntent(Intent intent)
         {
-            Logger?.Information("Android App On New Intent");
+            _logger?.Information("Android App On New Intent");
 
             if (intent.Action == Intent.ActionSend || intent.Action == Intent.ActionSendMultiple)
             {
-                Logger?.Information($"Found Intent Action: {Intent.Action}");
+                _logger?.Information($"Found Intent Action: {Intent.Action}");
             }
         }
         #endregion
