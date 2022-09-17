@@ -26,15 +26,19 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">23.0</SupportedOSPlatformVersion>
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
-		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</SupportedOSPlatformVersion>
+		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.19041.0</TargetPlatformMinVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
+		<DefaultLanguage>en</DefaultLanguage>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<NeutralLanguage>en</NeutralLanguage>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="$(TargetFramework.Contains('-windows')) and '$(Configuration)' == 'Release'">
 		<GenerateAppxPackageOnBuild>true</GenerateAppxPackageOnBuild>
 		<AppxPackageSigningEnabled>true</AppxPackageSigningEnabled>
 		<PackageCertificateThumbprint>34954C0BAE72284A40353096AE93E22E9BC0F08C</PackageCertificateThumbprint>
+		<CreateDesktopShortcut>true</CreateDesktopShortcut>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -56,20 +60,26 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="asagiv.common" Version="0.0.12" />
-	  <PackageReference Include="MudBlazor" Version="6.0.10" />
-	  <PackageReference Include="ReactiveUI" Version="18.1.8" />
-	  <PackageReference Include="ReactiveUI.Blazor" Version="18.1.8" />
-	  <PackageReference Include="ReactiveUI.Maui" Version="18.1.8" />
+	  <PackageReference Include="asagiv.common" Version="0.0.13" />
+	  <PackageReference Include="MudBlazor" Version="6.0.15" />
+	  <PackageReference Include="ReactiveUI" Version="18.3.1" />
+	  <PackageReference Include="ReactiveUI.Blazor" Version="18.3.1" />
+	  <PackageReference Include="ReactiveUI.Maui" Version="18.3.1" />
 	  <PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
-	  <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.0" />
-	  <PackageReference Include="SQLitePCLRaw.core" Version="2.1.0" />
-	  <PackageReference Include="SQLitePCLRaw.provider.dynamic_cdecl" Version="2.1.0" />
+	  <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.1" />
+	  <PackageReference Include="SQLitePCLRaw.core" Version="2.1.1" />
+	  <PackageReference Include="SQLitePCLRaw.provider.dynamic_cdecl" Version="2.1.1" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\asagiv.pushrocket.common\asagiv.pushrocket.common.csproj" />
 	  <ProjectReference Include="..\asagiv.pushrocket.ui.common\asagiv.pushrocket.ui.common.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Update="Platforms\Windows\appsettings.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	</ItemGroup>
 
 </Project>
