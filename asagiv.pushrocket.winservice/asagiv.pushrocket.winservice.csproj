@@ -1,17 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<SelfContained>True</SelfContained>
+		<RuntimeIdentifier>win10-x64</RuntimeIdentifier>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="asagiv.common" Version="0.0.13" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="6.0.0" />
-    <PackageReference Include="Serilog" Version="2.12.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="asagiv.common" Version="0.0.13" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="6.0.0" />
+		<PackageReference Include="Serilog" Version="2.12.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\asagiv.pushrocket.common\asagiv.pushrocket.common.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\asagiv.pushrocket.common\asagiv.pushrocket.common.csproj" />
+	</ItemGroup>
 </Project>
