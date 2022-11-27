@@ -19,13 +19,13 @@
 
 	<ItemGroup>
 	  <PackageReference Include="asagiv.common" Version="0.0.13" />
-	  <PackageReference Include="Grpc.Net.Client" Version="2.48.0" />
+	  <PackageReference Include="Grpc.Net.Client" Version="2.49.0" />
 	  <PackageReference Include="ReactiveUI.Blazor" Version="18.3.1" />
 	  <PackageReference Include="ReactiveUI.Maui" Version="18.3.1" />
 	  <PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
-	  <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.1" />
-	  <PackageReference Include="SQLitePCLRaw.core" Version="2.1.1" />
-	  <PackageReference Include="SQLitePCLRaw.provider.dynamic_cdecl" Version="2.1.1" />
+	  <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.2" />
+	  <PackageReference Include="SQLitePCLRaw.core" Version="2.1.2" />
+	  <PackageReference Include="SQLitePCLRaw.provider.dynamic_cdecl" Version="2.1.2" />
 	</ItemGroup>
 
 	<ItemGroup>
