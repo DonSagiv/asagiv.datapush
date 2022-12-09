@@ -8,10 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="asagiv.common" Version="0.0.13" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\asagiv.pushrocket.common\asagiv.pushrocket.common.csproj" />
     <ProjectReference Include="..\asagiv.pushrocket.grpcserver\asagiv.pushrocket.grpcserver.csproj" />
     <ProjectReference Include="..\asagiv.pushrocket.server.common\asagiv.pushrocket.server.common.csproj" />

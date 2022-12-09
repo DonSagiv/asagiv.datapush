@@ -1,5 +1,6 @@
-﻿using asagiv.pushrocket.common.Interfaces;
-using asagiv.common.Extensions;
+﻿using asagiv.common;
+using asagiv.common.core.Extensions;
+using asagiv.pushrocket.common.Interfaces;
 using Google.Protobuf;
 using Grpc.Core;
 using Serilog;
@@ -12,7 +13,6 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
-using asagiv.common;
 
 namespace asagiv.pushrocket.common.Models
 {
@@ -31,9 +31,10 @@ namespace asagiv.pushrocket.common.Models
         private readonly DataPush.DataPushClient _client;
         private readonly Subject<Unit> _onDataPushSubject = new();
         private readonly Subject<int> _onPushResponseReceived = new();
-        private IDisposable _pushDataDisposable;
         private DeliveryStatus _status;
         private int _numberOfBlocksPushed;
+        
+        private IDisposable _pushDataDisposable;
         #endregion
 
         #region Properties
