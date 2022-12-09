@@ -88,8 +88,7 @@
 {
     protected override async Task OnInitializedAsync()
     {
-        ViewModel.ErrorObservable
-            .Subscribe(ShowErrorNotifier);
+        ViewModel.ErrorObservable.Subscribe(ShowErrorNotifier);
 
         ViewModel.PropertyChanged += async (s, e) => await InvokeAsync(() => this.StateHasChanged());
 

@@ -25,6 +25,7 @@ namespace asagiv.pushrocket.ui.common.ViewModels
         private string _selectedDestinationNode;
         private string _selectedConnectionSettingString;
         private ClientConnectionSettings _selectedConnectionSetting;
+        private IClientSettingsModel _clientSettingsModel;
         #endregion
 
         #region Properties
@@ -154,31 +155,13 @@ namespace asagiv.pushrocket.ui.common.ViewModels
 
             _waitIndicator.ShowWaitIndicator();
 
-            _logger.Information("Appempting to connect to {ConnectionString}", connectionSettings.ConnectionString);
+            _clientSettingsModel = new ClientSettingsModel(_logger);
 
             try
             {
-                var channel = GrpcChannel.ForAddress(connectionSettings.ConnectionString);
+                var destinationNodes = await _clientSettingsModel.ConnectToServerAsync();
 
-                var timeoutTask = Task.Delay(10000);
-                var connectTask = channel.ConnectAsync();
-
-                await Task.WhenAny(timeoutTask, connectTask);
-
-                if (!connectTask.IsCompletedSuccessfully)
-                {
-                    throw new TimeoutException($"Connection to {connectionSettings.ConnectionString} timed out.");
-                }
-
-                _grpcClient = new GrpcClient(connectionSettings, channel, "Test");
-
-                var pullNodesToAdd = await _grpcClient.RegisterNodeAsync(false);
-
-                DestinationNodes.Clear();
-
-                DestinationNodes.AddRange(pullNodesToAdd);
-
-                _logger.Information("Successfully connected to {ConnectionString}", connectionSettings.ConnectionString);
+                DestinationNodes.AddRange(destinationNodes);
 
                 var previousDestinationNode = Preferences.Get("LastDestinationNode", string.Empty);
 

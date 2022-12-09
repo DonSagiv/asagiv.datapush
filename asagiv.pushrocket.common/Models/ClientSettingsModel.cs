@@ -64,6 +64,8 @@ namespace asagiv.pushrocket.common.Models
                 // Add the pull nodes to the list.
                 pullNodes.AddRange(pullNodesToAdd);
 
+                _logger.Information("Successfully connected to {0}", ConnectionSettings.ConnectionString);
+
                 return pullNodes;
             }
             catch(Exception ex)
