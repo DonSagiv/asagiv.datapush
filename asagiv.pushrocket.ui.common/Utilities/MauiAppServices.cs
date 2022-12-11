@@ -9,10 +9,6 @@ namespace asagiv.pushrocket.ui.common.Utilities
         public static MauiAppServices Instance => _lazyInstance.Value;
         #endregion
 
-        #region Fields
-        private readonly ILogger _logger;
-        #endregion
-
         #region Properties
         public IServiceProvider ServiceProvider { get; private set; }
         #endregion

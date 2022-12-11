@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reactive;
 using System.Threading.Tasks;
 
 namespace asagiv.pushrocket.common.Interfaces
@@ -10,7 +11,7 @@ namespace asagiv.pushrocket.common.Interfaces
         #endregion
 
         #region Methods
-        Task OnDataRetrievedAsync(IResponseStreamContext<DataPullResponse> responseStreamContext);
+        Task<Unit> OnDataRetrievedAsync(IResponseStreamContext<DataPullResponse> responseStreamContext);
         #endregion
     }
 }

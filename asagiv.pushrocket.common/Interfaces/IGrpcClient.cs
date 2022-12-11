@@ -10,7 +10,6 @@ namespace asagiv.pushrocket.common.Interfaces
     {
         #region Delegates
         event EventHandler Disposed;
-        event EventHandler<IResponseStreamContext<DataPullResponse>> DataRetrieved;
         #endregion
 
         #region Properties
@@ -18,6 +17,7 @@ namespace asagiv.pushrocket.common.Interfaces
         IList<IDataPullSubscriber> PullSubscribers { get; }
         string DeviceId { get; set; }
         bool IsDisposed { get; }
+        IObservable<IResponseStreamContext<DataPullResponse>> DataRetrievedObservable { get; }
         #endregion
 
         #region Methods

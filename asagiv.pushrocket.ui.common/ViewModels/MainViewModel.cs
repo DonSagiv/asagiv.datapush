@@ -3,7 +3,6 @@ using asagiv.pushrocket.common.Interfaces;
 using asagiv.pushrocket.common.Models;
 using asagiv.pushrocket.ui.common.Database;
 using asagiv.pushrocket.ui.common.Utilities;
-using Grpc.Net.Client;
 using ReactiveUI;
 using Serilog;
 using System.Collections.ObjectModel;
@@ -19,13 +18,12 @@ namespace asagiv.pushrocket.ui.common.ViewModels
         private readonly ILogger _logger;
         private readonly WaitIndicatorService _waitIndicator;
         private readonly PushRocketDatabase _pushRocketDatabase;
-        private readonly Subject<string> _errorSubject = new();
+        private readonly Subject<string> _errorSubject = new Subject<string>();
+        private readonly IClientSettingsModel _clientSettingsModel;
         private bool _isConnected;
-        private IGrpcClient _grpcClient;
         private string _selectedDestinationNode;
         private string _selectedConnectionSettingString;
         private ClientConnectionSettings _selectedConnectionSetting;
-        private IClientSettingsModel _clientSettingsModel;
         #endregion
 
         #region Properties
@@ -52,7 +50,7 @@ namespace asagiv.pushrocket.ui.common.ViewModels
             get => _selectedDestinationNode;
             set => this.RaiseAndSetIfChanged(ref _selectedDestinationNode, value);
         }
-        public IObservable<string> ErrorObservable => _errorSubject?.AsObservable();
+        public IObservable<string> ErrorObservable => _errorSubject.AsObservable();
         #endregion
 
         #region Commands
@@ -60,7 +58,7 @@ namespace asagiv.pushrocket.ui.common.ViewModels
         #endregion
 
         #region Constructor
-        public MainViewModel(WaitIndicatorService waitIndicator, PushRocketDatabase database, ILogger logger)
+        public MainViewModel(WaitIndicatorService waitIndicator, PushRocketDatabase database, ILogger logger, IClientSettingsModel clientSettingsModel)
         {
             _pushRocketDatabase = database;
 
@@ -70,13 +68,13 @@ namespace asagiv.pushrocket.ui.common.ViewModels
 
             _waitIndicator = waitIndicator;
 
-            ConnectionSettingsList = new ObservableCollection<ClientConnectionSettings>();
-            DestinationNodes = new ObservableCollection<string>();
-            PushContexts = new ObservableCollection<IDataPushContext>();
-
-            PushFilesCommand = ReactiveCommand.CreateFromTask(PushFilesAsync);
+            _clientSettingsModel = clientSettingsModel;
 
             ConnectionSettingsList = new();
+            DestinationNodes = new();
+            PushContexts = new();
+
+            PushFilesCommand = ReactiveCommand.CreateFromTask(PushFilesAsync);
 
             ConnectionSettingsList.CollectionChanged += (s, e) => this.RaisePropertyChanged();
 
@@ -97,6 +95,7 @@ namespace asagiv.pushrocket.ui.common.ViewModels
         #region Methods
         public async Task InitializeAsync()
         {
+            // Connect to the SqlLite database.
             await _pushRocketDatabase.ConnectAsync();
 
             if (!_pushRocketDatabase.IsConnected)
@@ -106,12 +105,14 @@ namespace asagiv.pushrocket.ui.common.ViewModels
 
             ConnectionSettingsList.Clear();
 
+            // Get all the connection settings from the SqlLite database.
             var connectionSettingsToAdd = await _pushRocketDatabase.GetAllConnectionSettingsAsync();
 
             ConnectionSettingsList.AddRange(connectionSettingsToAdd);
 
             try
             {
+                // Get the last-used connection setting.
                 var lastConnectionSettingIdString = Preferences.Get("LastConnectedSettingsId", String.Empty);
 
                 if(!uint.TryParse(lastConnectionSettingIdString, out var lastConnectionSettingId))
@@ -148,6 +149,7 @@ namespace asagiv.pushrocket.ui.common.ViewModels
 
         private async Task<ClientConnectionSettings> ConnectAsync(ClientConnectionSettings connectionSettings)
         {
+            // If no connection settings are selected, do nothing.
             if(connectionSettings == null)
             {
                 return null;
@@ -155,14 +157,18 @@ namespace asagiv.pushrocket.ui.common.ViewModels
 
             _waitIndicator.ShowWaitIndicator();
 
-            _clientSettingsModel = new ClientSettingsModel(_logger);
+            // Create a new client settings model w/ the connection settings.
+            _clientSettingsModel.ConnectionSettings = _selectedConnectionSetting;
 
             try
             {
+                // Attempt to connect to the server, get all destination nodes.
                 var destinationNodes = await _clientSettingsModel.ConnectToServerAsync();
 
+                // Add the destination nodes to the list.
                 DestinationNodes.AddRange(destinationNodes);
 
+                // Get the last-used destination node, set it as the current destination node.
                 var previousDestinationNode = Preferences.Get("LastDestinationNode", string.Empty);
 
                 SelectedDestinationNode = DestinationNodes.FirstOrDefault(x => x == previousDestinationNode);
@@ -217,6 +223,7 @@ namespace asagiv.pushrocket.ui.common.ViewModels
         {
             try
             {
+                // Use the file picker to browser for the files to transfer.
                 var pickOptions = new PickOptions();
 
                 var fileResultList = await FilePicker.Default.PickMultipleAsync(pickOptions);
@@ -226,14 +233,15 @@ namespace asagiv.pushrocket.ui.common.ViewModels
                     return;
                 }
 
+                // Create a context for pushing the each selected file.
                 var contextsToAddTasks = fileResultList
-                    .Select(x => _grpcClient.CreatePushFileContextAsync(SelectedDestinationNode, x.FileName, x.OpenReadAsync()));
+                    .Select(x => _clientSettingsModel.Client.CreatePushFileContextAsync(SelectedDestinationNode, x.FileName, x.OpenReadAsync()));
 
                 var contextsToAdd = await Task.WhenAll(contextsToAddTasks);
 
                 PushContexts.AddRange(contextsToAdd);
 
-                // Start with the last file.
+                // Start with the last selected file so that it appears in the correct order in the UI.
                 foreach (var context in contextsToAdd.Reverse())
                 {
                     await context.PushDataAsync();

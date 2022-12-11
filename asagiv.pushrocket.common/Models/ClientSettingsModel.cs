@@ -1,15 +1,18 @@
 ﻿using asagiv.pushrocket.common.Interfaces;
 using asagiv.pushrocket.common.Utilities;
+using asagiv.common;
 using Grpc.Net.Client;
 using ReactiveUI;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
+using System.Linq.Expressions;
 
 namespace asagiv.pushrocket.common.Models
 {
-    public class ClientSettingsModel : ReactiveObject, IClientSettingsModel
+    public class ClientSettingsModel : INotifyPropertyChanged, IClientSettingsModel
     {
         #region Fields
         protected readonly ILogger _logger;
@@ -17,11 +20,15 @@ namespace asagiv.pushrocket.common.Models
         private IClientConnectionSettings _connectionSettings;
         #endregion
 
+        #region Delegates
+        public event PropertyChangedEventHandler PropertyChanged;
+        #endregion
+
         #region Properties
         public IClientConnectionSettings ConnectionSettings
         {
             get => _connectionSettings;
-            set => this.RaiseAndSetIfChanged(ref _connectionSettings, value);
+            set => this.RaiseAndSetIfChanged(ref _connectionSettings, value, OnConnectionSettingsChanged);
         }
         public string DestinationNode
         {
@@ -54,12 +61,17 @@ namespace asagiv.pushrocket.common.Models
 
             try
             {
+                // Create a channel for the gRPC address
                 var channel = GrpcChannel.ForAddress(ConnectionSettings.ConnectionString);
 
+                // Create a new client w/ the channel.
                 Client = new GrpcClient(ConnectionSettings, channel, GrpcClientFactory.GetDeviceId(), _logger);
 
-                // Register the current node and get the available pull nodes.
-                var pullNodesToAdd = await Client.RegisterNodeAsync(false);
+                // Create a subscriber for pulling data.
+                await Client.CreatePullSubscriberAsync();
+
+                // Register the current node and get the available pull nodes (including this one).
+                var pullNodesToAdd = await Client.RegisterNodeAsync(true);
 
                 // Add the pull nodes to the list.
                 pullNodes.AddRange(pullNodesToAdd);
@@ -68,7 +80,7 @@ namespace asagiv.pushrocket.common.Models
 
                 return pullNodes;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.Error(ex, "Server Connection Error");
 
@@ -86,10 +98,22 @@ namespace asagiv.pushrocket.common.Models
             return _connectionSettings != null;
         }
 
+        private void OnConnectionSettingsChanged(IClientConnectionSettings _)
+        {
+            // Clear the client and destination node (i.e. Disconnect).
+            Client = null;
+            DestinationNode = null;
+        }
+
         public void Dispose()
         {
-            GC.SuppressFinalize(this);
+            Dispose(true);
 
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool isDisposing)
+        {
             Client.Dispose();
         }
         #endregion

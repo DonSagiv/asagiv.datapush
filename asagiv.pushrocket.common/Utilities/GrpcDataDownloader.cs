@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Serilog;
 using System;
 using System.IO;
+using System.Reactive;
 using System.Threading.Tasks;
 
 namespace asagiv.pushrocket.common.Utilities
@@ -24,6 +25,7 @@ namespace asagiv.pushrocket.common.Utilities
         {
             _logger = logger;
 
+            // Get the save directory from the configuration file.
             _saveDirectory = configuration.GetSection("DownloadPath")?.Value;
 
             if (_saveDirectory == null)
@@ -45,7 +47,8 @@ namespace asagiv.pushrocket.common.Utilities
         }
         #endregion
 
-        public async Task OnDataRetrievedAsync(IResponseStreamContext<DataPullResponse> responseStreamContext)
+        #region Methods
+        public async Task<Unit> OnDataRetrievedAsync(IResponseStreamContext<DataPullResponse> responseStreamContext)
         {
             var tempFilePath = Path.Combine(_saveDirectory, $"{responseStreamContext.ResponseData.SourceRequestId}.tmp");
 
@@ -84,6 +87,8 @@ namespace asagiv.pushrocket.common.Utilities
             };
 
             AcknowledgeDelivery?.Invoke(this, acknowledgePullDataRequest);
+
+            return Unit.Default;
         }
 
         private async Task<bool> DownloadStreamToFileAsync(IResponseStreamContext<DataPullResponse> responseStreamContext, string tempFilePath)
@@ -137,5 +142,6 @@ namespace asagiv.pushrocket.common.Utilities
 
             _logger?.Information($"Renamed {tempFilePath} Bytes to {currentDownloadFilePath}.");
         }
+        #endregion
     }
 }
