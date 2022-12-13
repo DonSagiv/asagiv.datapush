@@ -73,20 +73,22 @@
 
     <MudDivider />
 
-    <MudTextField T="string" InputMode="InputMode.text"
-                  Variant="Variant.Outlined"
-                  Class="m-3"
-                  Label="Pull Connection Name" />
+    <div class="d-flex">
 
-    <MudTextField T="string" InputMode="InputMode.url"
-                  Variant="Variant.Outlined"
-                  Class="m-3"
-                  Label="Pull Connection URL" />
+        <MudButton Class="m-3" Color="Color.Primary"
+                   FullWidth="true"
+                   Variant="Variant.Filled"
+                   OnClick="() => ViewModel.NewConnectionSettingsCommand.Execute(null)">
+            Set Download Directory
+        </MudButton>
 
-    <MudTextField T="string" InputMode="InputMode.url"
-                  Variant="Variant.Outlined"
-                  Class="m-3"
-                  Label="Download Directory" />
+    </div>
+
+    <MudText Class="m-3"
+             Color="Color.Primary"
+             Align="Align.Center">
+        This is my directory
+    </MudText>
 
 </div>
 
