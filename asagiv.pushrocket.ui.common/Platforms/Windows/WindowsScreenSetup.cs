@@ -12,7 +12,6 @@ namespace asagiv.pushrocket.ui.common
         {
             WindowHandler.Mapper.AppendToMapping(nameof(IWindow), (handler, _) =>
             {
-                var mauiWindow = handler.VirtualView;
                 var nativeWindow = handler.PlatformView;
                 nativeWindow.Activate();
                 IntPtr windowHandle = WinRT.Interop.WindowNative.GetWindowHandle(nativeWindow);

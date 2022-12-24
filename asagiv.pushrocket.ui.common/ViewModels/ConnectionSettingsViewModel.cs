@@ -150,7 +150,7 @@ namespace asagiv.pushrocket.ui.common.ViewModels
             }
             else
             {
-                SelectedConnectionSettingsString = ConnectionSettingsList.FirstOrDefault().ConnectionName;
+                SelectedConnectionSettingsString = ConnectionSettingsList.FirstOrDefault()?.ConnectionName;
             }
         }
         #endregion

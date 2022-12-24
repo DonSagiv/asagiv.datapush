@@ -2,17 +2,14 @@
 using asagiv.pushrocket.common.Utilities;
 using asagiv.common;
 using Grpc.Net.Client;
-using ReactiveUI;
 using Serilog;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Threading.Tasks;
-using System.Linq.Expressions;
 
 namespace asagiv.pushrocket.common.Models
 {
-    public class ClientSettingsModel : INotifyPropertyChanged, IClientSettingsModel
+    public class ClientSettingsModel : PropertyChangedBase, IClientSettingsModel
     {
         #region Fields
         protected readonly ILogger _logger;
@@ -20,20 +17,16 @@ namespace asagiv.pushrocket.common.Models
         private IClientConnectionSettings _connectionSettings;
         #endregion
 
-        #region Delegates
-        public event PropertyChangedEventHandler PropertyChanged;
-        #endregion
-
         #region Properties
         public IClientConnectionSettings ConnectionSettings
         {
             get => _connectionSettings;
-            set => this.RaiseAndSetIfChanged(ref _connectionSettings, value, OnConnectionSettingsChanged);
+            set => RaiseAndSetIfChanged(ref _connectionSettings, value, OnConnectionSettingsChanged);
         }
         public string DestinationNode
         {
             get => _destinationNode;
-            set => this.RaiseAndSetIfChanged(ref _destinationNode, value);
+            set => RaiseAndSetIfChanged(ref _destinationNode, value);
         }
         public IGrpcClient Client { get; protected set; }
         #endregion

@@ -85,7 +85,7 @@ namespace asagiv.pushrocket.server.common.Models
             _repository.Remove(routeRequest);
         }
 
-        public IRouteRequest ConfirmRequestDelivery(string destinationNode, string errorMessage)
+        public IRouteRequest ConfirmRequestDelivery(string destinationNode, string errorMessage = "")
         {
             var routeRequest = _repository
                 .Where(x => x.IsRouteCompleted && !x.IsDeliveryAcknowledged)

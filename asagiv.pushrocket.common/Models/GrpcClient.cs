@@ -20,7 +20,7 @@ namespace asagiv.pushrocket.common.Models
         #region Fields
         private readonly ILogger _logger;
         private readonly IClientConnectionSettings _clientConnectionSettings;
-        private readonly Subject<IResponseStreamContext<DataPullResponse>> _dataRetrievedSubject;
+        private readonly Subject<IResponseStreamContext<DataPullResponse>> _dataRetrievedSubject = new();
         #endregion
 
         #region Delegates
@@ -118,11 +118,11 @@ namespace asagiv.pushrocket.common.Models
             return await Client.RegisterNodeAsync(nodeRequest);
         }
 
-        public async Task<IDataPushContext> CreatePushFileContextAsync(string destinationNode, string fileName, Task<Stream> streamTask)
+        public async Task<IDataPushContext> CreatePushFileContextAsync(string destinationNode, string filePath, Task<Stream> stream)
         {
-            var stream = await streamTask;
+            var streamResult = await stream;
 
-            return CreatePushDataContext(destinationNode, fileName, stream);
+            return CreatePushDataContext(destinationNode, filePath, streamResult);
         }
 
         public IDataPushContext CreatePushDataContext(string destinationNode, string name, Stream stream)

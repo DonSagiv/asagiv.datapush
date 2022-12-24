@@ -12,7 +12,7 @@ namespace asagiv.pushrocket.common.Models
     {
         #region Fields
         private readonly IDisposable _pullSubscribe;
-        private readonly Subject<IResponseStreamContext<DataPullResponse>> _dataRetrievedSubject;
+        private readonly Subject<IResponseStreamContext<DataPullResponse>> _dataRetrievedSubject = new();
         #endregion
 
         #region Properties

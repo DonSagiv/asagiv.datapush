@@ -1,5 +1,6 @@
 ﻿@page "/ConnectionSettings"
 @using asagiv.pushrocket.common.Models
+@using asagiv.pushrocket.common.Utilities;
 @using asagiv.pushrocket.ui.common.ViewModels
 @inject ConnectionSettingsViewModel ViewModel
 
@@ -78,7 +79,7 @@
         <MudButton Class="m-3" Color="Color.Primary"
                    FullWidth="true"
                    Variant="Variant.Filled"
-                   OnClick="() => ViewModel.NewConnectionSettingsCommand.Execute(null)">
+                   OnClick="() => SetDownloadDirectoryAsync()">
             Set Download Directory
         </MudButton>
 
@@ -102,5 +103,21 @@
         await ViewModel.InitializeAsync();
 
         await base.OnInitializedAsync();
+    }
+
+    protected async Task SetDownloadDirectoryAsync()
+    {
+        try
+        {
+            await FileSystemExtensions.GetFileSystemAsync(FileSystem.Current.AppDataDirectory);
+        }
+        catch(UnauthorizedAccessException uae)
+        {
+            var a = 1;
+        }
+
+        // var subDirectories = Directory.EnumerateDirectories(root).ToList();
+
+        await Task.CompletedTask;
     }
 }

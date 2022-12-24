@@ -6,9 +6,7 @@ using asagiv.pushrocket.ui.common.Database;
 using asagiv.pushrocket.ui.common.Interfaces;
 using asagiv.pushrocket.ui.common.Utilities;
 using asagiv.pushrocket.ui.common.ViewModels;
-using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
-using Windows.ApplicationModel.Core;
 
 namespace asagiv.pushrocket.ui
 {
@@ -16,9 +14,8 @@ namespace asagiv.pushrocket.ui
     {
         public static MauiApp CreateMauiApp()
         {
-            
-
             var builder = MauiApp.CreateBuilder();
+
             builder.UseMauiApp<App>()
                 .ConfigureFonts(fonts => fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"));
 

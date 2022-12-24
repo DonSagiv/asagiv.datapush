@@ -7,7 +7,7 @@ namespace asagiv.pushrocket.ui.common.Database
     public class PushRocketDatabase
     {
         #region Fields
-        private readonly string _dbFileLocation;
+        private readonly string _dbFileLocation = Path.Combine(FileSystem.Current.AppDataDirectory, "Data");
         private readonly ILogger _logger;
         private SQLiteAsyncConnection _connection;
         #endregion
@@ -19,8 +19,6 @@ namespace asagiv.pushrocket.ui.common.Database
         #region Constructor
         public PushRocketDatabase(ILogger logger)
         {
-            _dbFileLocation = Path.Combine(FileSystem.Current.AppDataDirectory, "Data");
-
             if (!Directory.Exists(_dbFileLocation))
             {
                 Directory.CreateDirectory(_dbFileLocation);

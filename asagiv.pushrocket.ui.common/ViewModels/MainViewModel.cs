@@ -18,7 +18,7 @@ namespace asagiv.pushrocket.ui.common.ViewModels
         private readonly ILogger _logger;
         private readonly WaitIndicatorService _waitIndicator;
         private readonly PushRocketDatabase _pushRocketDatabase;
-        private readonly Subject<string> _errorSubject = new Subject<string>();
+        private readonly Subject<string> _errorSubject = new();
         private readonly IClientSettingsModel _clientSettingsModel;
         private bool _isConnected;
         private string _selectedDestinationNode;
