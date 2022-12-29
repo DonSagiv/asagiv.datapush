@@ -6,13 +6,15 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Reactive.Linq;
 
 namespace asagiv.pushrocket.common.Models
 {
     public class ClientSettingsModel : PropertyChangedBase, IClientSettingsModel
     {
         #region Fields
-        protected readonly ILogger _logger;
+        private readonly ILogger _logger;
+        private readonly IGrpcDataDownloader _dataDownloader;
         private string _destinationNode;
         private IClientConnectionSettings _connectionSettings;
         #endregion
@@ -32,9 +34,10 @@ namespace asagiv.pushrocket.common.Models
         #endregion
 
         #region Constructor
-        public ClientSettingsModel(ILogger logger)
+        public ClientSettingsModel(ILogger logger, IGrpcDataDownloader dataDownloader)
         {
             _logger = logger;
+            _dataDownloader = dataDownloader;
 
             _logger.Debug("Client settings model instantiated.");
         }
@@ -66,6 +69,12 @@ namespace asagiv.pushrocket.common.Models
                 // Register the current node and get the available pull nodes (including this one).
                 var pullNodesToAdd = await Client.RegisterNodeAsync(true);
 
+                // Subscribe the data pull observable to the downloader.
+                Client.DataRetrievedObservable
+                    .SelectMany(x => _dataDownloader.OnDataRetrievedAsync(x))
+                    .SelectMany(x => Client.AcknowledgeDeliveryAsync(x))
+                    .Subscribe();
+
                 // Add the pull nodes to the list.
                 pullNodes.AddRange(pullNodesToAdd);
 
@@ -80,6 +89,8 @@ namespace asagiv.pushrocket.common.Models
                 throw;
             }
         }
+
+        private void _dataDownloader_AcknowledgeDelivery(object sender, AcknowledgeDeliveryRequest e) => throw new NotImplementedException();
 
         protected virtual bool IsPullNodeSelected()
         {

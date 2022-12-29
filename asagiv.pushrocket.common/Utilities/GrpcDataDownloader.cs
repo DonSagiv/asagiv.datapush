@@ -1,10 +1,11 @@
 ﻿using asagiv.pushrocket.common.Interfaces;
 using Grpc.Core;
-using Microsoft.Extensions.Configuration;
 using Serilog;
 using System;
 using System.IO;
 using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
 
 namespace asagiv.pushrocket.common.Utilities
@@ -16,19 +17,15 @@ namespace asagiv.pushrocket.common.Utilities
         private readonly string _saveDirectory;
         #endregion
 
-        #region Delegates
-        public event EventHandler<AcknowledgeDeliveryRequest> AcknowledgeDelivery;
-        #endregion
-
         #region Constructor
-        public GrpcDataDownloader(ILogger logger, IConfiguration configuration)
+        public GrpcDataDownloader(ILogger logger, IPlatformServices platformServices)
         {
             _logger = logger;
 
             // Get the save directory from the configuration file.
-            _saveDirectory = configuration.GetSection("DownloadPath")?.Value;
+            _saveDirectory = platformServices.GetDownloadDirectory();
 
-            if (_saveDirectory == null)
+            if (string.IsNullOrWhiteSpace(_saveDirectory) || !Directory.Exists(_saveDirectory))
             {
                 _logger.Warning("Save Diretory Not Specified.");
             }
@@ -48,7 +45,7 @@ namespace asagiv.pushrocket.common.Utilities
         #endregion
 
         #region Methods
-        public async Task<Unit> OnDataRetrievedAsync(IResponseStreamContext<DataPullResponse> responseStreamContext)
+        public async Task<AcknowledgeDeliveryRequest> OnDataRetrievedAsync(IResponseStreamContext<DataPullResponse> responseStreamContext)
         {
             var tempFilePath = Path.Combine(_saveDirectory, $"{responseStreamContext.ResponseData.SourceRequestId}.tmp");
 
@@ -59,7 +56,7 @@ namespace asagiv.pushrocket.common.Utilities
 
             try
             {
-                if(await DownloadStreamToFileAsync(responseStreamContext, tempFilePath))
+                if (await DownloadStreamToFileAsync(responseStreamContext, tempFilePath))
                 {
                     UpdateFileName(responseStreamContext.ResponseData.Name, tempFilePath);
                 }
@@ -77,7 +74,7 @@ namespace asagiv.pushrocket.common.Utilities
 
             _logger.Information($"Sending Delivery Acknowledgement (Name: {responseStreamContext.ResponseData.Name}, Is Successful: {isDeliverySuccessful})");
 
-            var acknowledgePullDataRequest = new AcknowledgeDeliveryRequest
+            return new AcknowledgeDeliveryRequest
             {
                 RequestId = responseStreamContext.ResponseData.RequestId,
                 Name = responseStreamContext.ResponseData.Name,
@@ -85,10 +82,6 @@ namespace asagiv.pushrocket.common.Utilities
                 IsDeliverySuccessful = isDeliverySuccessful,
                 ErrorMessage = errorMessage
             };
-
-            AcknowledgeDelivery?.Invoke(this, acknowledgePullDataRequest);
-
-            return Unit.Default;
         }
 
         private async Task<bool> DownloadStreamToFileAsync(IResponseStreamContext<DataPullResponse> responseStreamContext, string tempFilePath)
@@ -96,11 +89,10 @@ namespace asagiv.pushrocket.common.Utilities
             var downloadComplete = false;
 
             using var fs = new FileStream(tempFilePath, FileMode.Append);
+
+            while (await responseStreamContext.ResponseStream.MoveNext())
             {
-                while (await responseStreamContext.ResponseStream.MoveNext())
-                {
-                    downloadComplete = await DownloadStreamBlockAsync(responseStreamContext, tempFilePath, fs);
-                }
+                downloadComplete = await DownloadStreamBlockAsync(responseStreamContext, tempFilePath, fs);
             }
 
             await fs.DisposeAsync();

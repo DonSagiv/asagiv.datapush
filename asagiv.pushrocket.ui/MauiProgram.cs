@@ -1,9 +1,9 @@
 ﻿using asagiv.common.Logging;
 using asagiv.pushrocket.common.Interfaces;
 using asagiv.pushrocket.common.Models;
+using asagiv.pushrocket.common.Utilities;
 using asagiv.pushrocket.ui.common;
 using asagiv.pushrocket.ui.common.Database;
-using asagiv.pushrocket.ui.common.Interfaces;
 using asagiv.pushrocket.ui.common.Utilities;
 using asagiv.pushrocket.ui.common.ViewModels;
 using MudBlazor.Services;
@@ -22,13 +22,14 @@ namespace asagiv.pushrocket.ui
             var appDataDirectory = FileSystem.Current.AppDataDirectory;
 
             builder.Services.UseSerilog(appDataDirectory);
-            builder.Services.AddSingleton<IPlatformServices, PlatformServices>();
             builder.Services.AddSingleton<IClientSettingsModel, ClientSettingsModel>();
             builder.Services.AddSingleton<PushRocketDatabase>();
             builder.Services.AddSingleton<WaitIndicatorService>();
             builder.Services.AddSingleton<DarkModeService>();
             builder.Services.AddSingleton<MainViewModel>();
             builder.Services.AddSingleton<ConnectionSettingsViewModel>();
+            builder.Services.AddSingleton<IPlatformServices, PlatformServices>();
+            builder.Services.AddSingleton<IGrpcDataDownloader, GrpcDataDownloader>();
 
             builder.Services.AddMauiBlazorWebView();
 #if DEBUG

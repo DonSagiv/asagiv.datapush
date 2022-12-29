@@ -74,17 +74,6 @@
 
     <MudDivider />
 
-    <div class="d-flex">
-
-        <MudButton Class="m-3" Color="Color.Primary"
-                   FullWidth="true"
-                   Variant="Variant.Filled"
-                   OnClick="() => SetDownloadDirectoryAsync()">
-            Set Download Directory
-        </MudButton>
-
-    </div>
-
     <MudText Class="m-3"
              Color="Color.Primary"
              Align="Align.Center">
@@ -107,17 +96,6 @@
 
     protected async Task SetDownloadDirectoryAsync()
     {
-        try
-        {
-            await FileSystemExtensions.GetFileSystemAsync(FileSystem.Current.AppDataDirectory);
-        }
-        catch(UnauthorizedAccessException uae)
-        {
-            var a = 1;
-        }
-
-        // var subDirectories = Directory.EnumerateDirectories(root).ToList();
-
         await Task.CompletedTask;
     }
 }

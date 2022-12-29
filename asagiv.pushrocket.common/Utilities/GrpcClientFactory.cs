@@ -24,7 +24,7 @@ namespace asagiv.pushrocket.common.Utilities
             var nodeName = configuration?.GetSection("ClientName")?.Value;
             var connectionString = configuration?.GetSection("GrpcServerAddress")?.Value;
 
-            var clientConnectionSettings = new Models.ClientConnectionSettings
+            var clientConnectionSettings = new ClientConnectionSettings
             {
                 ConnectionString = connectionString,
                 NodeName = nodeName,

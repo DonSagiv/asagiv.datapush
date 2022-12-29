@@ -7,10 +7,8 @@ namespace asagiv.pushrocket.common.Utilities
 {
     public static class FileSystemExtensions
     {
-        public static Task GetFileSystemAsync(string sampleDirectory)
+        public static Task GetFileSystemAsync()
         {
-            var root = FindWorkableRootDirectory(sampleDirectory);
-
             return Task.CompletedTask;
         }
 

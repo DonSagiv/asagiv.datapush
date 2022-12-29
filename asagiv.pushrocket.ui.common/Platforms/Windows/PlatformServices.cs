@@ -1,12 +1,12 @@
-﻿using asagiv.pushrocket.ui.common.Interfaces;
+﻿using asagiv.pushrocket.common.Interfaces;
 
 namespace asagiv.pushrocket.ui.common
 {
     public class PlatformServices : IPlatformServices
     {
-        public void StartPullBackgroundService()
+        public string GetDownloadDirectory()
         {
-            throw new NotImplementedException();
+            return Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         }
     }
 }

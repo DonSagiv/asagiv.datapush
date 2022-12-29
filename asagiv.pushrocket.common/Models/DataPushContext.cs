@@ -16,14 +16,10 @@ using System.Threading.Tasks;
 
 namespace asagiv.pushrocket.common.Models
 {
-    public class DataPushContext : INotifyPropertyChanged, IDataPushContext
+    public class DataPushContext : PropertyChangedBase, IDataPushContext
     {
         #region Statics
         public const int blockSize = 2500000;
-        #endregion
-
-        #region Delegates
-        public event PropertyChangedEventHandler PropertyChanged;
         #endregion
 
         #region Fields
@@ -47,13 +43,13 @@ namespace asagiv.pushrocket.common.Models
         public int NumberOfBlocksPushed
         {
             get => _numberOfBlocksPushed;
-            private set => this.RaiseAndSetIfChanged(ref _numberOfBlocksPushed, value);
+            private set => RaiseAndSetIfChanged(ref _numberOfBlocksPushed, value);
         }
         public int TotalNumberOfBlocks { get; private set; }
         public DeliveryStatus Status
         {
             get => _status;
-            private set => this.RaiseAndSetIfChanged(ref _status, value);
+            private set => RaiseAndSetIfChanged(ref _status, value);
         }
         public IObservable<int> OnPushResponseReceived => _onPushResponseReceived.AsObservable();
         #endregion
