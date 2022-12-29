@@ -3,9 +3,6 @@ using Grpc.Core;
 using Serilog;
 using System;
 using System.IO;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Threading.Tasks;
 
 namespace asagiv.pushrocket.common.Utilities
