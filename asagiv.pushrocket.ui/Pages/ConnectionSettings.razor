@@ -1,0 +1,101 @@
+﻿@page "/ConnectionSettings"
+@using asagiv.pushrocket.common.Models
+@using asagiv.pushrocket.common.Utilities;
+@using asagiv.pushrocket.ui.common.ViewModels
+@inject ConnectionSettingsViewModel ViewModel
+
+<div>
+
+    <MudSwitch Class="m-3" Label="Enable Dark Mode" Color="Color.Primary" @bind-Checked="ViewModel.IsDarkModeEnabled" />
+
+    <MudDivider />
+
+    <MudSelect Label="Connection" T="string"
+               Class="m-3"
+               Variant="Variant.Outlined"
+               @bind-Value="@ViewModel.SelectedConnectionSettingsString"
+               AnchorOrigin="Origin.BottomCenter">
+        @foreach (var connectionSetting in ViewModel.ConnectionSettingsList)
+        {
+            <MudSelectItem Value="@connectionSetting.ConnectionName">@connectionSetting.ConnectionName</MudSelectItem>
+        }
+    </MudSelect>
+
+    <div Class="d-flex justify-content-center">
+
+        <MudButton Class="m-3" Color="Color.Primary"
+                   FullWidth="true"
+                   Variant="Variant.Filled"
+                   OnClick="(() => ViewModel.NewConnectionSettingsCommand.Execute(null))">
+            Add
+        </MudButton>
+
+        <MudButton Class="m-3" Color="Color.Primary"
+                   FullWidth="true"
+                   Variant="Variant.Filled"
+                   OnClick="(() => ViewModel.SaveConnectionSettingsCommand.Execute(null))">
+            Save All
+        </MudButton>
+
+    </div>
+
+    @if (ViewModel.SelectedConnectionSettings != null)
+    {
+        <MudTextField T="string" InputMode="InputMode.text"
+                  Variant="Variant.Outlined"
+                  Class="m-3"
+                  Label="Connection Name"
+                  @bind-Value="@ViewModel.SelectedConnectionSettings.ConnectionName" />
+
+        <MudTextField T="string" InputMode="InputMode.url"
+                  Variant="Variant.Outlined"
+                  Class="m-3"
+                  Label="Connection URL"
+                  @bind-Value="@ViewModel.SelectedConnectionSettings.ConnectionString" />
+
+        <MudTextField T="string" InputMode="InputMode.text"
+                  Variant="Variant.Outlined"
+                  Class="m-3"
+                  Label="ConnectionNodeName"
+                  @bind-Value="@ViewModel.SelectedConnectionSettings.NodeName" />
+
+        <div class="d-flex">
+
+            <MudButton Color="Color.Primary"
+                   FullWidth="true"
+                   Class="m-3"
+                   Variant="Variant.Filled"
+                   OnClick="() => ViewModel.DeleteConnectionSettingsCommand.Execute(null)">
+                Delete
+            </MudButton>
+
+        </div>
+    }
+
+    <MudDivider />
+
+    <MudText Class="m-3"
+             Color="Color.Primary"
+             Align="Align.Center">
+        This is my directory
+    </MudText>
+
+</div>
+
+@code
+{
+    protected override async Task OnInitializedAsync()
+    {
+        ViewModel.PropertyChanged += async (s, e) => await InvokeAsync(() =>
+        this.StateHasChanged());
+
+        await ViewModel.InitializeAsync();
+
+        await base.OnInitializedAsync();
+    }
+
+    protected async Task SetDownloadDirectoryAsync()
+    {
+        await Task.CompletedTask;
+    }
+}

@@ -8,6 +8,17 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["asagiv.pushrocket.grpcserver/asagiv.pushrocket.grpcserver.csproj", "asagiv.pushrocket.grpcserver/"]
+
+# Use the nuget-template file to build the nuget.config.
+COPY ["asagiv.pushrocket.grpcserver/nuget-template.config", ""]
+
+ARG PAT_ARG
+RUN echo $PAT_ARG
+
+# Apply the Github PAT to the nuget-template.config file to create the nuget.config file.
+# This requires a PAT_ARG environment variable when calling docker build.
+RUN sed "s/pat_arg/${PAT_ARG}/g" ./nuget-template.config > ./nuget.config
+
 RUN dotnet restore "asagiv.pushrocket.grpcserver/asagiv.pushrocket.grpcserver.csproj"
 COPY . .
 WORKDIR "/src/asagiv.pushrocket.grpcserver"

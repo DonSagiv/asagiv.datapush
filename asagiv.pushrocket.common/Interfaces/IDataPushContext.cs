@@ -1,5 +1,6 @@
 ﻿using asagiv.pushrocket.common.Models;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace asagiv.pushrocket.common.Interfaces
@@ -11,7 +12,7 @@ namespace asagiv.pushrocket.common.Interfaces
         string SourceNode { get; }
         string DestinationNode { get; }
         string Name { get; }
-        byte[] Payload { get; }
+        Stream Payload { get; }
         string Description { get; }
         int NumberOfBlocksPushed { get; }
         int TotalNumberOfBlocks { get; }

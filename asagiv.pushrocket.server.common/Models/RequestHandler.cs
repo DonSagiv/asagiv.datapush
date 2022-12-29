@@ -83,10 +83,7 @@ namespace asagiv.pushrocket.server.common.Models
                     request = requestStream.Current;
 
                     // Add route request to repository if none available.
-                    if (routeRequest == null)
-                    {
-                        routeRequest = _routeRepository.AddRouteRequest(request, responseStream);
-                    }
+                    routeRequest ??= _routeRepository.AddRouteRequest(request, responseStream);
 
                     // Push Route Request Context.
                     _dataPushRequestReceived.OnNext(new RouteRequestContext(request, routeRequest, responseStream));

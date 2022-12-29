@@ -3,6 +3,7 @@ using Grpc.Core;
 using System;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
 
 namespace asagiv.pushrocket.common.Models
@@ -11,16 +12,14 @@ namespace asagiv.pushrocket.common.Models
     {
         #region Fields
         private readonly IDisposable _pullSubscribe;
-        #endregion
-
-        #region Delegages
-        public event EventHandler<IResponseStreamContext<DataPullResponse>> DataRetrieved;
+        private readonly Subject<IResponseStreamContext<DataPullResponse>> _dataRetrievedSubject = new();
         #endregion
 
         #region Properties
         public DataPush.DataPushClient Client { get; }
         public string DestinationNode { get; }
         public bool IsDisposed { get; private set; }
+        public IObservable<IResponseStreamContext<DataPullResponse>> DataRetrievedObservable => _dataRetrievedSubject.AsObservable();
         #endregion
 
         #region Constructor
@@ -30,17 +29,19 @@ namespace asagiv.pushrocket.common.Models
 
             DestinationNode = node;
 
+            // Check every second if there is data to be pulled.
             var pullObservable = Observable.Interval(TimeSpan.FromSeconds(1));
 
             _pullSubscribe = pullObservable
-                .ObserveOn(TaskPoolScheduler.Default)
-                .Subscribe(async _ => await PollDataAsync());
+                .SelectMany(x => PollDataAsync())
+                .Subscribe();
         }
         #endregion
 
         #region Methods
         private async Task<bool> PollDataAsync()
         {
+            // Generate the data pull request, send via gRPC to the server.
             var request = new DataPullRequest
             {
                 RequestId = Guid.NewGuid().ToString(),
@@ -49,11 +50,13 @@ namespace asagiv.pushrocket.common.Models
 
             var pullResponse = Client.PullData(request);
 
+            // Check if any data is to be pulled.
             if (await pullResponse.ResponseStream.MoveNext() && !string.IsNullOrEmpty(pullResponse.ResponseStream.Current.Name))
             {
+                // Create a context for pulling the data from the server.
                 var responseStreamContext = new ResponseStreamContext<DataPullResponse>(pullResponse.ResponseStream.Current, pullResponse.ResponseStream);
 
-                DataRetrieved?.Invoke(this, responseStreamContext);
+                _dataRetrievedSubject.OnNext(responseStreamContext);
 
                 return true;
             }

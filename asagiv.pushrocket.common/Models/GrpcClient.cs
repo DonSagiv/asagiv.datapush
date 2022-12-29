@@ -1,13 +1,13 @@
-﻿using asagiv.pushrocket.common;
-using asagiv.pushrocket.common.Interfaces;
-using asagiv.pushrocket.common.Models;
-using Grpc.Core;
+﻿using asagiv.pushrocket.common.Interfaces;
 using Grpc.Net.Client;
 using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
 
 namespace asagiv.pushrocket.common.Models
@@ -21,11 +21,11 @@ namespace asagiv.pushrocket.common.Models
         #region Fields
         private readonly ILogger _logger;
         private readonly IClientConnectionSettings _clientConnectionSettings;
+        private readonly Subject<IResponseStreamContext<DataPullResponse>> _dataRetrievedSubject = new();
         #endregion
 
         #region Delegates
         public event EventHandler Disposed;
-        public event EventHandler<IResponseStreamContext<DataPullResponse>> DataRetrieved;
         #endregion
 
         #region Properties
@@ -33,6 +33,7 @@ namespace asagiv.pushrocket.common.Models
         public IList<IDataPullSubscriber> PullSubscribers { get; }
         public string DeviceId { get; set; }
         public bool IsDisposed { get; private set; }
+        public IObservable<IResponseStreamContext<DataPullResponse>> DataRetrievedObservable => _dataRetrievedSubject.AsObservable();
         #endregion
 
         #region Constructor
@@ -63,21 +64,23 @@ namespace asagiv.pushrocket.common.Models
         #region Methods
         public Task CreatePullSubscriberAsync()
         {
+            // Check and see if pull subscriber for node exists.
             var subscriber = PullSubscribers
                 .FirstOrDefault(x => x.DestinationNode == _clientConnectionSettings.NodeName);
 
-            if (subscriber != null)
+            if (subscriber is not null)
             {
                 _logger?.Information($"Pull Subscriber for {subscriber.DestinationNode} Already Exists.");
 
                 return Task.CompletedTask;
             }
 
+            // Create a new pull subscriber.
             subscriber = new DataPullSubscriber(Client, _clientConnectionSettings.NodeName);
 
-            _logger?.Information($"Creating Pull Subscriber for {subscriber.DestinationNode}.");
+            subscriber.DataRetrievedObservable.Subscribe(_dataRetrievedSubject.OnNext);
 
-            subscriber.DataRetrieved += OnPullDataRetrieved;
+            _logger?.Information($"Creating Pull Subscriber for {subscriber.DestinationNode}.");
 
             PullSubscribers.Add(subscriber);
 
@@ -88,6 +91,7 @@ namespace asagiv.pushrocket.common.Models
         {
             _logger?.Information($"Creating Register Node Request for {DeviceId}. (Name: {_clientConnectionSettings.NodeName}, IsPullNode: {isPullNode})");
 
+            // Wait 5 seconds to establish connection, otherwise give up.
             var getPullNodeTask = GetPullNodeListAsync(isPullNode);
             var timeoutTask = Task.Delay(5000);
 
@@ -95,6 +99,7 @@ namespace asagiv.pushrocket.common.Models
 
             if (!getPullNodeTask.IsCompletedSuccessfully)
             {
+                // Throw a time-out exception if it takes longer than 5 seconds to connect.
                 throw new TimeoutException(timeoutMessage);
             }
 
@@ -114,28 +119,16 @@ namespace asagiv.pushrocket.common.Models
             return await Client.RegisterNodeAsync(nodeRequest);
         }
 
-        private void OnPullDataRetrieved(object sender, IResponseStreamContext<DataPullResponse> e)
+        public async Task<IDataPushContext> CreatePushFileContextAsync(string destinationNode, string filePath, Task<Stream> stream)
         {
-            DataRetrieved?.Invoke(sender, e);
+            var streamResult = await stream;
+
+            return CreatePushDataContext(destinationNode, filePath, streamResult);
         }
 
-        public async Task<IDataPushContext> CreatePushFileContextAsync(string destinationNode, string filePath)
+        public IDataPushContext CreatePushDataContext(string destinationNode, string name, Stream stream)
         {
-            if (string.IsNullOrWhiteSpace(filePath))
-            {
-                return null;
-            }
-
-            var data = await File.ReadAllBytesAsync(filePath);
-
-            var name = Path.GetFileName(filePath);
-
-            return CreatePushDataContext(destinationNode, name, data);
-        }
-
-        public IDataPushContext CreatePushDataContext(string destinationNode, string name, byte[] data)
-        {
-            return new DataPushContext(Client, _clientConnectionSettings.NodeName, destinationNode, name, data, _logger);
+            return new DataPushContext(Client, _clientConnectionSettings.NodeName, destinationNode, name, stream, _logger);
         }
 
         public void Dispose()
@@ -154,9 +147,11 @@ namespace asagiv.pushrocket.common.Models
             GC.SuppressFinalize(this);
         }
 
-        public async Task AcknowledgeDeliveryAsync(AcknowledgeDeliveryRequest acknowledgeDataPullRequest)
+        public async Task<Unit> AcknowledgeDeliveryAsync(AcknowledgeDeliveryRequest acknowledgeDataPullRequest)
         {
             await Client.AcknowledgeDeliveryAsync(acknowledgeDataPullRequest);
+
+            return Unit.Default;
         }
         #endregion
     }

@@ -1,9 +1,12 @@
-﻿using asagiv.pushrocket.common.Interfaces;
+﻿using asagiv.common;
+using asagiv.common.core.Extensions;
+using asagiv.pushrocket.common.Interfaces;
 using Google.Protobuf;
 using Grpc.Core;
 using Serilog;
 using System;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -13,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace asagiv.pushrocket.common.Models
 {
-    public class DataPushContext : IDataPushContext, INotifyPropertyChanged
+    public class DataPushContext : PropertyChangedBase, IDataPushContext
     {
         #region Statics
         public const int blockSize = 2500000;
@@ -24,12 +27,10 @@ namespace asagiv.pushrocket.common.Models
         private readonly DataPush.DataPushClient _client;
         private readonly Subject<Unit> _onDataPushSubject = new();
         private readonly Subject<int> _onPushResponseReceived = new();
-        private IDisposable _pushDataDisposable;
         private DeliveryStatus _status;
-        #endregion
-
-        #region Delegates
-        public event PropertyChangedEventHandler PropertyChanged;
+        private int _numberOfBlocksPushed;
+        
+        private IDisposable _pushDataDisposable;
         #endregion
 
         #region Properties
@@ -37,25 +38,30 @@ namespace asagiv.pushrocket.common.Models
         public string SourceNode { get; }
         public string DestinationNode { get; }
         public string Name { get; }
-        public byte[] Payload { get; }
+        public Stream Payload { get; }
         public string Description => $"{Name} to {DestinationNode}";
-        public int NumberOfBlocksPushed { get; private set; }
+        public int NumberOfBlocksPushed
+        {
+            get => _numberOfBlocksPushed;
+            private set => RaiseAndSetIfChanged(ref _numberOfBlocksPushed, value);
+        }
         public int TotalNumberOfBlocks { get; private set; }
         public DeliveryStatus Status
         {
             get => _status;
-            private set { _status = value; RaisePropertyChanged(nameof(Status)); }
+            private set => RaiseAndSetIfChanged(ref _status, value);
         }
         public IObservable<int> OnPushResponseReceived => _onPushResponseReceived.AsObservable();
         #endregion
 
         #region Constructor
-        public DataPushContext(DataPush.DataPushClient client, string sourceNode, string destinationNode, string name, byte[] payload, ILogger logger = null)
+        public DataPushContext(DataPush.DataPushClient client, string sourceNode, string destinationNode, string name, Stream payload, ILogger logger = null)
         {
             SourceNode = sourceNode;
             DestinationNode = destinationNode;
             Name = name;
             Payload = payload;
+            Status = DeliveryStatus.Pending;
 
             _client = client;
             _logger = logger;
@@ -85,9 +91,10 @@ namespace asagiv.pushrocket.common.Models
                     .Subscribe();
 
                 var blocks = Enumerable.Range(0, TotalNumberOfBlocks)
-                    .Select(x => GetPayloadPushRequest(x));
+                    .Select(x => GetPayloadPushRequest(x))
+                    .ToAsync();
 
-                foreach (var block in blocks)
+                await foreach (var block in blocks)
                 {
                     await PushBlockAsync(block, streamDuplex);
                 }
@@ -104,18 +111,27 @@ namespace asagiv.pushrocket.common.Models
             }
         }
 
-        private DataPushRequest GetPayloadPushRequest(int blockNumber)
+        private async Task<DataPushRequest> GetPayloadPushRequest(int blockNumber)
         {
             // Get the start index of the payload byte array.
             var start = blockNumber * blockSize;
 
             // Get the end index of the payload byte array.
-            var end = start + blockSize >= Payload.Length
-                ? Payload.Length // In case the index exceeds the payload length
-                : start + blockSize;
+            var length = blockSize >= Payload.Length
+                ? Payload.Length - start // In case the index exceeds the payload length
+                : blockSize;
 
             // Get the data block from the payload.
-            var dataBlock = Payload[start..end];
+            var dataBlock = new byte[length];
+
+            await Payload.ReadAsync(dataBlock);
+
+            if (blockNumber >= TotalNumberOfBlocks)
+            {
+                _logger.Information("Payload upload completed. Disposing payload.");
+
+                await Payload.DisposeAsync();
+            }
 
             // Return the data push request with the payload block.
             return new DataPushRequest
@@ -211,11 +227,6 @@ namespace asagiv.pushrocket.common.Models
             Status = DeliveryStatus.Failed;
 
             return false;
-        }
-
-        private void RaisePropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
     }

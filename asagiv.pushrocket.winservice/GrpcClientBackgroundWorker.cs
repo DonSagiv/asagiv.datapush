@@ -2,6 +2,8 @@ using asagiv.pushrocket.common.Interfaces;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System;
+using System.Reactive;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -31,7 +33,10 @@ namespace asagiv.pushrocket.winservice
                 await _client.CreatePullSubscriberAsync();
                 await _client.RegisterNodeAsync(true);
 
-                _client.DataRetrieved += async (_, e) => await _downloader.OnDataRetrievedAsync(e);
+                _client.DataRetrievedObservable
+                    .SelectMany(x => _downloader.OnDataRetrievedAsync(x))
+                    .Subscribe();
+
                 _downloader.AcknowledgeDelivery += async (_, e) => await _client.AcknowledgeDeliveryAsync(e);
 
                 while (!stoppingToken.IsCancellationRequested && !_client.IsDisposed)
@@ -39,7 +44,7 @@ namespace asagiv.pushrocket.winservice
                     await Task.Delay(1000, stoppingToken);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.Error(ex, ex.Message);
             }

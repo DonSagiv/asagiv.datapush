@@ -1,0 +1,70 @@
+﻿@using asagiv.pushrocket.ui.common.Utilities
+@inherits LayoutComponentBase
+@inject WaitIndicatorService WaitIndicator
+@inject NavigationManager NavManager
+@inject DarkModeService DarkThemeService
+
+<MudThemeProvider IsDarkMode="@_darkThemeEnabled" />
+<MudDialogProvider CloseButton="true" DisableBackdropClick="true" />
+<MudSnackbarProvider />
+
+<div class="page">
+
+    @Body
+
+    @if (!_showWaitIndicator)
+    {
+        <MudTabs Color="Color.Dark" Elevation="4" Class="fixed-bottom" Centered="true" Position="Position.Bottom" Border="true">
+            <MudTabPanel Icon="@Icons.Material.Filled.Home" OnClick="(_ => HomeIconClicked())" />
+            <MudTabPanel Icon="@Icons.Material.Filled.Settings" OnClick="(_ => SettingsIconClicked())" />
+        </MudTabs>
+    }
+
+</div>
+
+<MudOverlay Visible="_showWaitIndicator" DarkBackground="true" Absolute="true">
+    <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+</MudOverlay>
+
+@code
+{
+    bool _showWaitIndicator;
+    bool _darkThemeEnabled;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _darkThemeEnabled = true;
+
+        DarkThemeService.DarkModeSetObservable
+            .Subscribe(SetDarkMode);
+
+        WaitIndicator.WaitIndicatorSetObservable
+            .Subscribe(SetWaitIndicator);
+    }
+
+    private void SetDarkMode(bool isDarkTheme)
+    {
+        _darkThemeEnabled = isDarkTheme;
+
+        StateHasChanged();
+    }
+
+    private void SetWaitIndicator(bool showIndicator)
+    {
+        _showWaitIndicator = showIndicator;
+
+        this.StateHasChanged();
+    }
+
+    private void HomeIconClicked()
+    {
+        NavManager.NavigateTo("/");
+    }
+
+    protected void SettingsIconClicked()
+    {
+        NavManager.NavigateTo("/ConnectionSettings");
+    }
+}
