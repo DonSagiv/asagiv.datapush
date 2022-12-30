@@ -42,12 +42,8 @@ namespace asagiv.pushrocket.wininterop
             data.CallbackMessageId = WindowMessageSink.CallbackMessageId;
             data.VersionOrTimeout = (uint)0x4;
 
-            var hIcon = PInvoke.User32.LoadImage(IntPtr.Zero,
-                iconFile, 
-                PInvoke.User32.ImageType.IMAGE_ICON, 
-                16, 
-                16, 
-                PInvoke.User32.LoadImageFlags.LR_LOADFROMFILE);
+            IntPtr hIcon = PInvoke.User32.LoadImage(IntPtr.Zero, iconFile,
+                PInvoke.User32.ImageType.IMAGE_ICON, 16, 16, PInvoke.User32.LoadImageFlags.LR_LOADFROMFILE);
 
             data.IconHandle = hIcon;
 

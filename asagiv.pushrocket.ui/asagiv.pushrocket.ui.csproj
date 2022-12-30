@@ -60,6 +60,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Platforms\Windows\trayicon.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Platforms\Windows\trayicon.ico">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
+
+	<ItemGroup>
 	  <PackageReference Include="asagiv.common" Version="0.0.14" />
 	  <PackageReference Include="MudBlazor" Version="6.1.6" />
 	  <PackageReference Include="ReactiveUI" Version="18.4.1" />
@@ -73,6 +83,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\asagiv.pushrocket.common\asagiv.pushrocket.common.csproj" />
+	  <ProjectReference Include="..\asagiv.pushrocket.wininterop\asagiv.pushrocket.wininterop.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

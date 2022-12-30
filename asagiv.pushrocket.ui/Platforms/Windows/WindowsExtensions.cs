@@ -8,14 +8,16 @@ namespace asagiv.pushrocket.ui
     // All the code in this file is only included on Windows.
     public static class WindowsExtensions
     {
+        public static IntPtr Hwnd { get; set; }
+
         public static void SetUpWindow(WindowStartupLocation startupLocation = WindowStartupLocation.None, int width = 1000, int height = 800)
         {
             WindowHandler.Mapper.AppendToMapping(nameof(IWindow), (handler, _) =>
             {
                 var nativeWindow = handler.PlatformView;
                 nativeWindow.Activate();
-                IntPtr windowHandle = WinRT.Interop.WindowNative.GetWindowHandle(nativeWindow);
-                var windowId = Microsoft.UI.Win32Interop.GetWindowIdFromWindow(windowHandle);
+                Hwnd = WinRT.Interop.WindowNative.GetWindowHandle(nativeWindow);
+                var windowId = Microsoft.UI.Win32Interop.GetWindowIdFromWindow(Hwnd);
                 var appWindow = Microsoft.UI.Windowing.AppWindow.GetFromWindowId(windowId);
 
                 var currentScreen = startupLocation switch
@@ -40,6 +42,35 @@ namespace asagiv.pushrocket.ui
                     appWindow.MoveAndResize(new RectInt32(X0, Y0, width, height));
                 }
             });
+        }
+
+        public static void SetIcon(string iconFileName)
+        {
+            if(Hwnd == IntPtr.Zero)
+            {
+                return;
+            }
+
+            var hIcon = PInvoke.User32.LoadImage(IntPtr.Zero,
+                iconFileName,
+                PInvoke.User32.ImageType.IMAGE_ICON,
+                16,
+                16,
+                PInvoke.User32.LoadImageFlags.LR_LOADFROMFILE);
+
+            PInvoke.User32.SendMessage(Hwnd, PInvoke.User32.WindowMessage.WM_SETICON, (IntPtr)0, hIcon);
+        }
+        
+        public static void BringToFront()
+        {
+            PInvoke.User32.ShowWindow(Hwnd, PInvoke.User32.WindowShowStyle.SW_SHOW);
+            PInvoke.User32.ShowWindow(Hwnd, PInvoke.User32.WindowShowStyle.SW_RESTORE);
+        }
+
+        public static void MinimizeToTray()
+        {
+            PInvoke.User32.ShowWindow(Hwnd, PInvoke.User32.WindowShowStyle.SW_MINIMIZE);
+            PInvoke.User32.ShowWindow(Hwnd, PInvoke.User32.WindowShowStyle.SW_HIDE);
         }
     }
 }
