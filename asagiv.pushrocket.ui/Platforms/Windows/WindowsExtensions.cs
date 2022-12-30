@@ -1,5 +1,7 @@
-﻿using asagiv.pushrocket.ui.Platforms.Windows;
+﻿using asagiv.pushrocket.wininterop;
 using Microsoft.Maui.Handlers;
+using Microsoft.UI.Windowing;
+using System.Diagnostics;
 using System.Windows.Forms;
 using Windows.Graphics;
 
@@ -30,6 +32,8 @@ namespace asagiv.pushrocket.ui
 
                 var bounds = currentScreen.Bounds;
 
+                appWindow.Changed += AppWindow_Resize;
+
                 if(startupLocation == WindowStartupLocation.None)
                 {
                     appWindow.Resize(new SizeInt32(width, height));
@@ -42,6 +46,18 @@ namespace asagiv.pushrocket.ui
                     appWindow.MoveAndResize(new RectInt32(X0, Y0, width, height));
                 }
             });
+        }
+
+        private static void AppWindow_Resize(AppWindow sender, AppWindowChangedEventArgs args)
+        {
+            Debug.WriteLine("X Position: " + sender.Position.X);
+            Debug.WriteLine("Y Position: " + sender.Position.Y);
+
+            // Minimize window if 
+            if(sender.Position.X == -32000 && sender.Position.Y == -32000)
+            {
+                MinimizeToTray();
+            }
         }
 
         public static void SetIcon(string iconFileName)

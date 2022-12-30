@@ -1,4 +1,4 @@
-﻿namespace asagiv.pushrocket.ui.Platforms.Windows
+﻿namespace asagiv.pushrocket.wininterop
 {
     [Flags]
     public enum WindowStartupLocation

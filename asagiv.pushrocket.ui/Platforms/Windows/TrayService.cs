@@ -11,7 +11,7 @@ namespace asagiv.pushrocket.ui
 
         public void Initialize()
         {
-            _tray = new WindowsTrayIcon("Platforms/Windows/trayicon.ico")
+            _tray = new WindowsTrayIcon("Platforms/Windows/trayicon.ico", "PushRocket")
             {
                 LeftClick = () =>
                 {

@@ -14,11 +14,11 @@ namespace asagiv.pushrocket.wininterop
         public Action RightClick { get; set; }
         public bool IsTaskBarIconCreated { get; private set; }
 
-        public WindowsTrayIcon(string iconFile)
+        public WindowsTrayIcon(string iconFile, string defaultTooltip)
         {
             messageSink = new WindowMessageSink();
 
-            iconData = NotifyIconData.CreateDefault(messageSink.MessageWindowHandle, iconFile);
+            iconData = NotifyIconData.CreateDefault(messageSink.MessageWindowHandle, iconFile, defaultTooltip);
 
             CreateTaskbarIcon();
 

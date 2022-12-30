@@ -23,7 +23,7 @@ namespace asagiv.pushrocket.wininterop
         public Guid TaskbarIconGuid;
         public IntPtr CustomBalloonIconHandle;
 
-        public static NotifyIconData CreateDefault(IntPtr handle, string iconFile)
+        public static NotifyIconData CreateDefault(IntPtr handle, string iconFile, string defaultTooltip)
         {
             var data = new NotifyIconData();
 
@@ -54,7 +54,7 @@ namespace asagiv.pushrocket.wininterop
                                 | IconDataMembers.Icon
                                 | IconDataMembers.Tip;
 
-            data.ToolTipText = data.BalloonText = data.BalloonTitle = string.Empty;
+            data.ToolTipText = data.BalloonText = data.BalloonTitle = defaultTooltip ?? string.Empty;
 
             return data;
         }
