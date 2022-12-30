@@ -1,6 +1,4 @@
-﻿using Serilog;
-
-namespace asagiv.pushrocket.common.Interfaces
+﻿namespace asagiv.pushrocket.common.Interfaces
 {
     public interface IPlatformServices
     {
