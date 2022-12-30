@@ -38,6 +38,7 @@ namespace asagiv.pushrocket.ui
 #endif
 #if WINDOWS
             builder.Services.AddSingleton<ITrayService, TrayService>();
+            builder.Services.AddSingleton<INotificationService, NotificationService>();
 #endif
 
             builder.ConfigureLifecycleEvents(lc =>

@@ -71,6 +71,7 @@
 
 	<ItemGroup>
 	  <PackageReference Include="asagiv.common" Version="0.0.14" />
+	  <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
 	  <PackageReference Include="MudBlazor" Version="6.1.6" />
 	  <PackageReference Include="ReactiveUI" Version="18.4.1" />
 	  <PackageReference Include="ReactiveUI.Blazor" Version="18.4.1" />
