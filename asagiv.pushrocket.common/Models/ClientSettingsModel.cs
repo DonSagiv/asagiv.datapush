@@ -89,9 +89,7 @@ namespace asagiv.pushrocket.common.Models
                 throw;
             }
         }
-
-        private void _dataDownloader_AcknowledgeDelivery(object sender, AcknowledgeDeliveryRequest e) => throw new NotImplementedException();
-
+        
         protected virtual bool IsPullNodeSelected()
         {
             return !string.IsNullOrWhiteSpace(DestinationNode);

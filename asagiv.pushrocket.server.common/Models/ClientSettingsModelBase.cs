@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace asagiv.pushrocket.ui.common.Models
+namespace asagiv.pushrocket.server.common
 {
     public abstract class ClientSettingsModelBase : ReactiveObject, IClientSettingsModel
     {

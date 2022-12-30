@@ -23,7 +23,6 @@
     <ProjectReference Include="..\asagiv.pushrocket.common\asagiv.pushrocket.common.csproj" />
     <ProjectReference Include="..\asagiv.pushrocket.grpcserver\asagiv.pushrocket.grpcserver.csproj" />
     <ProjectReference Include="..\asagiv.pushrocket.server.common\asagiv.pushrocket.server.common.csproj" />
-    <ProjectReference Include="..\asagiv.pushrocket.ui.common\asagiv.pushrocket.ui.common.csproj" />
   </ItemGroup>
 
 </Project>

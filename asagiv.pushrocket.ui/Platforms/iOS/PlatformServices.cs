@@ -1,13 +1,13 @@
 ﻿using asagiv.pushrocket.common.Interfaces;
 
-namespace asagiv.pushrocket.ui.common
+namespace asagiv.pushrocket.ui
 {
-    // All the code in this file is only included on Android.
+    // All the code in this file is only included on iOS.
     public class PlatformServices : IPlatformServices
     {
         public string GetDownloadDirectory()
         {
-            return FileSystem.Current.AppDataDirectory;
+            throw new NotImplementedException();
         }
     }
 }

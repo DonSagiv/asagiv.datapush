@@ -1,13 +1,13 @@
 ﻿using asagiv.pushrocket.common.Interfaces;
 
-namespace asagiv.pushrocket.ui.common
+namespace asagiv.pushrocket.ui
 {
-    // All the code in this file is only included on Mac Catalyst.
+    // All the code in this file is only included on Android.
     public class PlatformServices : IPlatformServices
     {
         public string GetDownloadDirectory()
         {
-            throw new NotImplementedException();
+            return FileSystem.Current.AppDataDirectory;
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using asagiv.pushrocket.ui.common;
-using asagiv.pushrocket.ui.common.Platforms.Windows;
+﻿using asagiv.pushrocket.ui.Platforms.Windows;
 
 namespace asagiv.pushrocket.ui.WinUI
 {

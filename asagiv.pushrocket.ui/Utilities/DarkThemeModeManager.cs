@@ -1,7 +1,7 @@
 ﻿using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
-namespace asagiv.pushrocket.ui.common.Utilities
+namespace asagiv.pushrocket.ui.Utilities
 {
     public class DarkModeService
     {

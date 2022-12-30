@@ -1,9 +1,9 @@
-﻿using asagiv.pushrocket.ui.common.Platforms.Windows;
+﻿using asagiv.pushrocket.ui.Platforms.Windows;
 using Microsoft.Maui.Handlers;
 using System.Windows.Forms;
 using Windows.Graphics;
 
-namespace asagiv.pushrocket.ui.common
+namespace asagiv.pushrocket.ui
 {
     // All the code in this file is only included on Windows.
     public static class WindowsExtensions

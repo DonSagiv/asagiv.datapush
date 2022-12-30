@@ -1,14 +1,14 @@
 ﻿using asagiv.common.Extensions;
 using asagiv.pushrocket.common.Models;
-using asagiv.pushrocket.ui.common.Database;
 using asagiv.pushrocket.common.Interfaces;
-using asagiv.pushrocket.ui.common.Utilities;
 using ReactiveUI;
 using Serilog;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using asagiv.pushrocket.ui.Utilities;
+using asagiv.pushrocket.ui.Database;
 
-namespace asagiv.pushrocket.ui.common.ViewModels
+namespace asagiv.pushrocket.ui.ViewModels
 {
     public class ConnectionSettingsViewModel : ReactiveObject
     {
@@ -16,7 +16,6 @@ namespace asagiv.pushrocket.ui.common.ViewModels
         private bool _isDarkModeEnabled;
         private readonly DarkModeService _darkThemeModeManager;
         private readonly ILogger _logger;
-        private readonly IPlatformServices _platformServices;
         private readonly PushRocketDatabase _pushRocketDatabase;
         private string _selectedConnectionSettingString;
         private ClientConnectionSettings _selectedConnectionSettings;
@@ -48,11 +47,10 @@ namespace asagiv.pushrocket.ui.common.ViewModels
         #endregion
 
         #region Constructor
-        public ConnectionSettingsViewModel(DarkModeService darkModeService, PushRocketDatabase database, IPlatformServices platformServices, ILogger logger)
+        public ConnectionSettingsViewModel(DarkModeService darkModeService, PushRocketDatabase database, ILogger logger)
         {
             _darkThemeModeManager = darkModeService;
             _pushRocketDatabase = database;
-            _platformServices = platformServices;
             _logger = logger;
 
             IsDarkModeEnabled = true;

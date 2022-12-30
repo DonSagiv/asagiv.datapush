@@ -1,8 +1,8 @@
 ﻿using asagiv.common.Extensions;
 using asagiv.pushrocket.common.Interfaces;
 using asagiv.pushrocket.common.Models;
-using asagiv.pushrocket.ui.common.Database;
-using asagiv.pushrocket.ui.common.Utilities;
+using asagiv.pushrocket.ui.Database;
+using asagiv.pushrocket.ui.Utilities;
 using ReactiveUI;
 using Serilog;
 using System.Collections.ObjectModel;
@@ -10,7 +10,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows.Input;
 
-namespace asagiv.pushrocket.ui.common.ViewModels
+namespace asagiv.pushrocket.ui.ViewModels
 {
     public class MainViewModel : ReactiveObject
     {

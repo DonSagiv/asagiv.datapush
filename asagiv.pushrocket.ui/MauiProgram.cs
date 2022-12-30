@@ -2,10 +2,10 @@
 using asagiv.pushrocket.common.Interfaces;
 using asagiv.pushrocket.common.Models;
 using asagiv.pushrocket.common.Utilities;
-using asagiv.pushrocket.ui.common;
-using asagiv.pushrocket.ui.common.Database;
-using asagiv.pushrocket.ui.common.Utilities;
-using asagiv.pushrocket.ui.common.ViewModels;
+using asagiv.pushrocket.ui.Database;
+using asagiv.pushrocket.ui.Utilities;
+using asagiv.pushrocket.ui.ViewModels;
+using Microsoft.Maui.LifecycleEvents;
 using MudBlazor.Services;
 
 namespace asagiv.pushrocket.ui
@@ -30,12 +30,18 @@ namespace asagiv.pushrocket.ui
             builder.Services.AddSingleton<ConnectionSettingsViewModel>();
             builder.Services.AddSingleton<IPlatformServices, PlatformServices>();
             builder.Services.AddSingleton<IGrpcDataDownloader, GrpcDataDownloader>();
-
+            builder.Services.AddMudServices();
             builder.Services.AddMauiBlazorWebView();
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
 #endif
-            builder.Services.AddMudServices();
+
+            builder.ConfigureLifecycleEvents(lc =>
+            {
+#if WINDOWS
+                lc.AddWindows(w => w.OnWindowCreated((del) => del.ExtendsContentIntoTitleBar = true));
+#endif
+            });
 
             var app = builder.Build();
 

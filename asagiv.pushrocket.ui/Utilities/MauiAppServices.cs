@@ -1,6 +1,6 @@
 ﻿using Serilog;
 
-namespace asagiv.pushrocket.ui.common.Utilities
+namespace asagiv.pushrocket.ui.Utilities
 {
     public sealed class MauiAppServices
     {

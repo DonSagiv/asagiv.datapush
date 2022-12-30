@@ -2,7 +2,7 @@
 using Serilog;
 using SQLite;
 
-namespace asagiv.pushrocket.ui.common.Database
+namespace asagiv.pushrocket.ui.Database
 {
     public class PushRocketDatabase
     {

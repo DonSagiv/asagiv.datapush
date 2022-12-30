@@ -1,6 +1,6 @@
 ﻿using asagiv.pushrocket.common.Interfaces;
 
-namespace asagiv.pushrocket.ui.common
+namespace asagiv.pushrocket.ui
 {
     public class PlatformServices : IPlatformServices
     {

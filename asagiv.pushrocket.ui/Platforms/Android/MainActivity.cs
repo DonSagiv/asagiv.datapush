@@ -2,7 +2,7 @@
 using Android.Content;
 using Android.Content.PM;
 using Android.OS;
-using asagiv.pushrocket.ui.common.Utilities;
+using asagiv.pushrocket.ui.Utilities;
 using Serilog;
 
 namespace asagiv.pushrocket.ui
