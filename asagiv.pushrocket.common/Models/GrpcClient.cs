@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
@@ -147,11 +146,11 @@ namespace asagiv.pushrocket.common.Models
             GC.SuppressFinalize(this);
         }
 
-        public async Task<Unit> AcknowledgeDeliveryAsync(AcknowledgeDeliveryRequest acknowledgeDataPullRequest)
+        public async Task<AcknowledgeDeliveryRequest> AcknowledgeDeliveryAsync(AcknowledgeDeliveryRequest acknowledgeDataPullRequest)
         {
             await Client.AcknowledgeDeliveryAsync(acknowledgeDataPullRequest);
 
-            return Unit.Default;
+            return acknowledgeDataPullRequest;
         }
         #endregion
     }

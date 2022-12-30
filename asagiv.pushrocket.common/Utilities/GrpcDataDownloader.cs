@@ -11,7 +11,10 @@ namespace asagiv.pushrocket.common.Utilities
     {
         #region Fields
         private readonly ILogger _logger;
-        private readonly string _saveDirectory;
+        #endregion
+
+        #region Properties
+        public string SaveDirectory { get; }
         #endregion
 
         #region Constructor
@@ -20,23 +23,23 @@ namespace asagiv.pushrocket.common.Utilities
             _logger = logger;
 
             // Get the save directory from the configuration file.
-            _saveDirectory = platformServices.GetDownloadDirectory();
+            SaveDirectory = platformServices.GetDownloadDirectory();
 
-            if (string.IsNullOrWhiteSpace(_saveDirectory) || !Directory.Exists(_saveDirectory))
+            if (string.IsNullOrWhiteSpace(SaveDirectory) || !Directory.Exists(SaveDirectory))
             {
                 _logger.Warning("Save Diretory Not Specified.");
             }
             else
             {
-                _logger?.Information($"Initializing GRPC Stream Downloader. (Save Directory: {_saveDirectory})");
+                _logger?.Information($"Initializing GRPC Stream Downloader. (Save Directory: {SaveDirectory})");
             }
 
             // Create the directory if it doesn't exist.
-            if (!Directory.Exists(_saveDirectory))
+            if (!Directory.Exists(SaveDirectory))
             {
-                _logger.Information("{saveDirectory} could not be found. Creating directory.", _saveDirectory);
+                _logger.Information("{saveDirectory} could not be found. Creating directory.", SaveDirectory);
 
-                Directory.CreateDirectory(_saveDirectory);
+                Directory.CreateDirectory(SaveDirectory);
             }
         }
         #endregion
@@ -44,7 +47,7 @@ namespace asagiv.pushrocket.common.Utilities
         #region Methods
         public async Task<AcknowledgeDeliveryRequest> OnDataRetrievedAsync(IResponseStreamContext<DataPullResponse> responseStreamContext)
         {
-            var tempFilePath = Path.Combine(_saveDirectory, $"{responseStreamContext.ResponseData.SourceRequestId}.tmp");
+            var tempFilePath = Path.Combine(SaveDirectory, $"{responseStreamContext.ResponseData.SourceRequestId}.tmp");
 
             _logger?.Information($"Streaming Pulled Data to {tempFilePath}");
 

@@ -14,6 +14,7 @@ namespace asagiv.pushrocket.common.Models
     {
         #region Fields
         private readonly ILogger _logger;
+        private readonly INotificationService _notificationService;
         private readonly IGrpcDataDownloader _dataDownloader;
         private string _destinationNode;
         private IClientConnectionSettings _connectionSettings;
@@ -34,10 +35,11 @@ namespace asagiv.pushrocket.common.Models
         #endregion
 
         #region Constructor
-        public ClientSettingsModel(ILogger logger, IGrpcDataDownloader dataDownloader)
+        public ClientSettingsModel(ILogger logger, IGrpcDataDownloader dataDownloader, INotificationService notificationService)
         {
             _logger = logger;
             _dataDownloader = dataDownloader;
+            _notificationService = notificationService;
 
             _logger.Debug("Client settings model instantiated.");
         }
@@ -73,7 +75,7 @@ namespace asagiv.pushrocket.common.Models
                 Client.DataRetrievedObservable
                     .SelectMany(x => _dataDownloader.OnDataRetrievedAsync(x))
                     .SelectMany(x => Client.AcknowledgeDeliveryAsync(x))
-                    .Subscribe();
+                    .Subscribe(OnDeliveryCompleted);
 
                 // Add the pull nodes to the list.
                 pullNodes.AddRange(pullNodesToAdd);
@@ -110,8 +112,25 @@ namespace asagiv.pushrocket.common.Models
         public void Dispose()
         {
             Dispose(true);
-
             GC.SuppressFinalize(this);
+        }
+
+        private void OnDeliveryCompleted(AcknowledgeDeliveryRequest request)
+        {
+            if(request is null)
+            {
+                return;
+            }
+
+            if (request.IsDeliverySuccessful)
+            {
+                var command = _dataDownloader.SaveDirectory;
+                _notificationService?.ShowNotification("New Data Retrieved", request.Name, command);
+            }
+            else
+            {
+                _notificationService?.ShowNotification("Error Retrieving File", $"{request.Name}: {request.ErrorMessage}", null);
+            }
         }
 
         protected virtual void Dispose(bool isDisposing)
