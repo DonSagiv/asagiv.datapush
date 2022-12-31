@@ -1,6 +1,5 @@
 ﻿using asagiv.pushrocket.common.Interfaces;
 using Microsoft.Toolkit.Uwp.Notifications;
-using Windows.UI.Notifications;
 
 namespace asagiv.pushrocket.ui
 {
@@ -16,6 +15,7 @@ namespace asagiv.pushrocket.ui
             }
 
             contentBuilder.AddText(title, hintStyle: AdaptiveTextStyle.Header)
+                .SetToastDuration(ToastDuration.Long)
                 .AddText(body, hintStyle: AdaptiveTextStyle.Body)
                 .Show();
         }

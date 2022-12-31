@@ -125,7 +125,7 @@ namespace asagiv.pushrocket.common.Models
             if (request.IsDeliverySuccessful)
             {
                 var command = _dataDownloader.SaveDirectory;
-                _notificationService?.ShowNotification("New Data Retrieved", request.Name, command);
+                _notificationService?.ShowNotification("New File Downloaded", request.Name, command);
             }
             else
             {
