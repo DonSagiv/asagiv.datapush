@@ -6,7 +6,7 @@
   xmlns:desktop6="http://schemas.microsoft.com/appx/manifest/desktop/windows10/6"
   IgnorableNamespaces="uap rescap">
 
-	<Identity Name="maui-package-name-placeholder" Publisher="CN=User Name" Version="0.0.0.0" />
+	<Identity Name="maui-package-name-placeholder" Publisher="CN=asagiv" Version="0.0.0.0" />
 
 	<Properties>
 		<DisplayName>$placeholder$</DisplayName>
@@ -34,24 +34,11 @@
 				<uap:DefaultTile Square71x71Logo="$placeholder$.png" Wide310x150Logo="$placeholder$.png" Square310x310Logo="$placeholder$.png" />
 				<uap:SplashScreen Image="$placeholder$.png" />
 			</uap:VisualElements>
-			<Extensions>
-				<desktop6:Extension
-				  Category="windows.service"
-				  Executable="Platforms/Windows/asagiv.pushrocket.winservice.exe"
-				  EntryPoint="asagiv.pushrocket.winservice.Program">
-					<desktop6:Service
-					  Name="PushRocket-Service"
-					  StartupType="auto"
-					  StartAccount="localSystem">
-					</desktop6:Service>
-				</desktop6:Extension>
-			</Extensions>
 		</Application>
 	</Applications>
 
 	<Capabilities>
 		<rescap:Capability Name="runFullTrust" />
-		<rescap:Capability Name="allowElevation" />
 		<rescap:Capability Name="packagedServices" />
 		<rescap:Capability Name="localSystemServices" />
 	</Capabilities>
