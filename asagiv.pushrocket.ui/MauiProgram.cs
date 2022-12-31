@@ -8,6 +8,7 @@ using asagiv.pushrocket.ui.Utilities;
 using asagiv.pushrocket.ui.ViewModels;
 using Microsoft.Maui.LifecycleEvents;
 using MudBlazor.Services;
+using Plugin.LocalNotification;
 
 namespace asagiv.pushrocket.ui
 {
@@ -38,7 +39,11 @@ namespace asagiv.pushrocket.ui
 #endif
 #if WINDOWS
             builder.Services.AddSingleton<ITrayService, TrayService>();
-            builder.Services.AddSingleton<INotificationService, NotificationService>();
+            builder.Services.AddSingleton<asagiv.pushrocket.common.Interfaces.INotificationService, NotificationService>();
+#endif
+#if ANDROID21_0_OR_GREATER
+            builder.UseLocalNotification();
+            builder.Services.AddSingleton<asagiv.pushrocket.common.Interfaces.INotificationService, NotificationService>();
 #endif
 
             builder.ConfigureLifecycleEvents(lc =>
