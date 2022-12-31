@@ -10,7 +10,7 @@
 
 <div>
 
-    <MudSelect Class="m-3" T="string" Label="Connection" Variant="Variant.Outlined"
+    <MudSelect Class="m-3" T="string" Label="Server" Variant="Variant.Outlined"
                @bind-Value="@ViewModel.SelectedConnectionSettingString"
                AnchorOrigin="Origin.BottomCenter">
         @foreach (var connectionSetting in ViewModel.ConnectionSettingsList)
@@ -94,7 +94,10 @@
     {
         ViewModel.ErrorObservable.Subscribe(ShowErrorNotifier);
 
-        ViewModel.PropertyChanged += async (s, e) => await InvokeAsync(() => this.StateHasChanged());
+        ViewModel.PropertyChanged += async (s, e) => 
+        {
+            await InvokeAsync(() => this.StateHasChanged());
+        };
 
         ViewModel.PushContexts.CollectionChanged += async (s, e) =>
         {
