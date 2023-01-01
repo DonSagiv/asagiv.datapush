@@ -8,7 +8,6 @@ namespace asagiv.pushrocket.ui
         {
             var notification = new NotificationRequest
             {
-                NotificationId = 1763,
                 Title = title,
                 Description = body,
                 Android =

@@ -6,6 +6,7 @@ using asagiv.pushrocket.ui.Utilities;
 using ReactiveUI;
 using Serilog;
 using System.Collections.ObjectModel;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Windows.Input;
@@ -20,6 +21,7 @@ namespace asagiv.pushrocket.ui.ViewModels
         private readonly PushRocketDatabase _pushRocketDatabase;
         private readonly Subject<string> _errorSubject = new();
         private readonly IClientSettingsModel _clientSettingsModel;
+        private readonly ISourceStreamPubSub _pushDataPubSub;
         private bool _isConnected;
         private string _selectedDestinationNode;
         private string _selectedConnectionSettingString;
@@ -61,14 +63,12 @@ namespace asagiv.pushrocket.ui.ViewModels
         public MainViewModel(WaitIndicatorService waitIndicator, PushRocketDatabase database, ILogger logger, IClientSettingsModel clientSettingsModel)
         {
             _pushRocketDatabase = database;
-
             _logger = logger;
+            _waitIndicator = waitIndicator;
+            _clientSettingsModel = clientSettingsModel;
+            _pushDataPubSub = SourceStreamPubSub.Instance;
 
             _logger?.Debug("Instantiating MainViewModel");
-
-            _waitIndicator = waitIndicator;
-
-            _clientSettingsModel = clientSettingsModel;
 
             ConnectionSettingsList = new();
             DestinationNodes = new();
@@ -89,6 +89,12 @@ namespace asagiv.pushrocket.ui.ViewModels
 
             this.WhenAnyValue(x => x.SelectedDestinationNode)
                 .Subscribe(OnSelectedDestinationNodeChanged);
+
+            _pushDataPubSub.SourceStreamsObservable
+                .SelectMany(PushContextsAsync)
+                .Subscribe();
+
+            _pushDataPubSub.PullSourceStreams();
         }
         #endregion
 
@@ -235,17 +241,9 @@ namespace asagiv.pushrocket.ui.ViewModels
 
                 // Create a context for pushing the each selected file.
                 var contextsToAddTasks = fileResultList
-                    .Select(x => _clientSettingsModel.Client.CreatePushFileContextAsync(SelectedDestinationNode, x.FileName, x.OpenReadAsync()));
+                    .Select(x => new SourceStreamInfo(x.FileName, x.OpenReadAsync()));
 
-                var contextsToAdd = await Task.WhenAll(contextsToAddTasks);
-
-                PushContexts.AddRange(contextsToAdd);
-
-                // Start with the last selected file so that it appears in the correct order in the UI.
-                foreach (var context in contextsToAdd.Reverse())
-                {
-                    await context.PushDataAsync();
-                }
+                _pushDataPubSub.PublishSourceStreams(contextsToAddTasks);
             }
             catch (Exception ex)
             {
@@ -255,6 +253,37 @@ namespace asagiv.pushrocket.ui.ViewModels
 
                 _errorSubject?.OnNext(message);
             }
+        }
+
+        private async Task<Unit> PushContextsAsync(IEnumerable<SourceStreamInfo> sourceStreamInfoList)
+        {
+            if (string.IsNullOrWhiteSpace(SelectedDestinationNode))
+            {
+                _logger.Warning("Push Files error: No destination node selected.");
+
+                return Unit.Default;
+            }
+
+            var contextsToAddTasks = sourceStreamInfoList
+                .Select(x => _clientSettingsModel.Client.CreatePushFileContextAsync(SelectedDestinationNode, x.PushDataName, x.PushDataStreamTask))
+                .ToArray();
+
+            if (!contextsToAddTasks.Any()) 
+            {
+                return Unit.Default;
+            }
+
+            var contextsToAdd = await Task.WhenAll(contextsToAddTasks);
+
+            PushContexts.AddRange(contextsToAdd);
+
+            // Start with the last selected file so that it appears in the correct order in the UI.
+            foreach (var context in contextsToAdd.Reverse())
+            {
+                await context.PushDataAsync();
+            }
+
+            return Unit.Default;
         }
 
         public void RemoveContext(IDataPushContext contextToRemove)

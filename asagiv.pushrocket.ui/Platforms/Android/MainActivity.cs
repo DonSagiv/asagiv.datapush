@@ -2,12 +2,14 @@
 using Android.Content;
 using Android.Content.PM;
 using Android.OS;
+using asagiv.pushrocket.common.Interfaces;
+using asagiv.pushrocket.ui.Platforms.Android;
 using asagiv.pushrocket.ui.Utilities;
 using Serilog;
 
 namespace asagiv.pushrocket.ui
 {
-    [Activity(Theme = "@style/Maui.SplashTheme", MainLauncher = true, LaunchMode = LaunchMode.SingleTop, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
+    [Activity(Theme = "@style/Maui.SplashTheme", MainLauncher = true, LaunchMode = LaunchMode.SingleInstance, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
     [IntentFilter(new[] { Intent.ActionSend }, Categories = new[] { Intent.CategoryDefault }, DataMimeType = "image/*")]
     [IntentFilter(new[] { Intent.ActionSendMultiple }, Categories = new[] { Intent.CategoryDefault }, DataMimeType = "image/*")]
     [IntentFilter(new[] { Intent.ActionSend }, Categories = new[] { Intent.CategoryDefault }, DataMimeType = "video/*")]
@@ -52,7 +54,9 @@ namespace asagiv.pushrocket.ui
 
             if (intent.Action == Intent.ActionSend || intent.Action == Intent.ActionSendMultiple)
             {
-                _logger?.Information($"Found Intent Action: {Intent.Action}");
+                _logger?.Information($"Found Intent Action: {intent.Action}");
+
+                AndroidUtilities.ExtractClipData(intent, ApplicationContext, SourceStreamPubSub.Instance);
             }
         }
         #endregion

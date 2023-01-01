@@ -6,6 +6,7 @@ using asagiv.pushrocket.ui.Database;
 using asagiv.pushrocket.ui.Interfaces;
 using asagiv.pushrocket.ui.Utilities;
 using asagiv.pushrocket.ui.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui.LifecycleEvents;
 using MudBlazor.Services;
 using Plugin.LocalNotification;
@@ -28,10 +29,10 @@ namespace asagiv.pushrocket.ui
             builder.Services.AddSingleton<PushRocketDatabase>();
             builder.Services.AddSingleton<WaitIndicatorService>();
             builder.Services.AddSingleton<DarkModeService>();
-            builder.Services.AddTransient<MainViewModel>();
-            builder.Services.AddTransient<ConnectionSettingsViewModel>();
             builder.Services.AddSingleton<IPlatformServices, PlatformServices>();
             builder.Services.AddSingleton<IGrpcDataDownloader, GrpcDataDownloader>();
+            builder.Services.AddTransient<MainViewModel>();
+            builder.Services.AddTransient<ConnectionSettingsViewModel>();
             builder.Services.AddMudServices();
             builder.Services.AddMauiBlazorWebView();
 #if DEBUG
