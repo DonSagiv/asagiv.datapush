@@ -18,12 +18,14 @@ namespace asagiv.pushrocket.ui
     {
         #region Fields
         private readonly ILogger _logger;
+        private readonly ISourceStreamPubSub _sourceStreamPubSub;
         #endregion
 
         #region Constructor
         public MainActivity()
         {
-            _logger = MauiAppServices.Instance.GetService<ILogger>();
+            _logger = MauiApplication.Current.Services.GetService<ILogger>();
+            _sourceStreamPubSub = MauiApplication.Current.Services.GetService<ISourceStreamPubSub>();
 
             _logger?.Information("Android MainActivity Instantiated.");
         }
@@ -56,7 +58,7 @@ namespace asagiv.pushrocket.ui
             {
                 _logger?.Information($"Found Intent Action: {intent.Action}");
 
-                AndroidUtilities.ExtractClipData(intent, ApplicationContext, SourceStreamPubSub.Instance);
+                AndroidUtilities.ExtractClipData(intent, ApplicationContext, _sourceStreamPubSub);
             }
         }
         #endregion

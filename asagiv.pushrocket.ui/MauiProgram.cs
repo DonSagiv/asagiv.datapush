@@ -25,12 +25,15 @@ namespace asagiv.pushrocket.ui
             var appDataDirectory = FileSystem.Current.AppDataDirectory;
 
             builder.Services.UseSerilog(appDataDirectory);
+            builder.Services.AddSingleton<MainPage>();
             builder.Services.AddSingleton<IClientSettingsModel, ClientSettingsModel>();
             builder.Services.AddSingleton<PushRocketDatabase>();
             builder.Services.AddSingleton<WaitIndicatorService>();
             builder.Services.AddSingleton<DarkModeService>();
             builder.Services.AddSingleton<IPlatformServices, PlatformServices>();
             builder.Services.AddSingleton<IGrpcDataDownloader, GrpcDataDownloader>();
+            builder.Services.AddSingleton<ISourceStreamPubSub, SourceStreamPubSub>();
+            builder.Services.AddSingleton<ITrayService, TrayService>();
             builder.Services.AddTransient<MainViewModel>();
             builder.Services.AddTransient<ConnectionSettingsViewModel>();
             builder.Services.AddMudServices();
@@ -39,10 +42,9 @@ namespace asagiv.pushrocket.ui
             builder.Services.AddBlazorWebViewDeveloperTools();
 #endif
 #if WINDOWS
-            builder.Services.AddSingleton<ITrayService, TrayService>();
             builder.Services.AddSingleton<asagiv.pushrocket.common.Interfaces.INotificationService, NotificationService>();
 #endif
-#if ANDROID21_0_OR_GREATER
+#if ANDROID
             builder.UseLocalNotification();
             builder.Services.AddSingleton<asagiv.pushrocket.common.Interfaces.INotificationService, NotificationService>();
 #endif
@@ -61,7 +63,7 @@ namespace asagiv.pushrocket.ui
             var app = builder.Build();
 
             // Allow app services to be accessed in static context.
-            MauiAppServices.Instance.InjectServiceProvider(app.Services);
+            // MauiAppServices.Instance.InjectServiceProvider(app.Services);
 
             return builder.Build();
         }

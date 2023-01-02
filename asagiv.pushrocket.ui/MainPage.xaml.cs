@@ -11,25 +11,16 @@ namespace asagiv.pushrocket.ui
         #endregion
 
         #region Constructor
-        public MainPage()
+        public MainPage(ITrayService trayService)
         {
             InitializeComponent();
 
             if (!isSetup)
             {
+                trayService?.Initialize();
+
                 isSetup = true;
-
-                SetupTrayIcon();
             }
-        }
-        #endregion
-
-        #region Methods
-        private void SetupTrayIcon()
-        {
-            var trayService = MauiAppServices.Instance.GetService<ITrayService>();
-
-            trayService?.Initialize();
         }
         #endregion
     }

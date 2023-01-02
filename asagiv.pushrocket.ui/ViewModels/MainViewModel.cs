@@ -60,13 +60,13 @@ namespace asagiv.pushrocket.ui.ViewModels
         #endregion
 
         #region Constructor
-        public MainViewModel(WaitIndicatorService waitIndicator, PushRocketDatabase database, ILogger logger, IClientSettingsModel clientSettingsModel)
+        public MainViewModel(WaitIndicatorService waitIndicator, PushRocketDatabase database, ILogger logger, IClientSettingsModel clientSettingsModel, ISourceStreamPubSub sourceStreamPubSub)
         {
             _pushRocketDatabase = database;
             _logger = logger;
             _waitIndicator = waitIndicator;
             _clientSettingsModel = clientSettingsModel;
-            _pushDataPubSub = SourceStreamPubSub.Instance;
+            _pushDataPubSub = sourceStreamPubSub;
 
             _logger?.Debug("Instantiating MainViewModel");
 

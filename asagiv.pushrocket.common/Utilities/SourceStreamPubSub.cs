@@ -9,11 +9,6 @@ namespace asagiv.pushrocket.ui.Utilities
 {
     public class SourceStreamPubSub : ISourceStreamPubSub
     {
-        #region Statics
-        private static readonly Lazy<SourceStreamPubSub> _lazyInstance = new(() => new SourceStreamPubSub());
-        public static SourceStreamPubSub Instance => _lazyInstance.Value;
-        #endregion
-
         #region Fields
         private readonly Subject<SourceStreamInfo[]> _pushDataContextSubject = new();
         private readonly Queue<SourceStreamInfo[]> _sourceStreamCache;
@@ -24,7 +19,7 @@ namespace asagiv.pushrocket.ui.Utilities
         #endregion
 
         #region Constructor
-        private SourceStreamPubSub()
+        public SourceStreamPubSub()
         {
             _sourceStreamCache = new Queue<SourceStreamInfo[]>();
         }

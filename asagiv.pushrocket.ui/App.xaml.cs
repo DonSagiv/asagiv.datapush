@@ -1,14 +1,12 @@
-﻿using System.Diagnostics;
-
-namespace asagiv.pushrocket.ui
+﻿namespace asagiv.pushrocket.ui
 {
     public partial class App : Application
     {
-        public App()
+        public App(MainPage mainPage)
         {
             InitializeComponent();
 
-            MainPage = new MainPage();
+            MainPage = mainPage;
         }
     }
 }
