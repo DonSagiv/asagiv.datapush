@@ -1,17 +1,18 @@
-﻿using asagiv.pushrocket.ui.Interfaces;
-using asagiv.pushrocket.wininterop;
+﻿using asagiv.pushrocket.interop.Platforms.Windows;
+using asagiv.pushrocket.ui.Interfaces;
 
 namespace asagiv.pushrocket.ui
 {
     public class TrayService : ITrayService
     {
-        private WindowsTrayIcon _tray;
-
+        #region Delegates
         public Action ClickHandler { get; set; }
+        #endregion
 
+        #region Methods
         public void Initialize()
         {
-            _tray = new WindowsTrayIcon("Platforms/Windows/trayicon.ico", "PushRocket")
+            var tray = new WindowsTrayIcon("Platforms/Windows/trayicon.ico", "PushRocket")
             {
                 LeftClick = () =>
                 {
@@ -20,5 +21,6 @@ namespace asagiv.pushrocket.ui
                 }
             };
         }
+        #endregion
     }
 }

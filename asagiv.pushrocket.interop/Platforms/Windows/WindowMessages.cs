@@ -1,4 +1,4 @@
-﻿namespace asagiv.pushrocket.wininterop
+﻿namespace asagiv.pushrocket.interop.Platforms.Windows
 {
     public enum WindowMessages : uint
     {

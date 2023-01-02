@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace asagiv.pushrocket.wininterop
+namespace asagiv.pushrocket.interop.Platforms.Windows
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     public struct NotifyIconData
@@ -27,7 +27,7 @@ namespace asagiv.pushrocket.wininterop
         {
             var data = new NotifyIconData();
 
-            if(Environment.OSVersion.Version.Major >= 6)
+            if (Environment.OSVersion.Version.Major >= 6)
             {
                 data.cbSize = (uint)Marshal.SizeOf(data);
             }
@@ -40,7 +40,7 @@ namespace asagiv.pushrocket.wininterop
             data.WindowHandle = handle;
             data.TaskbarIconId = 0x0;
             data.CallbackMessageId = WindowMessageSink.CallbackMessageId;
-            data.VersionOrTimeout = (uint)0x4;
+            data.VersionOrTimeout = 0x4;
 
             IntPtr hIcon = PInvoke.User32.LoadImage(IntPtr.Zero, iconFile,
                 PInvoke.User32.ImageType.IMAGE_ICON, 16, 16, PInvoke.User32.LoadImageFlags.LR_LOADFROMFILE);

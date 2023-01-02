@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
 
-namespace asagiv.pushrocket.wininterop
+namespace asagiv.pushrocket.interop.Platforms.Windows
 {
     public class WindowMessageSink : IDisposable
     {
@@ -56,7 +56,7 @@ namespace asagiv.pushrocket.wininterop
 
             MessageWindowHandle = WinApi.CreateWindowEx(0, WindowId, "", 0, 0, 0, 1, 1, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
 
-            if(MessageWindowHandle == IntPtr.Zero)
+            if (MessageWindowHandle == IntPtr.Zero)
             {
                 throw new Win32Exception("Message window handle was not a valid pointer");
             }
@@ -64,7 +64,7 @@ namespace asagiv.pushrocket.wininterop
 
         private IntPtr OnWindowMessageReceived(IntPtr hWnd, uint messageId, IntPtr wParam, IntPtr lParam)
         {
-            if(messageId == taskbarRestartMessageId)
+            if (messageId == taskbarRestartMessageId)
             {
                 var listener = TaskbarCreated;
                 listener?.Invoke();
@@ -77,7 +77,7 @@ namespace asagiv.pushrocket.wininterop
 
         private void ProcessWindowMessage(uint msg, IntPtr wParam, IntPtr lParam)
         {
-            if(msg != CallbackMessageId)
+            if (msg != CallbackMessageId)
             {
                 switch ((WindowMessages)msg)
                 {
@@ -104,7 +104,7 @@ namespace asagiv.pushrocket.wininterop
                     MouseEventReceived?.Invoke(MouseEvent.IconLeftMouseDown);
                     break;
                 case WindowMessages.WM_LBUTTONUP:
-                    if(!isDoubleClick)
+                    if (!isDoubleClick)
                     {
                         MouseEventReceived?.Invoke(MouseEvent.IconLeftMouseUp);
                     }

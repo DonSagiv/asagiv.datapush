@@ -1,5 +1,4 @@
-﻿using asagiv.pushrocket.wininterop;
-using System.Diagnostics;
+﻿using asagiv.pushrocket.interop.Platforms.Windows;
 
 namespace asagiv.pushrocket.ui.WinUI
 {

@@ -1,9 +1,9 @@
-﻿using asagiv.pushrocket.wininterop;
+﻿using asagiv.pushrocket.interop.Platforms.Windows;
 using Microsoft.Maui.Handlers;
 using Microsoft.UI.Windowing;
 using System.Diagnostics;
-using System.Windows.Forms;
 using Windows.Graphics;
+using System.Windows.Forms;
 
 namespace asagiv.pushrocket.ui
 {

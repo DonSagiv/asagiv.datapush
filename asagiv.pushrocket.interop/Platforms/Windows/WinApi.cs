@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace asagiv.pushrocket.wininterop
+namespace asagiv.pushrocket.interop.Platforms.Windows
 {
     internal static class WinApi
     {

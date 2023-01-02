@@ -82,7 +82,7 @@
 	<ItemGroup>
 	  <PackageReference Include="asagiv.common" Version="0.0.14" />
 	  <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
-	  <PackageReference Include="MudBlazor" Version="6.1.6" />
+	  <PackageReference Include="MudBlazor" Version="6.1.7" />
 	  <PackageReference Include="Plugin.LocalNotification" Version="10.0.3" />
 	  <PackageReference Include="ReactiveUI" Version="18.4.1" />
 	  <PackageReference Include="ReactiveUI.Blazor" Version="18.4.1" />
@@ -95,7 +95,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\asagiv.pushrocket.common\asagiv.pushrocket.common.csproj" />
-	  <ProjectReference Include="..\asagiv.pushrocket.wininterop\asagiv.pushrocket.wininterop.csproj" />
+	  <ProjectReference Include="..\asagiv.pushrocket.interop\asagiv.pushrocket.interop.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

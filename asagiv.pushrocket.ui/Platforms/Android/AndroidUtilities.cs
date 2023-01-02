@@ -1,5 +1,6 @@
 ﻿using Android.Content;
 using asagiv.pushrocket.common.Interfaces;
+using asagiv.pushrocket.interop.Platforms.Android;
 using asagiv.pushrocket.ui.Utilities;
 
 namespace asagiv.pushrocket.ui.Platforms.Android

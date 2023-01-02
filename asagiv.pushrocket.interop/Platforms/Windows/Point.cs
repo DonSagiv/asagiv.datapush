@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace asagiv.pushrocket.wininterop
+namespace asagiv.pushrocket.interop.Platforms.Windows
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct Point

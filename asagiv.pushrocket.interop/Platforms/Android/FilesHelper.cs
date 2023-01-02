@@ -7,7 +7,7 @@ using Java.IO;
 using Uri = Android.Net.Uri;
 using Environment = Android.OS.Environment;
 
-namespace asagiv.pushrocket.ui.Platforms.Android
+namespace asagiv.pushrocket.interop.Platforms.Android
 {
     public static class FilesHelper
     {
@@ -260,8 +260,7 @@ namespace asagiv.pushrocket.ui.Platforms.Android
             }
             finally
             {
-                if (cursor != null)
-                    cursor.Close();
+                cursor?.Close();
 
                 input.Close();
                 output.Close();
@@ -292,7 +291,7 @@ namespace asagiv.pushrocket.ui.Platforms.Android
                 }
                 finally
                 {
-                    cursor.Close();
+                    cursor?.Close();
                 }
             }
 
@@ -350,8 +349,12 @@ namespace asagiv.pushrocket.ui.Platforms.Android
                 while (true)
                 {
                     int len = await stream.ReadAsync(buffer, 0, bufferSize);
+                    
                     if (len == 0)
+                    {
                         break;
+                    }
+
                     await bos.WriteAsync(buffer, 0, len);
                 }
 
@@ -365,15 +368,8 @@ namespace asagiv.pushrocket.ui.Platforms.Android
             {
                 try
                 {
-                    if (stream != null)
-                    {
-                        stream.Close();
-                    }
-
-                    if (bos != null)
-                    {
-                        bos.Close();
-                    }
+                    stream?.Close();
+                    bos?.Close();
                 }
                 catch (Exception ex)
                 {
@@ -407,11 +403,9 @@ namespace asagiv.pushrocket.ui.Platforms.Android
                     return cursor.GetString(index);
                 }
             }
-            catch { }
             finally
             {
-                if (cursor != null)
-                    cursor.Close();
+                cursor?.Close();
             }
             return null;
         }

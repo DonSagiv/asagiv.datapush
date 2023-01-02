@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace asagiv.pushrocket.wininterop
+namespace asagiv.pushrocket.interop.Platforms.Windows
 {
     public class WindowsTrayIcon
     {
@@ -87,7 +87,7 @@ namespace asagiv.pushrocket.wininterop
 
         private void SetVersion()
         {
-            iconData.VersionOrTimeout = (uint)0x4;
+            iconData.VersionOrTimeout = 0x4;
 
             var status = WinApi.Shell_NotifyIcon(NotifyCommand.SetVersion, ref iconData);
 

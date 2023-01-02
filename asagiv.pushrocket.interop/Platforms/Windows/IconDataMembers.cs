@@ -1,4 +1,4 @@
-﻿namespace asagiv.pushrocket.wininterop
+﻿namespace asagiv.pushrocket.interop.Platforms.Windows
 {
     [Flags]
     public enum IconDataMembers
