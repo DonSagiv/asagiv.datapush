@@ -6,10 +6,10 @@ using asagiv.pushrocket.ui.Database;
 using asagiv.pushrocket.ui.Interfaces;
 using asagiv.pushrocket.ui.Utilities;
 using asagiv.pushrocket.ui.ViewModels;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui.LifecycleEvents;
 using MudBlazor.Services;
 using Plugin.LocalNotification;
+using Plugin.LocalNotification.AndroidOption;
 
 namespace asagiv.pushrocket.ui
 {
@@ -20,6 +20,13 @@ namespace asagiv.pushrocket.ui
             var builder = MauiApp.CreateBuilder();
 
             builder.UseMauiApp<App>()
+                .UseLocalNotification(config => config.AddAndroid(android =>
+                {
+                    android.AddChannel(new NotificationChannelRequest
+                    {
+                        Sound = "good_things_happen"
+                    });
+                }))
                 .ConfigureFonts(fonts => fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"));
 
             var appDataDirectory = FileSystem.Current.AppDataDirectory;

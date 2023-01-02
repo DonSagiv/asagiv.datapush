@@ -19,6 +19,8 @@ namespace asagiv.pushrocket.ui
                 }
             };
 
+            LocalNotificationCenter.Current.AreNotificationsEnabled();
+
             LocalNotificationCenter.Current.Show(notification);
         } 
     }
